@@ -1,0 +1,93 @@
+---
+swagger: "2.0"
+info:
+  title: "Plutonium Service API"
+  version: "1.0.0"
+  description: |
+    The Plutonium Service API provides endpoints to support the operations of the NFT Marketplace.
+    This document outlines the API's structure, response formats, and capabilities for integration.
+host: "plutonium"
+basePath: "/api/v1"
+schemes:
+  - http
+paths:
+  /ping:
+    get:
+      tags:
+        - Public
+      summary: Ping endpoint for server health and latency testing.
+      description: |
+        The ping endpoint provides a simple "pong" response to confirm server availability.
+        Use this endpoint to:
+        - Verify connectivity between the client and server.
+        - Measure network latency for diagnostics.
+        - Perform quick and reliable health checks over HTTP.
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        200:
+          description: "Successful response indicating server availability."
+          schema:
+            $ref: "#/definitions/PingResponse"
+        500:
+          description: |
+            Internal Server Error. This typically indicates a server-side issue or
+            an unexpected runtime error preventing proper functionality.
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /metrics:
+    get:
+      tags:
+        - Monitoring
+      summary: Retrieve Prometheus Metrics
+      description: |
+        This endpoint provides Prometheus-compatible metrics for monitoring the application. 
+        It is typically used by Prometheus or similar monitoring tools to scrape metrics data.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Metrics retrieved successfully.
+          schema:
+                $ref: "#/definitions/PrometheusResponse"
+definitions:
+  PingResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        enum:
+          - pong
+        example: "pong"
+        description: "Response message confirming successful server connectivity."
+      timestamp:
+        type: string
+        format: date-time
+        example: "2024-11-19T12:34:56Z"
+        description: "The timestamp of the server response, useful for tracking latency."
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        example: 500
+        description: "HTTP status code representing the type of error encountered."
+      message:
+        type: string
+        example: "Internal Server Error"
+        description: "Brief explanation of the error encountered."
+      details:
+        type: string
+        example: "Unexpected error while processing the request."
+        description: "Additional context or information about the error, if available."
+  PrometheusResponse:
+    type: object
+    additionalProperties:
+      type: string
+      format: number
+tags:
+  - name: Public
+    description: "Endpoints accessible to all clients for general API functionality."
+  - name: Monitoring 
+    description: "Endpoints accessible to all clients for monitoring API functionality."
