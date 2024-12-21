@@ -72,16 +72,17 @@ func (r *ContractsRepository) MigrateContext(ctx context.Context) error {
 		return ErrDBNotInitialized
 	}
 
-	_, err := r.DB.ExecContext(ctx, fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
-		id                     SERIAL PRIMARY KEY,
-		name                   varchar(255) UNIQUE NOT NULL,
-		address                varchar(255) UNIQUE NOT NULL,
-		tx                     varchar(255) UNIQUE NOT NULL,
-		abi                    text,
-		created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-		updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-		deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
-	);`, r.TBL))
+	_, err := r.DB.ExecContext(ctx, fmt.Sprintf(`
+CREATE TABLE IF NOT EXISTS %s (
+	id                     SERIAL PRIMARY KEY,
+	name                   varchar(255) UNIQUE NOT NULL,
+	address                varchar(255) UNIQUE NOT NULL,
+	tx                     varchar(255) UNIQUE NOT NULL,
+	abi                    text,
+	created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);`, r.TBL))
 
 	return err
 }
@@ -92,11 +93,11 @@ func (r *ContractsRepository) Create(ctx context.Context, contractMap map[string
 	}
 
 	_, err := r.DB.NamedExecContext(ctx, `
-		INSERT INTO contracts (name, address, tx, abi)
-		VALUES (:name, :address, :tx, :abi)
-		ON CONFLICT (name) 
-		DO 
-	    UPDATE SET address = EXCLUDED.address, tx = EXCLUDED.tx, abi = EXCLUDED.abi;`, contractMap)
+INSERT INTO contracts (name, address, tx, abi)
+VALUES (:name, :address, :tx, :abi)
+ON CONFLICT (name) 
+DO 
+UPDATE SET address = EXCLUDED.address, tx = EXCLUDED.tx, abi = EXCLUDED.abi;`, contractMap)
 
 	return err
 }
@@ -108,15 +109,16 @@ func (r *ContractsRepository) GetOne(ctx context.Context, name string) (*models.
 
 	var contract Contract
 
-	sqlStatement := `SELECT
-		id,
-		name,
-		address,
-		tx,
-		abi
-		FROM contracts
-		WHERE name=$1;
-	`
+	sqlStatement := `
+SELECT
+	id,
+	name,
+	address,
+	tx,
+	abi
+FROM contracts
+WHERE name=$1;`
+
 	row := r.DB.QueryRowContext(ctx, sqlStatement, name)
 
 	err := row.Scan(
@@ -144,15 +146,15 @@ func (r *ContractsRepository) GetByAddress(ctx context.Context, address common.A
 
 	var contract Contract
 
-	sqlStatement := `SELECT
-		id,
-		name,
-		address,
-		tx,
-		abi
-		FROM contracts
-		WHERE address=$1;
-	`
+	sqlStatement := `
+SELECT
+	id,
+	name,
+	address,
+	tx,
+	abi
+FROM contracts
+WHERE address=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, address.String())
 
 	err := row.Scan(
@@ -191,15 +193,16 @@ func (r *ContractsRepository) GetContractsByType(ctx context.Context, contractTy
 		contracts []*models.Contract
 	)
 
-	rows, err := r.DB.QueryxContext(ctx, fmt.Sprintf(
-		`select 
+	rows, err := r.DB.QueryxContext(ctx, fmt.Sprintf(`
+SELECT 
     c.id,
 	c.name,
    	c.address,
    	c.tx,
    	c.abi
-   	FROM contracts c	
-	WHERE c.name like '%s'`, contractType))
+FROM contracts c	
+WHERE c.name LIKE '%s';`, contractType))
+
 	if err != nil {
 		return nil, err
 	}

@@ -92,19 +92,20 @@ func (r *UsersRepository) MigrateContext(ctx context.Context) error {
 		return ErrDBNotInitialized
 	}
 
-	_, err := r.DB.ExecContext(ctx, fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (
-		id                      SERIAL PRIMARY KEY,
-	    email                   VARCHAR(255),
-    	password                VARCHAR(255) NOT NULL,
-		password_reset_token    VARCHAR(255),
-		password_reset_expires  BIGINT,
-		enabled                 bool NOT NULL DEFAULT TRUE,
-		secret                  VARCHAR(255),
-    	rsa_secret              VARCHAR(255),
-    	created                 TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-		updated                 TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-		deleted                 TIMESTAMP WITH TIME ZONE DEFAULT NULL
-	);`, r.TBL))
+	_, err := r.DB.ExecContext(ctx, fmt.Sprintf(`
+CREATE TABLE IF NOT EXISTS %s (
+	id                      SERIAL PRIMARY KEY,
+	email                   VARCHAR(255),
+	password                VARCHAR(255) NOT NULL,
+	password_reset_token    VARCHAR(255),
+	password_reset_expires  BIGINT,
+	enabled                 bool NOT NULL DEFAULT TRUE,
+	secret                  VARCHAR(255),
+	rsa_secret              VARCHAR(255),
+	created                 TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated                 TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	deleted                 TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);`, r.TBL))
 
 	return err
 }
@@ -124,9 +125,9 @@ func (r *UsersRepository) Create(ctx context.Context, userMap map[string]interfa
 	userMap["rsa_secret"] = hash.RandStringBytes(length)
 
 	_, dbErr := r.DB.NamedExecContext(ctx, fmt.Sprintf(`
-		INSERT INTO %s (email, password, secret, rsa_secret)
-		VALUES (:email, :password, :secret, :rsa_secret)
-		ON CONFLICT DO NOTHING`, r.TBL), userMap)
+INSERT INTO %s (email, password, secret, rsa_secret)
+VALUES (:email, :password, :secret, :rsa_secret)
+ON CONFLICT DO NOTHING`, r.TBL), userMap)
 
 	return dbErr
 }
@@ -138,19 +139,22 @@ func (r *UsersRepository) GetOne(ctx context.Context, email string) (*User, erro
 
 	var user User
 
-	sqlStatement := fmt.Sprintf(`SELECT 
-		id,
-	    email,
-    	password,
-		password_reset_token,
-		password_reset_expires,
-		enabled,
-		secret,
-		rsa_secret,
-		created,
-		updated,
-		deleted
-	from %s WHERE email=$1;`, r.TBL)
+	sqlStatement := fmt.Sprintf(`
+SELECT 
+	id,
+	email,
+	password,
+	password_reset_token,
+	password_reset_expires,
+	enabled,
+	secret,
+	rsa_secret,
+	created,
+	updated,
+	deleted
+FROM %s 
+WHERE email=$1;`, r.TBL)
+
 	row := r.DB.QueryRowxContext(ctx, sqlStatement, email)
 
 	err := row.StructScan(&user)

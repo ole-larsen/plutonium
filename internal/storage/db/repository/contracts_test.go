@@ -202,7 +202,7 @@ func TestContractsRepository_GetCollectionsContracts(t *testing.T) {
 
 	ctx := context.Background()
 
-	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'collection_%'`).
+	mock.ExpectQuery(`SELECT c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name LIKE 'collection_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow(1, "collection_1", "0x123", "0x456", "abi_data").
 			AddRow(2, "collection_2", "0x789", "0xABC", "abi_data_2"))
@@ -227,7 +227,7 @@ func TestContractsRepository_GetAuctions(t *testing.T) {
 
 	ctx := context.Background()
 
-	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'auction_%'`).
+	mock.ExpectQuery(`SELECT c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name LIKE 'auction_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow(1, "auction_1", "0x123", "0x456", "abi_data").
 			AddRow(2, "auction_2", "0x789", "0xABC", "abi_data_2"))
@@ -343,7 +343,7 @@ func TestContractsRepository_GetCollectionsContracts_NoResults(t *testing.T) {
 
 	ctx := context.Background()
 
-	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'collection_%'`).
+	mock.ExpectQuery(`SELECT c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name LIKE 'collection_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}))
 
 	contracts, err := repository.GetCollectionsContracts(ctx)
@@ -381,7 +381,7 @@ func TestContractsRepository_GetContractsByType_ScanError(t *testing.T) {
 	contractType := "type1"
 
 	// Mock the query to return invalid data that causes Scan to fail
-	mock.ExpectQuery(`select .* FROM contracts c WHERE c.name like 'type1'`).
+	mock.ExpectQuery(`SELECT .* FROM contracts c WHERE c.name LIKE 'type1'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow("invalid_id", "contract1", "0x123", "0x456", "abi_data")) // "invalid_id" will cause Scan to fail
 
