@@ -33,27 +33,27 @@ var (
 type MarketplaceCollectible struct {
 	Id           *big.Int
 	CollectionId *big.Int
+	Price        *big.Int
 	TokenIds     []*big.Int
 	Owners       []common.Address
+	Fulfilled    []bool
 	Creator      common.Address
 	IsAuction    bool
-	Price        *big.Int
-	Fulfilled    []bool
 	IsLocked     bool
 }
 
 // MarketplaceCollection is an auto generated low-level Go binding around an user-defined struct.
 type MarketplaceCollection struct {
+	Fee           *big.Int
+	MaxItems      *big.Int
 	Name          string
 	Symbol        string
 	Description   string
 	NftCollection common.Address
-	Fee           *big.Int
 	Owner         common.Address
 	Creator       common.Address
 	IsApproved    bool
 	IsLocked      bool
-	MaxItems      *big.Int
 }
 
 // MarketplaceMetaData contains all meta data concerning the Marketplace contract.
@@ -762,15 +762,13 @@ func (_Marketplace *MarketplaceTransactorSession) Fallback(calldata []byte) (*ty
 
 // MarketplaceBuyIterator is returned from FilterBuy and is used to iterate over the raw logs and unpacked data for Buy events raised by the Marketplace contract.
 type MarketplaceBuyIterator struct {
-	Event *MarketplaceBuy // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceBuy
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -831,11 +829,11 @@ func (it *MarketplaceBuyIterator) Close() error {
 type MarketplaceBuy struct {
 	Id           *big.Int
 	CollectionId *big.Int
-	TokenIds     []*big.Int
 	Price        *big.Int
-	Buyer        common.Address
 	Quantity     *big.Int
-	Raw          types.Log // Blockchain specific contextual infos
+	TokenIds     []*big.Int
+	Raw          types.Log
+	Buyer        common.Address
 }
 
 // FilterBuy is a free log retrieval operation binding the contract event 0x91527f0b12cc8ffc1cb4c6d5df9e2d58087a96596ad766c47a62594f47a41dad.
@@ -911,15 +909,13 @@ func (_Marketplace *MarketplaceFilterer) ParseBuy(log types.Log) (*MarketplaceBu
 
 // MarketplaceClaimFundsIterator is returned from FilterClaimFunds and is used to iterate over the raw logs and unpacked data for ClaimFunds events raised by the Marketplace contract.
 type MarketplaceClaimFundsIterator struct {
-	Event *MarketplaceClaimFunds // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceClaimFunds
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -978,9 +974,9 @@ func (it *MarketplaceClaimFundsIterator) Close() error {
 
 // MarketplaceClaimFunds represents a ClaimFunds event raised by the Marketplace contract.
 type MarketplaceClaimFunds struct {
-	User   common.Address
 	Amount *big.Int
-	Raw    types.Log // Blockchain specific contextual infos
+	Raw    types.Log
+	User   common.Address
 }
 
 // FilterClaimFunds is a free log retrieval operation binding the contract event 0x4f0554190111f93f8c2ccef2cc41473f187d7f29ff5a5c308ca41f9dfe4e989a.
@@ -1046,15 +1042,13 @@ func (_Marketplace *MarketplaceFilterer) ParseClaimFunds(log types.Log) (*Market
 
 // MarketplaceCreateCollectibleIterator is returned from FilterCreateCollectible and is used to iterate over the raw logs and unpacked data for CreateCollectible events raised by the Marketplace contract.
 type MarketplaceCreateCollectibleIterator struct {
-	Event *MarketplaceCreateCollectible // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceCreateCollectible
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1115,12 +1109,12 @@ func (it *MarketplaceCreateCollectibleIterator) Close() error {
 type MarketplaceCreateCollectible struct {
 	Id           *big.Int
 	CollectionId *big.Int
+	Price        *big.Int
 	TokenIds     []*big.Int
 	Owners       []common.Address
+	Raw          types.Log
 	Creator      common.Address
 	IsAuction    bool
-	Price        *big.Int
-	Raw          types.Log // Blockchain specific contextual infos
 }
 
 // FilterCreateCollectible is a free log retrieval operation binding the contract event 0x90ee92f99f21443735ecc68007318c34c52aa3e851f4fc29ddaa3f2254d83b1e.
@@ -1196,15 +1190,13 @@ func (_Marketplace *MarketplaceFilterer) ParseCreateCollectible(log types.Log) (
 
 // MarketplaceCreateCollectionIterator is returned from FilterCreateCollection and is used to iterate over the raw logs and unpacked data for CreateCollection events raised by the Marketplace contract.
 type MarketplaceCreateCollectionIterator struct {
-	Event *MarketplaceCreateCollection // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceCreateCollection
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1264,14 +1256,14 @@ func (it *MarketplaceCreateCollectionIterator) Close() error {
 // MarketplaceCreateCollection represents a CreateCollection event raised by the Marketplace contract.
 type MarketplaceCreateCollection struct {
 	Id         *big.Int
-	Name       string
-	Symbol     string
 	Fee        *big.Int
 	MaxItems   *big.Int
+	Name       string
+	Symbol     string
+	Raw        types.Log
 	Collection common.Address
 	Creator    common.Address
 	Owner      common.Address
-	Raw        types.Log // Blockchain specific contextual infos
 }
 
 // FilterCreateCollection is a free log retrieval operation binding the contract event 0xa7217fa6d312670524ba494cd4fe4649ba95a72936b4c34f1d3c9eceaee01922.
@@ -1363,15 +1355,13 @@ func (_Marketplace *MarketplaceFilterer) ParseCreateCollection(log types.Log) (*
 
 // MarketplaceEditCollectibleIterator is returned from FilterEditCollectible and is used to iterate over the raw logs and unpacked data for EditCollectible events raised by the Marketplace contract.
 type MarketplaceEditCollectibleIterator struct {
-	Event *MarketplaceEditCollectible // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceEditCollectible
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1432,10 +1422,10 @@ func (it *MarketplaceEditCollectibleIterator) Close() error {
 type MarketplaceEditCollectible struct {
 	CollectionId  *big.Int
 	CollectibleId *big.Int
+	Raw           types.Log
+	Owner         common.Address
 	IsLocked      bool
 	IsAuction     bool
-	Owner         common.Address
-	Raw           types.Log // Blockchain specific contextual infos
 }
 
 // FilterEditCollectible is a free log retrieval operation binding the contract event 0xdb5b6a14075ccd1caa16a0ffe9eb0684c26975464ac963c47f77a9fc4f2ba173.
@@ -1501,15 +1491,13 @@ func (_Marketplace *MarketplaceFilterer) ParseEditCollectible(log types.Log) (*M
 
 // MarketplaceEditCollectionIterator is returned from FilterEditCollection and is used to iterate over the raw logs and unpacked data for EditCollection events raised by the Marketplace contract.
 type MarketplaceEditCollectionIterator struct {
-	Event *MarketplaceEditCollection // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceEditCollection
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1569,16 +1557,16 @@ func (it *MarketplaceEditCollectionIterator) Close() error {
 // MarketplaceEditCollection represents a EditCollection event raised by the Marketplace contract.
 type MarketplaceEditCollection struct {
 	Id         *big.Int
-	Name       string
-	Symbol     string
 	Fee        *big.Int
 	MaxItems   *big.Int
+	Name       string
+	Symbol     string
+	Raw        types.Log
 	Collection common.Address
 	Creator    common.Address
 	Owner      common.Address
 	IsApproved bool
 	IsLocked   bool
-	Raw        types.Log // Blockchain specific contextual infos
 }
 
 // FilterEditCollection is a free log retrieval operation binding the contract event 0x7bab18a3dc1feb101f1f7ee8fc6ef12c98ab8c729af16c4b2505f80e2ffa3114.
@@ -1670,15 +1658,13 @@ func (_Marketplace *MarketplaceFilterer) ParseEditCollection(log types.Log) (*Ma
 
 // MarketplaceSellIterator is returned from FilterSell and is used to iterate over the raw logs and unpacked data for Sell events raised by the Marketplace contract.
 type MarketplaceSellIterator struct {
-	Event *MarketplaceSell // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *MarketplaceSell
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1739,11 +1725,11 @@ func (it *MarketplaceSellIterator) Close() error {
 type MarketplaceSell struct {
 	Id           *big.Int
 	CollectionId *big.Int
+	Quantity     *big.Int
 	TokenIds     []*big.Int
+	Raw          types.Log
 	Creator      common.Address
 	Seller       common.Address
-	Quantity     *big.Int
-	Raw          types.Log // Blockchain specific contextual infos
 }
 
 // FilterSell is a free log retrieval operation binding the contract event 0x2261292e5f83b9170492ed43134e451136c943134b649673be882c18582dcbf7.

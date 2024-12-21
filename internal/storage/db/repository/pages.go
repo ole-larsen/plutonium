@@ -9,20 +9,20 @@ import (
 )
 
 type Page struct {
-	ID          int64       `db:"id"`
-	CategoryID  int64       `db:"category_id"`
+	Created     strfmt.Date `db:"created"`
+	Deleted     strfmt.Date `db:"deleted"`
+	Updated     strfmt.Date `db:"updated"`
 	Title       string      `db:"title"`
 	Slug        string      `db:"slug"`
 	Description string      `db:"description"`
 	Content     string      `db:"content"`
 	ImageID     int64       `db:"image_id"`
-	Enabled     bool        `db:"enabled"`
 	OrderBy     int64       `db:"order_by"`
 	CreatedBy   int64       `db:"created_by"`
 	UpdatedBy   int64       `db:"updated_by"`
-	Created     strfmt.Date `db:"created"`
-	Updated     strfmt.Date `db:"updated"`
-	Deleted     strfmt.Date `db:"deleted"`
+	ID          int64       `db:"id"`
+	CategoryID  int64       `db:"category_id"`
+	Enabled     bool        `db:"enabled"`
 }
 
 type PagesRepositoryInterface interface {

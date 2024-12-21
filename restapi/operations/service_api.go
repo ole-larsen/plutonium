@@ -74,70 +74,32 @@ ServiceAPI The Plutonium Service API provides endpoints to support the operation
 This document outlines the API's structure, response formats, and capabilities for integration.
 */
 type ServiceAPI struct {
-	spec            *loads.Document
-	context         *middleware.Context
-	handlers        map[string]map[string]http.Handler
-	formats         strfmt.Registry
-	customConsumers map[string]runtime.Consumer
-	customProducers map[string]runtime.Producer
-	defaultConsumes string
-	defaultProduces string
-	Middleware      func(middleware.Builder) http.Handler
-	useSwaggerUI    bool
-
-	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
-
-	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
-
-	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
-
-	// JSONConsumer registers a consumer for the following mime types:
-	//   - application/json
-	JSONConsumer runtime.Consumer
-
-	// JSONProducer registers a producer for the following mime types:
-	//   - application/json
-	JSONProducer runtime.Producer
-
-	// XTokenAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key x-token provided in the header
-	XTokenAuth func(string) (*models.Principal, error)
-
-	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
-	APIAuthorizer runtime.Authorizer
-
-	// FrontendGetFrontendFooterHandler sets the operation handler for the get frontend footer operation
-	FrontendGetFrontendFooterHandler frontend.GetFrontendFooterHandler
-	// FrontendGetFrontendHeaderHandler sets the operation handler for the get frontend header operation
+	JSONConsumer                     runtime.Consumer
+	PublicGetPingHandler             public.GetPingHandler
+	MonitoringGetMetricsHandler      monitoring.GetMetricsHandler
+	formats                          strfmt.Registry
 	FrontendGetFrontendHeaderHandler frontend.GetFrontendHeaderHandler
-	// MonitoringGetMetricsHandler sets the operation handler for the get metrics operation
-	MonitoringGetMetricsHandler monitoring.GetMetricsHandler
-	// PublicGetPingHandler sets the operation handler for the get ping operation
-	PublicGetPingHandler public.GetPingHandler
-
-	// ServeError is called when an error is received, there is a default handler
-	// but you can set your own with this
-	ServeError func(http.ResponseWriter, *http.Request, error)
-
-	// PreServerShutdown is called before the HTTP(S) server is shutdown
-	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
-	PreServerShutdown func()
-
-	// ServerShutdown is called when the HTTP(S) server is shut down and done
-	// handling all active connections and does not accept connections any more
-	ServerShutdown func()
-
-	// Custom command line argument groups with their descriptions
-	CommandLineOptionsGroups []swag.CommandLineOptionsGroup
-
-	// User defined logger function.
-	Logger func(string, ...interface{})
+	FrontendGetFrontendFooterHandler frontend.GetFrontendFooterHandler
+	APIAuthorizer                    runtime.Authorizer
+	JSONProducer                     runtime.Producer
+	BearerAuthenticator              func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+	customProducers                  map[string]runtime.Producer
+	BasicAuthenticator               func(security.UserPassAuthentication) runtime.Authenticator
+	APIKeyAuthenticator              func(string, string, security.TokenAuthentication) runtime.Authenticator
+	spec                             *loads.Document
+	Middleware                       func(middleware.Builder) http.Handler
+	Logger                           func(string, ...interface{})
+	XTokenAuth                       func(string) (*models.Principal, error)
+	ServerShutdown                   func()
+	PreServerShutdown                func()
+	customConsumers                  map[string]runtime.Consumer
+	handlers                         map[string]map[string]http.Handler
+	context                          *middleware.Context
+	ServeError                       func(http.ResponseWriter, *http.Request, error)
+	defaultConsumes                  string
+	defaultProduces                  string
+	CommandLineOptionsGroups         []swag.CommandLineOptionsGroup
+	useSwaggerUI                     bool
 }
 
 // UseRedoc for documentation at /docs

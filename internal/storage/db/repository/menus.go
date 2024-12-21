@@ -11,27 +11,27 @@ import (
 )
 
 type MenuSection struct {
+	Created   strfmt.Date `db:"created"`
+	Updated   strfmt.Date `db:"updated"`
+	Deleted   strfmt.Date `db:"deleted"`
+	Title     string      `db:"title"`
 	ID        int64       `db:"id"`
 	MenuID    int64       `db:"menu_id"`
-	Title     string      `db:"title"`
-	Enabled   bool        `db:"enabled"`
 	OrderBy   int64       `db:"order_by"`
 	CreatedBy int64       `db:"created_by"`
 	UpdatedBy int64       `db:"updated_by"`
-	Created   strfmt.Date `db:"created"`
-	Updated   strfmt.Date `db:"updated"`
-	Deleted   strfmt.Date `db:"deleted"`
+	Enabled   bool        `db:"enabled"`
 }
 
 type Menu struct {
-	ID        int64       `db:"id"`
-	Title     string      `db:"title"`
-	Enabled   bool        `db:"enabled"`
-	CreatedBy int64       `db:"created_by"`
-	UpdatedBy int64       `db:"updated_by"`
 	Created   strfmt.Date `db:"created"`
 	Updated   strfmt.Date `db:"updated"`
 	Deleted   strfmt.Date `db:"deleted"`
+	Title     string      `db:"title"`
+	ID        int64       `db:"id"`
+	CreatedBy int64       `db:"created_by"`
+	UpdatedBy int64       `db:"updated_by"`
+	Enabled   bool        `db:"enabled"`
 }
 
 type MenusRepositoryInterface interface {
@@ -125,7 +125,9 @@ func (r *MenusRepository) GetMenuByProvider(provider string) (*models.PublicMenu
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var menu models.PublicMenu
+
 	var attributes AggregatedMenuAttributesJSON
 
 	sqlStatement := `SELECT
@@ -152,16 +154,18 @@ func (r *MenusRepository) GetMenuByProvider(provider string) (*models.PublicMenu
 	FROM menus m1
 	WHERE m1.title = $1 AND m1.enabled = TRUE AND m1.deleted_at isNull;`
 	row := r.DB.QueryRow(sqlStatement, provider)
+
 	err := row.Scan(&menu.ID, &attributes)
 	switch err {
 	case sql.ErrNoRows:
-		return nil, nil
+		return nil, NewError(fmt.Errorf("menu not found"))
 	case nil:
 		menu.Attributes = &models.PublicMenuAttributes{
 			Items: attributes.Items,
 			Link:  attributes.Link,
 			Name:  attributes.Name,
 		}
+
 		return &menu, nil
 	default:
 		return nil, err

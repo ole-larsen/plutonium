@@ -21,9 +21,9 @@ import (
 
 // MockContractsRepositoryInterface is a mock of ContractsRepositoryInterface interface.
 type MockContractsRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockContractsRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockContractsRepositoryInterfaceMockRecorder is the mock recorder for MockContractsRepositoryInterface.

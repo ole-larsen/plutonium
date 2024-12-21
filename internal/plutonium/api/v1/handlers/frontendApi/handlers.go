@@ -6,10 +6,10 @@ import (
 	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
 )
 
-func GetHeaderHandler(params frontend.GetFrontendHeaderParams, principal *models.Principal) middleware.Responder {
+func GetHeaderHandler(_ frontend.GetFrontendHeaderParams, _ *models.Principal) middleware.Responder {
 	return frontend.NewGetFrontendHeaderOK().WithPayload(nil)
 }
 
-func GetFooterHandler(params frontend.GetFrontendFooterParams, principal *models.Principal) middleware.Responder {
+func GetFooterHandler(_ frontend.GetFrontendFooterParams, _ *models.Principal) middleware.Responder {
 	return frontend.NewGetFrontendFooterOK().WithPayload(nil)
 }

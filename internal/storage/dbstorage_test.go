@@ -20,6 +20,7 @@ const (
 	validDSN      = "valid_dsn"
 	connectionErr = "connection error"
 	defaultKVType = "kv"
+	mockDSN       = "mock_dsn"
 )
 
 func TestNewDBStorage(t *testing.T) {
@@ -227,7 +228,7 @@ func TestSetupStorage_ConnectContractsRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := "mock-dsn"
+	dsn := mockDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -295,7 +296,7 @@ func TestSetupStorage_ConnectPagesRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := "mock-dsn"
+	dsn := mockDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -365,7 +366,7 @@ func TestSetupStorage_ConnectCategoriesRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := "mock-dsn"
+	dsn := mockDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -435,7 +436,7 @@ func TestSetupStorage_ConnectMenusRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := "mock-dsn"
+	dsn := mockDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {

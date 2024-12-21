@@ -19,9 +19,9 @@ import (
 
 // MockPagesRepositoryInterface is a mock of PagesRepositoryInterface interface.
 type MockPagesRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockPagesRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockPagesRepositoryInterfaceMockRecorder is the mock recorder for MockPagesRepositoryInterface.

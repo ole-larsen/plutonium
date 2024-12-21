@@ -21,9 +21,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.

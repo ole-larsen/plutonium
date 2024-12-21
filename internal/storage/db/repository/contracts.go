@@ -226,4 +226,3 @@ func (r *ContractsRepository) GetContractsByType(ctx context.Context, contractTy
 
 	return contracts, multierr.ErrorOrNil()
 }
-

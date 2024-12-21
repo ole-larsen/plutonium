@@ -7,6 +7,7 @@ import (
 	repo "github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAggregatedMenuAttributesJSON_Scan(t *testing.T) {
@@ -47,6 +48,8 @@ func TestAggregatedMenuAttributesJSON_Value(t *testing.T) {
 	// Convert `val` to `[]byte` for comparison
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok, "Value() should return a []byte")
-	expectedJSON, _ := json.Marshal(attr)
+
+	expectedJSON, err := json.Marshal(attr)
+	require.NoError(t, err)
 	assert.Equal(t, expectedJSON, valBytes, "Value() should return the correct JSON representation")
 }

@@ -723,15 +723,13 @@ func (_NFTCollection *NFTCollectionTransactorSession) TransferFrom(from common.A
 
 // NFTCollectionApprovalIterator is returned from FilterApproval and is used to iterate over the raw logs and unpacked data for Approval events raised by the NFTCollection contract.
 type NFTCollectionApprovalIterator struct {
-	Event *NFTCollectionApproval // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *NFTCollectionApproval
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -790,10 +788,10 @@ func (it *NFTCollectionApprovalIterator) Close() error {
 
 // NFTCollectionApproval represents a Approval event raised by the NFTCollection contract.
 type NFTCollectionApproval struct {
+	TokenId  *big.Int
+	Raw      types.Log
 	Owner    common.Address
 	Approved common.Address
-	TokenId  *big.Int
-	Raw      types.Log // Blockchain specific contextual infos
 }
 
 // FilterApproval is a free log retrieval operation binding the contract event 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925.
@@ -885,15 +883,13 @@ func (_NFTCollection *NFTCollectionFilterer) ParseApproval(log types.Log) (*NFTC
 
 // NFTCollectionApprovalForAllIterator is returned from FilterApprovalForAll and is used to iterate over the raw logs and unpacked data for ApprovalForAll events raised by the NFTCollection contract.
 type NFTCollectionApprovalForAllIterator struct {
-	Event *NFTCollectionApprovalForAll // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *NFTCollectionApprovalForAll
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -952,10 +948,10 @@ func (it *NFTCollectionApprovalForAllIterator) Close() error {
 
 // NFTCollectionApprovalForAll represents a ApprovalForAll event raised by the NFTCollection contract.
 type NFTCollectionApprovalForAll struct {
+	Raw      types.Log
 	Owner    common.Address
 	Operator common.Address
 	Approved bool
-	Raw      types.Log // Blockchain specific contextual infos
 }
 
 // FilterApprovalForAll is a free log retrieval operation binding the contract event 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31.
@@ -1039,15 +1035,13 @@ func (_NFTCollection *NFTCollectionFilterer) ParseApprovalForAll(log types.Log) 
 
 // NFTCollectionTransferIterator is returned from FilterTransfer and is used to iterate over the raw logs and unpacked data for Transfer events raised by the NFTCollection contract.
 type NFTCollectionTransferIterator struct {
-	Event *NFTCollectionTransfer // Event containing the contract specifics and raw log
-
-	contract *bind.BoundContract // Generic contract to use for unpacking event data
-	event    string              // Event name to use for unpacking event data
-
-	logs chan types.Log        // Log channel receiving the found contract events
-	sub  ethereum.Subscription // Subscription for errors, completion and termination
-	done bool                  // Whether the subscription completed delivering logs
-	fail error                 // Occurred error to stop iteration
+	sub      ethereum.Subscription
+	fail     error
+	Event    *NFTCollectionTransfer
+	contract *bind.BoundContract
+	logs     chan types.Log
+	event    string
+	done     bool
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -1106,10 +1100,10 @@ func (it *NFTCollectionTransferIterator) Close() error {
 
 // NFTCollectionTransfer represents a Transfer event raised by the NFTCollection contract.
 type NFTCollectionTransfer struct {
+	TokenId *big.Int
+	Raw     types.Log
 	From    common.Address
 	To      common.Address
-	TokenId *big.Int
-	Raw     types.Log // Blockchain specific contextual infos
 }
 
 // FilterTransfer is a free log retrieval operation binding the contract event 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef.

@@ -43,6 +43,7 @@ func TestCategoriesRepository_InnerDB(t *testing.T) {
 
 	// Nil receiver case
 	var nilRepository *repo.CategoriesRepository
+
 	assert.Nil(t, nilRepository.InnerDB())
 }
 
@@ -60,6 +61,7 @@ func TestCategoriesRepository_Ping(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectPing().WillReturnError(errors.New("ping error"))
+
 	err = repository.Ping()
 	assert.Error(t, err)
 

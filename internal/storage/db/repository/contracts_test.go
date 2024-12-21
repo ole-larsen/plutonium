@@ -46,6 +46,7 @@ func TestContractsRepository_InnerDB(t *testing.T) {
 
 	// Nil receiver case
 	var nilRepository *repo.ContractsRepository
+
 	assert.Nil(t, nilRepository.InnerDB())
 }
 
@@ -63,6 +64,7 @@ func TestContractsRepository_Ping(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectPing().WillReturnError(errors.New("ping error"))
+
 	err = repository.Ping()
 	assert.Error(t, err)
 
@@ -164,6 +166,7 @@ func TestContractsRepository_GetByAddress(t *testing.T) {
 		WithArgs(address).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow(1, "contract1", address, "0x456", "abi_data"))
+
 	commonAddress := common.HexToAddress(address)
 	contract, err := repository.GetByAddress(ctx, commonAddress)
 	assert.NoError(t, err)
@@ -198,6 +201,7 @@ func TestContractsRepository_GetCollectionsContracts(t *testing.T) {
 	repository := repo.NewContractsRepository(sqlxDB, "contracts")
 
 	ctx := context.Background()
+
 	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'collection_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow(1, "collection_1", "0x123", "0x456", "abi_data").
@@ -222,6 +226,7 @@ func TestContractsRepository_GetAuctions(t *testing.T) {
 	repository := repo.NewContractsRepository(sqlxDB, "contracts")
 
 	ctx := context.Background()
+
 	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'auction_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}).
 			AddRow(1, "auction_1", "0x123", "0x456", "abi_data").
@@ -337,6 +342,7 @@ func TestContractsRepository_GetCollectionsContracts_NoResults(t *testing.T) {
 	repository := repo.NewContractsRepository(sqlxDB, "contracts")
 
 	ctx := context.Background()
+
 	mock.ExpectQuery(`select c.id, c.name, c.address, c.tx, c.abi FROM contracts c WHERE c.name like 'collection_%'`).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "address", "tx", "abi"}))
 
@@ -354,6 +360,7 @@ func TestContractsRepository_GetAuctions_Error(t *testing.T) {
 	repository := repo.NewContractsRepository(sqlxDB, "contracts")
 
 	ctx := context.Background()
+
 	mock.ExpectQuery(`SELECT .* FROM contracts c WHERE c.name like 'auction_%'`).
 		WillReturnError(errors.New("query error"))
 

@@ -159,5 +159,6 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 	if err := store.ConnectMenusRepository(ctx, sqlxdb); err != nil {
 		return nil, err
 	}
+
 	return store, nil
 }

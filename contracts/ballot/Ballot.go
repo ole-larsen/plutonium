@@ -237,15 +237,15 @@ func (_Ballot *BallotCallerSession) Chairperson() (common.Address, error) {
 //
 // Solidity: function proposals(uint256 ) view returns(bytes32 name, uint256 voteCount)
 func (_Ballot *BallotCaller) Proposals(opts *bind.CallOpts, arg0 *big.Int) (struct {
-	Name      [32]byte
 	VoteCount *big.Int
+	Name      [32]byte
 }, error) {
 	var out []interface{}
 	err := _Ballot.contract.Call(opts, &out, "proposals", arg0)
 
 	outstruct := new(struct {
-		Name      [32]byte
 		VoteCount *big.Int
+		Name      [32]byte
 	})
 	if err != nil {
 		return *outstruct, err
@@ -262,8 +262,8 @@ func (_Ballot *BallotCaller) Proposals(opts *bind.CallOpts, arg0 *big.Int) (stru
 //
 // Solidity: function proposals(uint256 ) view returns(bytes32 name, uint256 voteCount)
 func (_Ballot *BallotSession) Proposals(arg0 *big.Int) (struct {
-	Name      [32]byte
 	VoteCount *big.Int
+	Name      [32]byte
 }, error) {
 	return _Ballot.Contract.Proposals(&_Ballot.CallOpts, arg0)
 }
@@ -272,8 +272,8 @@ func (_Ballot *BallotSession) Proposals(arg0 *big.Int) (struct {
 //
 // Solidity: function proposals(uint256 ) view returns(bytes32 name, uint256 voteCount)
 func (_Ballot *BallotCallerSession) Proposals(arg0 *big.Int) (struct {
-	Name      [32]byte
 	VoteCount *big.Int
+	Name      [32]byte
 }, error) {
 	return _Ballot.Contract.Proposals(&_Ballot.CallOpts, arg0)
 }
@@ -283,18 +283,18 @@ func (_Ballot *BallotCallerSession) Proposals(arg0 *big.Int) (struct {
 // Solidity: function voters(address ) view returns(uint256 weight, bool voted, address delegate, uint256 vote)
 func (_Ballot *BallotCaller) Voters(opts *bind.CallOpts, arg0 common.Address) (struct {
 	Weight   *big.Int
-	Voted    bool
-	Delegate common.Address
 	Vote     *big.Int
+	Delegate common.Address
+	Voted    bool
 }, error) {
 	var out []interface{}
 	err := _Ballot.contract.Call(opts, &out, "voters", arg0)
 
 	outstruct := new(struct {
 		Weight   *big.Int
-		Voted    bool
-		Delegate common.Address
 		Vote     *big.Int
+		Delegate common.Address
+		Voted    bool
 	})
 	if err != nil {
 		return *outstruct, err
@@ -314,9 +314,9 @@ func (_Ballot *BallotCaller) Voters(opts *bind.CallOpts, arg0 common.Address) (s
 // Solidity: function voters(address ) view returns(uint256 weight, bool voted, address delegate, uint256 vote)
 func (_Ballot *BallotSession) Voters(arg0 common.Address) (struct {
 	Weight   *big.Int
-	Voted    bool
-	Delegate common.Address
 	Vote     *big.Int
+	Delegate common.Address
+	Voted    bool
 }, error) {
 	return _Ballot.Contract.Voters(&_Ballot.CallOpts, arg0)
 }
@@ -326,9 +326,9 @@ func (_Ballot *BallotSession) Voters(arg0 common.Address) (struct {
 // Solidity: function voters(address ) view returns(uint256 weight, bool voted, address delegate, uint256 vote)
 func (_Ballot *BallotCallerSession) Voters(arg0 common.Address) (struct {
 	Weight   *big.Int
-	Voted    bool
-	Delegate common.Address
 	Vote     *big.Int
+	Delegate common.Address
+	Voted    bool
 }, error) {
 	return _Ballot.Contract.Voters(&_Ballot.CallOpts, arg0)
 }

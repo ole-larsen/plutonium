@@ -19,9 +19,9 @@ import (
 
 // MockCategoriesRepositoryInterface is a mock of CategoriesRepositoryInterface interface.
 type MockCategoriesRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockCategoriesRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockCategoriesRepositoryInterfaceMockRecorder is the mock recorder for MockCategoriesRepositoryInterface.

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/go-pg/migrations"
 )
 
 func init() {
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		fmt.Println("creating table menus_sections")
+
 		_, err := db.Exec(`
 			CREATE TABLE IF NOT EXISTS menus_sections (
 				id                     SERIAL PRIMARY KEY,
@@ -25,10 +27,13 @@ func init() {
 			ALTER TABLE menus_sections ADD CONSTRAINT menus_sections_menu_id_foreign
 				FOREIGN KEY (menu_id) REFERENCES menus(id) ON UPDATE CASCADE ON DELETE CASCADE;
 		`)
+
 		return err
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping menus_sections")
+
 		_, err := db.Exec(`DROP TABLE IF EXISTS menus_sections`)
+
 		return err
 	})
 }

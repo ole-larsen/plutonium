@@ -20,9 +20,9 @@ import (
 
 // MockMenusRepositoryInterface is a mock of MenusRepositoryInterface interface.
 type MockMenusRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockMenusRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockMenusRepositoryInterfaceMockRecorder is the mock recorder for MockMenusRepositoryInterface.

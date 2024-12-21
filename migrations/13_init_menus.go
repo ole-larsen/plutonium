@@ -9,6 +9,7 @@ import (
 func init() {
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		fmt.Println("creating table menus")
+
 		_, err := db.Exec(`
 			CREATE TABLE IF NOT EXISTS menus (
 				id                     SERIAL PRIMARY KEY,
@@ -21,10 +22,13 @@ func init() {
 				deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
 			);
 		`)
+
 		return err
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping menus")
+
 		_, err := db.Exec(`DROP TABLE IF EXISTS menus`)
+
 		return err
 	})
 }
