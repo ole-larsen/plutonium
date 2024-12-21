@@ -97,5 +97,8 @@ abigen --abi contracts/auction/abi/NFTAuction.abi --pkg auction --type NFTAuctio
 ```bash
 mockgen -source=internal/storage/db/repository/users.go -destination=internal/storage/mocks/users_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/contracts.go -destination=internal/storage/mocks/contracts_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/categories.go -destination=internal/storage/mocks/categories_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/pages.go -destination=internal/storage/mocks/pages_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/menus.go -destination=internal/storage/mocks/menus_mock.go -package=mocks
 mockgen -source=internal/storage/dbstorage.go -destination=internal/storage/mocks/dbstorage_mock.go -package=mocks
 ```

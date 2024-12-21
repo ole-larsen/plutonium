@@ -15,12 +15,14 @@ import (
 	"github.com/ole-larsen/plutonium/internal/blockchain"
 	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/internal/plutonium"
+	v1frontendApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/frontendApi"
 	v1monitoringApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/monitoringApi"
 	v1publicApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/publicApi"
 	v1middleware "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/middleware"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
 	"github.com/ole-larsen/plutonium/restapi/operations"
+	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
 	"github.com/ole-larsen/plutonium/restapi/operations/monitoring"
 	"github.com/ole-larsen/plutonium/restapi/operations/public"
 )
@@ -81,6 +83,10 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.PublicGetPingHandler = public.GetPingHandlerFunc(v1publicApi.GetPingHandler)
 
 	api.MonitoringGetMetricsHandler = monitoring.GetMetricsHandlerFunc(v1monitoringApi.GetMetricsHandler)
+
+	// frontend handlers
+	api.FrontendGetFrontendHeaderHandler = frontend.GetFrontendHeaderHandlerFunc(v1frontendApi.GetHeaderHandler)
+	api.FrontendGetFrontendFooterHandler = frontend.GetFrontendFooterHandlerFunc(v1frontendApi.GetFooterHandler)
 
 	api.PreServerShutdown = func() {}
 

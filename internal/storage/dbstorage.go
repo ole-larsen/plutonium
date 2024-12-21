@@ -22,6 +22,9 @@ type DBStorageInterface interface {
 	Ping() error
 	ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error)
 	GetUser(ctx context.Context, login string) (*repository.User, error)
 	GetContractsRepository() *repository.ContractsRepository
@@ -29,9 +32,12 @@ type DBStorageInterface interface {
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
-	Users     repository.UsersRepositoryInterface
-	Contracts *repository.ContractsRepository
-	DSN       string
+	Users      repository.UsersRepositoryInterface
+	Contracts  *repository.ContractsRepository
+	Pages      *repository.PagesRepository
+	Categories *repository.CategoriesRepository
+	Menus      *repository.MenusRepository
+	DSN        string
 }
 
 func NewDBStorage(dsn string) DBStorageInterface {
@@ -72,6 +78,24 @@ func (s *DBStorage) ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx
 	s.Contracts = repository.NewContractsRepository(sqlxDB, "contracts")
 
 	return s.Contracts.MigrateContext(ctx)
+}
+
+func (s *DBStorage) ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	s.Pages = repository.NewPagesRepository(sqlxDB, "pages")
+
+	return s.Pages.MigrateContext(ctx)
+}
+
+func (s *DBStorage) ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	s.Menus = repository.NewMenusRepository(sqlxDB, "menus")
+
+	return s.Menus.MigrateContext(ctx)
+}
+
+func (s *DBStorage) ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	s.Categories = repository.NewCategoriesRepository(sqlxDB, "categories")
+
+	return s.Categories.MigrateContext(ctx)
 }
 
 func (s *DBStorage) Ping() error {
@@ -124,5 +148,16 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 		return nil, err
 	}
 
+	if err := store.ConnectPagesRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
+
+	if err := store.ConnectCategoriesRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
+
+	if err := store.ConnectMenusRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
 	return store, nil
 }

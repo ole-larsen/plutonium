@@ -30,6 +30,118 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/footer": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Fetches the public footer for the frontend.",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the footer",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched the footer.",
+            "schema": {
+              "$ref": "#/definitions/PublicFooterResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/header": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Fetches the public header for the frontend.",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the header.",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched the header.",
+            "schema": {
+              "$ref": "#/definitions/PublicHeaderResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "description": "This endpoint provides Prometheus-compatible metrics for monitoring the application. \nIt is typically used by Prometheus or similar monitoring tools to scrape metrics data.\n",
@@ -487,6 +599,56 @@ func init() {
         }
       }
     },
+    "PublicFooterResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
+        }
+      }
+    },
+    "PublicHeaderResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
+        }
+      }
+    },
+    "PublicMenu": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicMenuAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicMenuAttributes": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicMenu"
+          }
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "orderBy": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
     "PublicUser": {
       "type": "object",
       "properties": {
@@ -529,9 +691,29 @@ func init() {
           "format": "bigInt"
         }
       }
+    },
+    "principal": {
+      "description": "A unique identifier for a principal (user or entity).",
+      "type": "string"
+    }
+  },
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    },
+    "x-token": {
+      "type": "apiKey",
+      "name": "x-token",
+      "in": "header"
     }
   },
   "tags": [
+    {
+      "description": "Endpoints accessible to all clients for frontend API functionality.",
+      "name": "Frontend"
+    },
     {
       "description": "Endpoints accessible to all clients for general API functionality.",
       "name": "Public"
@@ -555,6 +737,118 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/footer": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Fetches the public footer for the frontend.",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the footer",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched the footer.",
+            "schema": {
+              "$ref": "#/definitions/PublicFooterResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/header": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Fetches the public header for the frontend.",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the header.",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched the header.",
+            "schema": {
+              "$ref": "#/definitions/PublicHeaderResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "description": "This endpoint provides Prometheus-compatible metrics for monitoring the application. \nIt is typically used by Prometheus or similar monitoring tools to scrape metrics data.\n",
@@ -1050,6 +1344,56 @@ func init() {
         }
       }
     },
+    "PublicFooterResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
+        }
+      }
+    },
+    "PublicHeaderResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
+        }
+      }
+    },
+    "PublicMenu": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicMenuAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicMenuAttributes": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicMenu"
+          }
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "orderBy": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
     "PublicUser": {
       "type": "object",
       "properties": {
@@ -1092,9 +1436,29 @@ func init() {
           "format": "bigInt"
         }
       }
+    },
+    "principal": {
+      "description": "A unique identifier for a principal (user or entity).",
+      "type": "string"
+    }
+  },
+  "securityDefinitions": {
+    "bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    },
+    "x-token": {
+      "type": "apiKey",
+      "name": "x-token",
+      "in": "header"
     }
   },
   "tags": [
+    {
+      "description": "Endpoints accessible to all clients for frontend API functionality.",
+      "name": "Frontend"
+    },
     {
       "description": "Endpoints accessible to all clients for general API functionality.",
       "name": "Public"

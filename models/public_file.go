@@ -115,17 +115,39 @@ func (m *PublicFile) UnmarshalBinary(b []byte) error {
 //
 // swagger:model PublicFileAttributes
 type PublicFileAttributes struct {
-	Alt      string  `json:"alt,omitempty"`
-	Caption  string  `json:"caption,omitempty"`
-	Ext      string  `json:"ext,omitempty"`
-	Hash     string  `json:"hash,omitempty"`
-	Mime     string  `json:"mime,omitempty"`
-	Name     string  `json:"name,omitempty"`
-	Provider string  `json:"provider,omitempty"`
-	URL      string  `json:"url,omitempty"`
-	Height   int64   `json:"height,omitempty"`
-	Size     float64 `json:"size,omitempty"`
-	Width    int64   `json:"width,omitempty"`
+
+	// alt
+	Alt string `json:"alt,omitempty"`
+
+	// caption
+	Caption string `json:"caption,omitempty"`
+
+	// ext
+	Ext string `json:"ext,omitempty"`
+
+	// hash
+	Hash string `json:"hash,omitempty"`
+
+	// height
+	Height int64 `json:"height,omitempty"`
+
+	// mime
+	Mime string `json:"mime,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// provider
+	Provider string `json:"provider,omitempty"`
+
+	// size
+	Size float64 `json:"size,omitempty"`
+
+	// url
+	URL string `json:"url,omitempty"`
+
+	// width
+	Width int64 `json:"width,omitempty"`
 }
 
 // Validate validates this public file attributes

@@ -19,6 +19,8 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/ole-larsen/plutonium/models"
+	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
 	"github.com/ole-larsen/plutonium/restapi/operations/monitoring"
 	"github.com/ole-larsen/plutonium/restapi/operations/public"
 )
@@ -45,12 +47,25 @@ func NewServiceAPI(spec *loads.Document) *ServiceAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		FrontendGetFrontendFooterHandler: frontend.GetFrontendFooterHandlerFunc(func(params frontend.GetFrontendFooterParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation frontend.GetFrontendFooter has not yet been implemented")
+		}),
+		FrontendGetFrontendHeaderHandler: frontend.GetFrontendHeaderHandlerFunc(func(params frontend.GetFrontendHeaderParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation frontend.GetFrontendHeader has not yet been implemented")
+		}),
 		MonitoringGetMetricsHandler: monitoring.GetMetricsHandlerFunc(func(params monitoring.GetMetricsParams) middleware.Responder {
 			return middleware.NotImplemented("operation monitoring.GetMetrics has not yet been implemented")
 		}),
 		PublicGetPingHandler: public.GetPingHandlerFunc(func(params public.GetPingParams) middleware.Responder {
 			return middleware.NotImplemented("operation public.GetPing has not yet been implemented")
 		}),
+
+		// Applies when the "x-token" header is set
+		XTokenAuth: func(token string) (*models.Principal, error) {
+			return nil, errors.NotImplemented("api key auth (x-token) x-token from header param [x-token] has not yet been implemented")
+		},
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -59,28 +74,70 @@ ServiceAPI The Plutonium Service API provides endpoints to support the operation
 This document outlines the API's structure, response formats, and capabilities for integration.
 */
 type ServiceAPI struct {
-	JSONConsumer                runtime.Consumer
-	PublicGetPingHandler        public.GetPingHandler
+	spec            *loads.Document
+	context         *middleware.Context
+	handlers        map[string]map[string]http.Handler
+	formats         strfmt.Registry
+	customConsumers map[string]runtime.Consumer
+	customProducers map[string]runtime.Producer
+	defaultConsumes string
+	defaultProduces string
+	Middleware      func(middleware.Builder) http.Handler
+	useSwaggerUI    bool
+
+	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
+
+	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
+
+	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+
+	// JSONConsumer registers a consumer for the following mime types:
+	//   - application/json
+	JSONConsumer runtime.Consumer
+
+	// JSONProducer registers a producer for the following mime types:
+	//   - application/json
+	JSONProducer runtime.Producer
+
+	// XTokenAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key x-token provided in the header
+	XTokenAuth func(string) (*models.Principal, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
+
+	// FrontendGetFrontendFooterHandler sets the operation handler for the get frontend footer operation
+	FrontendGetFrontendFooterHandler frontend.GetFrontendFooterHandler
+	// FrontendGetFrontendHeaderHandler sets the operation handler for the get frontend header operation
+	FrontendGetFrontendHeaderHandler frontend.GetFrontendHeaderHandler
+	// MonitoringGetMetricsHandler sets the operation handler for the get metrics operation
 	MonitoringGetMetricsHandler monitoring.GetMetricsHandler
-	formats                     strfmt.Registry
-	JSONProducer                runtime.Producer
-	customProducers             map[string]runtime.Producer
-	customConsumers             map[string]runtime.Consumer
-	Logger                      func(string, ...interface{})
-	Middleware                  func(middleware.Builder) http.Handler
-	ServerShutdown              func()
-	BasicAuthenticator          func(security.UserPassAuthentication) runtime.Authenticator
-	APIKeyAuthenticator         func(string, string, security.TokenAuthentication) runtime.Authenticator
-	BearerAuthenticator         func(string, security.ScopedTokenAuthentication) runtime.Authenticator
-	spec                        *loads.Document
-	PreServerShutdown           func()
-	handlers                    map[string]map[string]http.Handler
-	context                     *middleware.Context
-	ServeError                  func(http.ResponseWriter, *http.Request, error)
-	defaultConsumes             string
-	defaultProduces             string
-	CommandLineOptionsGroups    []swag.CommandLineOptionsGroup
-	useSwaggerUI                bool
+	// PublicGetPingHandler sets the operation handler for the get ping operation
+	PublicGetPingHandler public.GetPingHandler
+
+	// ServeError is called when an error is received, there is a default handler
+	// but you can set your own with this
+	ServeError func(http.ResponseWriter, *http.Request, error)
+
+	// PreServerShutdown is called before the HTTP(S) server is shutdown
+	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
+	PreServerShutdown func()
+
+	// ServerShutdown is called when the HTTP(S) server is shut down and done
+	// handling all active connections and does not accept connections any more
+	ServerShutdown func()
+
+	// Custom command line argument groups with their descriptions
+	CommandLineOptionsGroups []swag.CommandLineOptionsGroup
+
+	// User defined logger function.
+	Logger func(string, ...interface{})
 }
 
 // UseRedoc for documentation at /docs
@@ -140,6 +197,16 @@ func (o *ServiceAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.XTokenAuth == nil {
+		unregistered = append(unregistered, "XTokenAuth")
+	}
+
+	if o.FrontendGetFrontendFooterHandler == nil {
+		unregistered = append(unregistered, "frontend.GetFrontendFooterHandler")
+	}
+	if o.FrontendGetFrontendHeaderHandler == nil {
+		unregistered = append(unregistered, "frontend.GetFrontendHeaderHandler")
+	}
 	if o.MonitoringGetMetricsHandler == nil {
 		unregistered = append(unregistered, "monitoring.GetMetricsHandler")
 	}
@@ -161,12 +228,23 @@ func (o *ServiceAPI) ServeErrorFor(operationID string) func(http.ResponseWriter,
 
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *ServiceAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name := range schemes {
+		switch name {
+		case "x-token":
+			scheme := schemes[name]
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
+				return o.XTokenAuth(token)
+			})
+
+		}
+	}
+	return result
 }
 
 // Authorizer returns the registered authorizer
 func (o *ServiceAPI) Authorizer() runtime.Authorizer {
-	return nil
+	return o.APIAuthorizer
 }
 
 // ConsumersFor gets the consumers for the specified media types.
@@ -234,6 +312,14 @@ func (o *ServiceAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/frontend/footer"] = frontend.NewGetFrontendFooter(o.context, o.FrontendGetFrontendFooterHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/frontend/header"] = frontend.NewGetFrontendHeader(o.context, o.FrontendGetFrontendHeaderHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

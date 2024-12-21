@@ -37,8 +37,6 @@ func init() {
 				FOREIGN KEY (created_by_id) REFERENCES users(id);
 			ALTER TABLE pages ADD CONSTRAINT pages_updated_by_id_foreign
 				FOREIGN KEY (updated_by_id) REFERENCES users(id);
-	
-
 		`)
 
 		return err

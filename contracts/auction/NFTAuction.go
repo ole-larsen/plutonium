@@ -629,13 +629,15 @@ func (_NFTAuction *NFTAuctionTransactorSession) StartAuction() (*types.Transacti
 
 // NFTAuctionAuctionEndedIterator is returned from FilterAuctionEnded and is used to iterate over the raw logs and unpacked data for AuctionEnded events raised by the NFTAuction contract.
 type NFTAuctionAuctionEndedIterator struct {
-	sub      ethereum.Subscription
-	fail     error
-	Event    *NFTAuctionAuctionEnded
-	contract *bind.BoundContract
-	logs     chan types.Log
-	event    string
-	done     bool
+	Event *NFTAuctionAuctionEnded // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -694,9 +696,9 @@ func (it *NFTAuctionAuctionEndedIterator) Close() error {
 
 // NFTAuctionAuctionEnded represents a AuctionEnded event raised by the NFTAuction contract.
 type NFTAuctionAuctionEnded struct {
-	Amount *big.Int
-	Raw    types.Log
 	Winner common.Address
+	Amount *big.Int
+	Raw    types.Log // Blockchain specific contextual infos
 }
 
 // FilterAuctionEnded is a free log retrieval operation binding the contract event 0xdaec4582d5d9595688c8c98545fdd1c696d41c6aeaeb636737e84ed2f5c00eda.
@@ -772,13 +774,15 @@ func (_NFTAuction *NFTAuctionFilterer) ParseAuctionEnded(log types.Log) (*NFTAuc
 
 // NFTAuctionAuctionStartedIterator is returned from FilterAuctionStarted and is used to iterate over the raw logs and unpacked data for AuctionStarted events raised by the NFTAuction contract.
 type NFTAuctionAuctionStartedIterator struct {
-	sub      ethereum.Subscription
-	fail     error
-	Event    *NFTAuctionAuctionStarted
-	contract *bind.BoundContract
-	logs     chan types.Log
-	event    string
-	done     bool
+	Event *NFTAuctionAuctionStarted // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -837,15 +841,15 @@ func (it *NFTAuctionAuctionStartedIterator) Close() error {
 
 // NFTAuctionAuctionStarted represents a AuctionStarted event raised by the NFTAuction contract.
 type NFTAuctionAuctionStarted struct {
+	Beneficiary      common.Address
 	CollectionId     *big.Int
 	ItemId           *big.Int
 	ReservePrice     *big.Int
 	StartPrice       *big.Int
 	AuctionStartTime *big.Int
 	AuctionEndTime   *big.Int
-	Raw              types.Log
-	Beneficiary      common.Address
 	Started          bool
+	Raw              types.Log // Blockchain specific contextual infos
 }
 
 // FilterAuctionStarted is a free log retrieval operation binding the contract event 0x0dbe763818e0c26abc06649c68eab10b0f73d7491fea8b4b0062c2b77546c066.
@@ -921,13 +925,15 @@ func (_NFTAuction *NFTAuctionFilterer) ParseAuctionStarted(log types.Log) (*NFTA
 
 // NFTAuctionBidPlacedIterator is returned from FilterBidPlaced and is used to iterate over the raw logs and unpacked data for BidPlaced events raised by the NFTAuction contract.
 type NFTAuctionBidPlacedIterator struct {
-	sub      ethereum.Subscription
-	fail     error
-	Event    *NFTAuctionBidPlaced
-	contract *bind.BoundContract
-	logs     chan types.Log
-	event    string
-	done     bool
+	Event *NFTAuctionBidPlaced // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
 }
 
 // Next advances the iterator to the subsequent event, returning whether there
@@ -986,9 +992,9 @@ func (it *NFTAuctionBidPlacedIterator) Close() error {
 
 // NFTAuctionBidPlaced represents a BidPlaced event raised by the NFTAuction contract.
 type NFTAuctionBidPlaced struct {
-	Amount *big.Int
-	Raw    types.Log
 	Bidder common.Address
+	Amount *big.Int
+	Raw    types.Log // Blockchain specific contextual infos
 }
 
 // FilterBidPlaced is a free log retrieval operation binding the contract event 0x3fabff0a9c3ecd6814702e247fa9733e5d0aa69e3a38590f92cb18f623a2254d.

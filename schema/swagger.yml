@@ -10,6 +10,15 @@ host: "plutonium"
 basePath: "/api/v1"
 schemes:
   - http
+securityDefinitions:
+  bearer:
+    type: apiKey
+    in: header
+    name: Authorization
+  x-token:
+    type: apiKey
+    in: header
+    name: x-token
 paths:
   /ping:
     get:
@@ -51,7 +60,83 @@ paths:
           description: Metrics retrieved successfully.
           schema:
                 $ref: "#/definitions/PrometheusResponse"
+  # frontend API
+  /frontend/header:
+    get:
+      security:
+        - x-token: []
+      tags:
+        - Frontend
+      parameters:
+        - name: provider
+          in: query
+          type: string
+          description: "The provider to be used in the header."
+          required: false
+      summary: "Fetches the public header for the frontend."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successfully fetched the header."
+          schema:
+            $ref: '#/definitions/PublicHeaderResponse'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/footer:
+    get:
+      security:
+        - x-token: []
+      tags:
+        - Frontend
+      parameters:
+        - name: provider
+          in: query
+          type: string
+          description: "The provider to be used in the footer"
+          required: false
+      summary: "Fetches the public footer for the frontend."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successfully fetched the footer."
+          schema:
+            $ref: '#/definitions/PublicFooterResponse'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
+  principal:
+    type: string
+    description: "A unique identifier for a principal (user or entity)."
   PingResponse:
     type: object
     properties:
@@ -360,8 +445,43 @@ definitions:
             type: string
           provider:
             type: string
-    
+  # frontend definitions
+  PublicHeaderResponse:
+    type: object
+    properties:
+      menu:
+        $ref: '#/definitions/PublicMenu'
+  PublicFooterResponse:
+    type: object
+    properties:
+      menu:
+        $ref: '#/definitions/PublicMenu'
+  PublicMenu:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicMenuAttributes'
+  PublicMenuAttributes:
+    type: object
+    properties:
+      orderBy:
+        type: integer
+        format: bigInt
+      name:
+        type: string
+      link:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/PublicMenu"
 tags:
+  - name: Frontend
+    description: "Endpoints accessible to all clients for frontend API functionality."
   - name: Public
     description: "Endpoints accessible to all clients for general API functionality."
   - name: Monitoring 
