@@ -170,7 +170,7 @@ func TestMenusRepository_GetMenuByProvider(t *testing.T) {
 		WillReturnError(sql.ErrNoRows)
 
 	menu, err = repository.GetMenuByProvider(provider)
-	assert.NoError(t, err)
+	assert.Error(t, err, "[repository]: menu not found")
 	assert.Nil(t, menu)
 
 	// Query error case
