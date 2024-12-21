@@ -1,0 +1,14 @@
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: ganache
+    restart: always
+    ports:
+      - 8545:8545
+    networks:
+      - dapp-web
+  
+networks:
+  dapp-web:
+    name: dapp-web
+    driver: bridge

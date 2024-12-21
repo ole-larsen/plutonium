@@ -21,14 +21,17 @@ type DBStorageInterface interface {
 	Init(ctx context.Context, sqlxDB *sqlx.DB) (*sqlx.DB, error)
 	Ping() error
 	ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error)
 	GetUser(ctx context.Context, login string) (*repository.User, error)
+	GetContractsRepository() *repository.ContractsRepository
 }
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
-	Users repository.UsersRepositoryInterface
-	DSN   string
+	Users     repository.UsersRepositoryInterface
+	Contracts *repository.ContractsRepository
+	DSN       string
 }
 
 func NewDBStorage(dsn string) DBStorageInterface {
@@ -65,6 +68,12 @@ func (s *DBStorage) ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB)
 	return s.Users.MigrateContext(ctx)
 }
 
+func (s *DBStorage) ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	s.Contracts = repository.NewContractsRepository(sqlxDB, "contracts")
+
+	return s.Contracts.MigrateContext(ctx)
+}
+
 func (s *DBStorage) Ping() error {
 	if s == nil || s.Users == nil || s.Users.InnerDB() == nil {
 		return NewError(fmt.Errorf("DBStorage is nil or not initialized"))
@@ -92,6 +101,10 @@ func (s *DBStorage) GetUser(ctx context.Context, login string) (*repository.User
 	return s.Users.GetOne(ctx, login)
 }
 
+func (s *DBStorage) GetContractsRepository() *repository.ContractsRepository {
+	return s.Contracts
+}
+
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 	store := NewPGSQLStorage(dsn)
 	if store == nil {
@@ -104,6 +117,10 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 	}
 
 	if err := store.ConnectUsersRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
+
+	if err := store.ConnectContractsRepository(ctx, sqlxdb); err != nil {
 		return nil, err
 	}
 

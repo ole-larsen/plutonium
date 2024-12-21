@@ -9,8 +9,11 @@ import (
 
 // Settings represents the configuration settings for the server.
 type Settings struct {
-	DSN string
-	DB  DB
+	MarketName string `mapstructure:"MARKETNAME"`
+	DSN        string
+	PrivateKey string `mapstructure:"ETH_PRIVATE_KEY"`
+	Network    string `mapstructure:"ETH_NETWORK"`
+	DB         DB
 }
 
 type DB struct {
@@ -31,7 +34,7 @@ var (
 // LoadConfig initializes and returns the settings singleton.
 func LoadConfig(cfgPath string) *Settings {
 	once.Do(func() {
-		config = InitConfig(cfgPath, WithDSN())
+		config = InitConfig(cfgPath, WithMarketname(), WithDSN(), WithEthPK(), WithEthWeb())
 	})
 
 	return config
@@ -67,6 +70,13 @@ func (c *Settings) Reload(opts ...func(*Settings)) {
 	}
 }
 
+func WithMarketname() func(*Settings) {
+	return func(ss *Settings) {
+		name := viper.GetString("MARKETNAME")
+		ss.MarketName = name
+	}
+}
+
 // WithDSN is a functional option for building the DSN string.
 func WithDSN() func(*Settings) {
 	return func(ss *Settings) {
@@ -88,5 +98,21 @@ func WithDSN() func(*Settings) {
 		}
 
 		ss.DSN = dsn
+	}
+}
+
+// WithEthPK is a functional option for building the pk string.
+func WithEthPK() func(*Settings) {
+	return func(ss *Settings) {
+		pk := viper.GetString("ETH_PRIVATE_KEY")
+		ss.PrivateKey = pk
+	}
+}
+
+// WithEthWeb is a functional option for building the pk string.
+func WithEthWeb() func(*Settings) {
+	return func(ss *Settings) {
+		network := viper.GetString("ETH_NETWORK")
+		ss.Network = network
 	}
 }

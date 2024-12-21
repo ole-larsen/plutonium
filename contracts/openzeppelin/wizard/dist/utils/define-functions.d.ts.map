@@ -1,0 +1,1 @@
+{"version":3,"file":"define-functions.d.ts","sourceRoot":"","sources":["../../src/utils/define-functions.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,aAAa,CAAC;AAEhD,aAAK,oBAAoB,GAAG,IAAI,CAAC,YAAY,EAAE,MAAM,CAAC,CAAC;AAEvD,wBAAgB,eAAe,CAAC,CAAC,SAAS,MAAM,EAC9C,GAAG,EAAE,MAAM,CAAC,CAAC,EAAE,oBAAoB,CAAC,GACnC,MAAM,CAAC,CAAC,EAAE,YAAY,CAAC,CAAC"}

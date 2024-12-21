@@ -27,7 +27,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	cfg := settings.LoadConfig("../.env")
+	cfg := settings.LoadConfig(".env")
 
 	if cfg == nil {
 		exitf("config not found")

@@ -32,6 +32,15 @@ func (m *MockStorage) ConnectUsersRepository(_ *sqlx.DB) error {
 	return nil
 }
 
+// ConnectContractsRepository is a mock implementation of the ConnectContractsRepository method.
+func (m *MockStorage) ConnectContractsRepository(_ *sqlx.DB) error {
+	if m.ShouldError {
+		return errors.New("mock connect error")
+	}
+
+	return nil
+}
+
 // Ping is a mock implementation of the Ping method.
 func (m *MockStorage) Ping() error {
 	if m.ShouldError {
@@ -170,5 +179,27 @@ func TestStorageGetUserError(t *testing.T) {
 
 	if user != nil {
 		t.Errorf("GetUser() returned non-nil user, expected nil")
+	}
+}
+
+// TestStorageConnectContractsRepositorySuccess tests the successful case of the ConnectContractsRepository method.
+func TestStorageConnectContractsRepositorySuccess(t *testing.T) {
+	mockStorage := &MockStorage{ShouldError: false}
+	mockSQLxDB := &sqlx.DB{}
+
+	err := mockStorage.ConnectContractsRepository(mockSQLxDB)
+	if err != nil {
+		t.Errorf("ConnectcontractsRepository() returned an error: %v, expected nil", err)
+	}
+}
+
+// TestStorageConnectContractsRepositoryError tests the error case of the ConnectContractsRepository method.
+func TestStorageConnectContractsRepositoryError(t *testing.T) {
+	mockStorage := &MockStorage{ShouldError: true}
+	mockSQLxDB := &sqlx.DB{}
+
+	err := mockStorage.ConnectContractsRepository(mockSQLxDB)
+	if err == nil {
+		t.Errorf("ConnectContractsRepository() returned nil, expected an error")
 	}
 }

@@ -142,6 +142,47 @@ func TestDBStorage_ConnectUsersRepository(t *testing.T) {
 	assert.NoError(t, err, "All expectations should be met")
 }
 
+func TestDBStorage_ConnectContractsRepository(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Test case 1: Nil DBStorage
+
+	nilStorage := mocks.NewMockDBStorageInterface(ctrl)
+	nilStorage.EXPECT().ConnectContractsRepository(context.Background(), gomock.Any()).Return(errors.New("[storage]: DBStorage is nil"))
+
+	err := nilStorage.ConnectContractsRepository(context.Background(), nil)
+	assert.Error(t, err, "ConnectContractsRepository() should return an error for nil DBStorage")
+	assert.Equal(t, "[storage]: DBStorage is nil", err.Error(), "ConnectContractsRepository() should return the correct error message for nil DBStorage")
+
+	// Setup mock database and expectations
+	store := mocks.NewMockDBStorageInterface(ctrl)
+	store.EXPECT().ConnectContractsRepository(context.Background(), gomock.Any()).Return(nil)
+
+	// Test case 2: Successful connection with a valid sqlxDB
+	mockDB, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+
+	err = store.ConnectContractsRepository(context.Background(), sqlxDB)
+	assert.NoError(t, err, "ConnectContractsRepository() should not return an error for successful connection")
+
+	// Test case 3: Successful connection with a nil sqlxDB
+	s := &storage.DBStorage{
+		DSN: "user=postgres password=secret dbname=testdb sslmode=disable",
+	}
+
+	err = s.ConnectContractsRepository(context.Background(), nil)
+	assert.Error(t, err, "ConnectContractsRepository() should not return an error when sqlxDB is nil")
+	assert.Nil(t, s.Contracts, "ConnectContractsRepository() should still set the Contracts repository even if sqlxDB is nil")
+
+	// Ensure all expectations were met
+	err = mock.ExpectationsWereMet()
+	assert.NoError(t, err, "All expectations should be met")
+}
+
 func TestDBStorage_Ping(t *testing.T) {
 	// Test case 1: Nil DBStorage
 	var nilStorage *storage.DBStorage
@@ -424,6 +465,7 @@ func TestSetupStorage_Success(t *testing.T) {
 	mockStore.EXPECT().Init(ctx, nil).Return(sqlxDB, nil)
 
 	mockStore.EXPECT().ConnectUsersRepository(context.Background(), gomock.Any()).Return(nil)
+	mockStore.EXPECT().ConnectContractsRepository(context.Background(), gomock.Any()).Return(nil)
 
 	// Replace the NewDBStorage function with a mock
 	originalNewDBStorage := storage.NewPGSQLStorage
@@ -436,4 +478,62 @@ func TestSetupStorage_Success(t *testing.T) {
 	store, err := storage.SetupStorage(ctx, dsn)
 	require.NoError(t, err)
 	require.NotNil(t, store)
+}
+
+func TestDBStorage_GetContractsRepository(t *testing.T) {
+	// Test case 1: Nil DBStorage
+	s := &storage.DBStorage{
+		DSN: "user=postgres password=secret dbname=testdb sslmode=disable",
+	}
+
+	contractsRepo := s.GetContractsRepository()
+	assert.Nil(t, contractsRepo, "GetContractsRepository() should return nil when Contracts repository is not initialized")
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDB, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+
+	// Test case 2: Nil Contracts repository
+	s = &storage.DBStorage{
+		DSN:       "user=postgres password=secret dbname=testdb sslmode=disable",
+		Contracts: repository.NewContractsRepository(sqlxDB, "contracts"),
+	}
+
+	assert.NotNil(t, s.Contracts, "ConnectContractsRepository() should still set the Contracts repository even if sqlxDB is nil")
+
+	// Ensure all expectations were met
+	err = mock.ExpectationsWereMet()
+	assert.NoError(t, err, "All expectations should be met")
+}
+
+func TestSetupStorage_ConnectContractsRepositoryError(t *testing.T) {
+	// Arrange
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
+
+	ctx := context.Background()
+	dsn := "mock-dsn"
+
+	// Mock `NewPGSQLStorage` to return our mockStorage
+	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
+		return mockStorage
+	}
+
+	mockStorage.EXPECT().Init(ctx, nil).Return(nil, nil)
+	mockStorage.EXPECT().ConnectUsersRepository(ctx, nil).Return(nil)
+	mockStorage.EXPECT().ConnectContractsRepository(ctx, nil).Return(errors.New("mock contracts repository error"))
+
+	// Act
+	store, err := storage.SetupStorage(ctx, dsn)
+
+	// Assert
+	assert.Nil(t, store, "SetupStorage should return nil storage on error")
+	assert.EqualError(t, err, "mock contracts repository error", "SetupStorage should return the error from ConnectContractsRepository")
 }

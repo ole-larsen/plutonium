@@ -16,4 +16,5 @@ type Storage interface {
 	ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	CreateUser(ctx context.Context, userMap map[string]interface{}) error
 	GetUser(ctx context.Context, email string) (*repository.User, error)
+	ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 }

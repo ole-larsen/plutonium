@@ -8,8 +8,18 @@ import (
 	"github.com/jmoiron/sqlx"
 	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
+
+const testEmail = "test@example.com"
+
+func setupMockController(t *testing.T) (*gomock.Controller, *mocks.MockDBStorageInterface) {
+	t.Helper()
+	ctrl := gomock.NewController(t)
+
+	return ctrl, mocks.NewMockDBStorageInterface(ctrl)
+}
 
 func TestMockDBStorageInterface_ConnectUsersRepository(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -34,6 +44,33 @@ func TestMockDBStorageInterface_ConnectUsersRepository(t *testing.T) {
 	mockDBStorage.EXPECT().ConnectUsersRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
 
 	if err := mockDBStorage.ConnectUsersRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
+		t.Errorf("Expected error %v, got %v", mockError, err)
+	}
+}
+
+func TestMockDBStorageInterface_ConnectContractsRepository(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
+
+	mockSQLxDB := &sqlx.DB{}
+
+	// Test successful connection
+	mockDBStorage.EXPECT().ConnectContractsRepository(ctx, mockSQLxDB).Return(nil).Times(1)
+
+	if err := mockDBStorage.ConnectContractsRepository(ctx, mockSQLxDB); err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// Test connection with error
+	mockError := fmt.Errorf("connection error")
+	mockDBStorage.EXPECT().ConnectContractsRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
+
+	if err := mockDBStorage.ConnectContractsRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
 		t.Errorf("Expected error %v, got %v", mockError, err)
 	}
 }
@@ -124,7 +161,7 @@ func TestMockDBStorageInterface_GetUser(t *testing.T) {
 
 	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
 	ctx := context.Background()
-	email := "test@example.com"
+	email := testEmail
 	expectedUser := &repository.User{
 		ID:    1,
 		Email: email,
@@ -154,4 +191,67 @@ func TestMockDBStorageInterface_GetUser(t *testing.T) {
 	if err == nil || err.Error() != mockError.Error() {
 		t.Errorf("Expected error %v, got %v", mockError, err)
 	}
+}
+
+func TestMockDBStorageInterface_GetUser2(t *testing.T) {
+	ctrl, mockDBStorage := setupMockController(t)
+	defer ctrl.Finish()
+
+	ctx := context.Background()
+	email := testEmail
+	expectedUser := &repository.User{
+		ID:    1,
+		Email: email,
+	}
+
+	t.Run("Success", func(t *testing.T) {
+		mockDBStorage.EXPECT().GetUser(ctx, email).Return(expectedUser, nil)
+
+		user, err := mockDBStorage.GetUser(ctx, email)
+
+		assert.NoError(t, err, "Expected no error")
+		assert.Equal(t, expectedUser, user, "Expected user to match")
+	})
+
+	t.Run("Error", func(t *testing.T) {
+		mockError := fmt.Errorf("get user error")
+		mockDBStorage.EXPECT().GetUser(ctx, email).Return(nil, mockError)
+
+		user, err := mockDBStorage.GetUser(ctx, email)
+
+		assert.Nil(t, user, "Expected user to be nil")
+		assert.ErrorIs(t, err, mockError, "Expected specific error")
+	})
+}
+
+func TestMockDBStorageInterface_GetContractsRepository(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
+	expectedRepo := &repository.ContractsRepository{}
+
+	t.Run("Success", func(t *testing.T) {
+		// Set expectation for GetContractsRepository call to return the mock repository.
+		mockDBStorage.EXPECT().GetContractsRepository().Return(expectedRepo).Times(1)
+
+		repo := mockDBStorage.GetContractsRepository()
+
+		// Assertions
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
+
+	t.Run("NilRepository", func(t *testing.T) {
+		// Set expectation for GetContractsRepository call to return nil.
+		mockDBStorage.EXPECT().GetContractsRepository().Return(nil).Times(1)
+
+		repo := mockDBStorage.GetContractsRepository()
+
+		// Assertions
+		if repo != nil {
+			t.Errorf("Expected nil, got %v", repo)
+		}
+	})
 }

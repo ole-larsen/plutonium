@@ -1,0 +1,1 @@
+{"version":3,"file":"format-lines.d.ts","sourceRoot":"","sources":["../../src/utils/format-lines.ts"],"names":[],"mappings":"AAAA,OAAO,8BAA8B,CAAC;AAEtC,oBAAY,KAAK,GAAG,MAAM,GAAG,OAAO,UAAU,GAAG,KAAK,EAAE,CAAC;AAEzD,QAAA,MAAM,UAAU,eAAuB,CAAC;AAExC,wBAAgB,WAAW,CAAC,GAAG,KAAK,EAAE,KAAK,EAAE,GAAG,MAAM,CAErD;AAiBD,wBAAgB,YAAY,CAAC,GAAG,KAAK,EAAE,KAAK,EAAE,EAAE,GAAG,KAAK,EAAE,CAKzD"}

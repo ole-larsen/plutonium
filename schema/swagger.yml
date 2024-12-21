@@ -86,6 +86,281 @@ definitions:
     additionalProperties:
       type: string
       format: number
+  Contract:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      name:
+        type: string
+      address:
+        type: string
+      tx:
+        type: string
+      abi:
+        type: string
+  MarketplaceCollectible:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/MarketplaceCollectibleAttributes'
+  MarketplaceCollectibleAttributes:
+    type: object
+    properties:
+      itemId:
+        type: integer
+        format: bigInt
+      tokenIds:
+        type: array
+        items:
+          type: integer
+          format: bigInt
+      collectionId:
+        type: integer
+        format: bigInt
+      uri:
+        type: string
+      owner:
+        type: object
+        $ref: "#/definitions/PublicUser"
+      creator:
+        type: object
+        $ref: "#/definitions/PublicUser"
+      metadata:
+        $ref: "#/definitions/MarketplaceCollectibleMetadata"
+      details:
+        $ref: "#/definitions/MarketplaceCollectibleDetails"
+  MarketplaceCollectibleMetadata:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      external_url:
+        type: string
+      background_color:
+        type: string
+      animation_url:
+        type: string
+      youtube_url:
+        type: string
+      attributes:
+        type: array
+        items:
+          $ref: "#/definitions/MetadataAttributes"
+  Metadata:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      external_url:
+        type: string
+      background_color:
+        type: string
+      animation_url:
+        type: string
+      youtube_url:
+        type: string
+      attributes:
+        type: array
+        items:
+          $ref: "#/definitions/MetadataAttributes"
+  MarketplaceCollectibleDetails:
+    type: object
+    properties:
+      address:
+        type: string
+      collection:
+        type: string
+      tags:
+        type: string
+      fulfilled:
+        type: boolean
+      cancelled:
+        type: boolean
+      auction:
+        type: boolean
+      price:
+        type: string
+      price_wei:
+        type: string
+      fee:
+        type: string
+      fee_wei:
+        type: string
+      total:
+        type: string
+      total_wei:
+        type: string
+      start_time:
+        type: integer
+        format: int64
+      end_time:
+        type: integer
+        format: int64
+      start_price:
+        type: string
+      reserve_price:
+        type: string
+      start_price_wei:
+        type: string
+      reserve_price_wei:
+        type: string
+      is_started:
+        type: boolean
+      quantity:
+        type: integer
+        format: bigInt
+  MetadataAttributes:
+    type: object
+    properties:
+      trait_type:
+        type: string
+      value:
+        type: string
+  MarketplaceCollection:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/MarketplaceCollectionAttributes'
+  MarketplaceCollectionAttributes:
+    type: object
+    properties:
+      id:
+        type: object
+        x-go-type:
+          type: Int
+          import:
+            package: math/big
+          hints:
+            kind: object
+            noValidation: true
+            nullable: true
+      categoryId:
+        type: integer
+        format: bigInt
+      address:
+        type: object
+        x-go-type:
+          type: Address
+          import:
+            package: github.com/ethereum/go-ethereum/common
+          hints:
+            kind: object
+            noValidation: true
+      name:
+        type: string
+      symbol:
+        type: string
+      description:
+        type: string
+      slug:
+        type: string
+      fee:
+        type: string
+      maxItems:
+        type: integer
+        format: bigInt  
+      owner:
+        type: object
+        $ref: "#/definitions/PublicUser"
+      creator:
+        type: object
+        $ref: "#/definitions/PublicUser"
+      logo:
+        $ref: '#/definitions/PublicFile'
+      featured:
+        $ref: '#/definitions/PublicFile'
+      banner:
+        $ref: '#/definitions/PublicFile'
+      isApproved:
+        type: boolean
+      isLocked:
+        type: boolean
+      url:
+        type: string
+      created:
+        type: string
+      collectibles:
+        type: array
+        items:
+          $ref: "#/definitions/MarketplaceCollectible"
+  PublicUser:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      uuid:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      gravatar:
+        type: string
+      token:
+        type: string
+      address:
+        type: string
+      nonce:
+        type: string
+      wallpaperId:
+        type: integer
+        format: bigInt
+      wallpaper:
+        type: string
+      funds:
+        type: string
+      created:
+        type: string
+  PublicFile:
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+          alt:
+            type: string
+          caption:
+            type: string
+          width:
+            type: integer
+          height:
+            type: integer
+          hash:
+            type: string
+          ext:
+            type: string
+          mime:
+            type: string
+          size:
+            type: number
+          url:
+            type: string
+          provider:
+            type: string
+    
 tags:
   - name: Public
     description: "Endpoints accessible to all clients for general API functionality."

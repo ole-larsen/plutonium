@@ -78,6 +78,27 @@ func init() {
     }
   },
   "definitions": {
+    "Contract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tx": {
+          "type": "string"
+        }
+      }
+    },
     "ErrorResponse": {
       "type": "object",
       "properties": {
@@ -95,6 +116,302 @@ func init() {
           "description": "Brief explanation of the error encountered.",
           "type": "string",
           "example": "Internal Server Error"
+        }
+      }
+    },
+    "MarketplaceCollectible": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/MarketplaceCollectibleAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "MarketplaceCollectibleAttributes": {
+      "type": "object",
+      "properties": {
+        "collectionId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "creator": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "details": {
+          "$ref": "#/definitions/MarketplaceCollectibleDetails"
+        },
+        "itemId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "metadata": {
+          "$ref": "#/definitions/MarketplaceCollectibleMetadata"
+        },
+        "owner": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "tokenIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollectibleDetails": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "auction": {
+          "type": "boolean"
+        },
+        "cancelled": {
+          "type": "boolean"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "end_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fee": {
+          "type": "string"
+        },
+        "fee_wei": {
+          "type": "string"
+        },
+        "fulfilled": {
+          "type": "boolean"
+        },
+        "is_started": {
+          "type": "boolean"
+        },
+        "price": {
+          "type": "string"
+        },
+        "price_wei": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "reserve_price": {
+          "type": "string"
+        },
+        "reserve_price_wei": {
+          "type": "string"
+        },
+        "start_price": {
+          "type": "string"
+        },
+        "start_price_wei": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string"
+        },
+        "total_wei": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollectibleMetadata": {
+      "type": "object",
+      "properties": {
+        "animation_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetadataAttributes"
+          }
+        },
+        "background_color": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "youtube_url": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollection": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/MarketplaceCollectionAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "MarketplaceCollectionAttributes": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "github.com/ethereum/go-ethereum/common"
+            },
+            "type": "Address"
+          }
+        },
+        "banner": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "categoryId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "collectibles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarketplaceCollectible"
+          }
+        },
+        "created": {
+          "type": "string"
+        },
+        "creator": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "description": {
+          "type": "string"
+        },
+        "featured": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "fee": {
+          "type": "string"
+        },
+        "id": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true,
+              "nullable": true
+            },
+            "import": {
+              "package": "math/big"
+            },
+            "type": "Int"
+          }
+        },
+        "isApproved": {
+          "type": "boolean"
+        },
+        "isLocked": {
+          "type": "boolean"
+        },
+        "logo": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "maxItems": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "animation_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetadataAttributes"
+          }
+        },
+        "background_color": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "youtube_url": {
+          "type": "string"
+        }
+      }
+    },
+    "MetadataAttributes": {
+      "type": "object",
+      "properties": {
+        "trait_type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },
@@ -122,6 +439,95 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicFile": {
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "string"
+            },
+            "caption": {
+              "type": "string"
+            },
+            "ext": {
+              "type": "string"
+            },
+            "hash": {
+              "type": "string"
+            },
+            "height": {
+              "type": "integer"
+            },
+            "mime": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            },
+            "url": {
+              "type": "string"
+            },
+            "width": {
+              "type": "integer"
+            }
+          }
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicUser": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "funds": {
+          "type": "string"
+        },
+        "gravatar": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "wallpaper": {
+          "type": "string"
+        },
+        "wallpaperId": {
+          "type": "integer",
+          "format": "bigInt"
+        }
       }
     }
   },
@@ -197,6 +603,27 @@ func init() {
     }
   },
   "definitions": {
+    "Contract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tx": {
+          "type": "string"
+        }
+      }
+    },
     "ErrorResponse": {
       "type": "object",
       "properties": {
@@ -214,6 +641,302 @@ func init() {
           "description": "Brief explanation of the error encountered.",
           "type": "string",
           "example": "Internal Server Error"
+        }
+      }
+    },
+    "MarketplaceCollectible": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/MarketplaceCollectibleAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "MarketplaceCollectibleAttributes": {
+      "type": "object",
+      "properties": {
+        "collectionId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "creator": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "details": {
+          "$ref": "#/definitions/MarketplaceCollectibleDetails"
+        },
+        "itemId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "metadata": {
+          "$ref": "#/definitions/MarketplaceCollectibleMetadata"
+        },
+        "owner": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "tokenIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollectibleDetails": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "auction": {
+          "type": "boolean"
+        },
+        "cancelled": {
+          "type": "boolean"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "end_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "fee": {
+          "type": "string"
+        },
+        "fee_wei": {
+          "type": "string"
+        },
+        "fulfilled": {
+          "type": "boolean"
+        },
+        "is_started": {
+          "type": "boolean"
+        },
+        "price": {
+          "type": "string"
+        },
+        "price_wei": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "reserve_price": {
+          "type": "string"
+        },
+        "reserve_price_wei": {
+          "type": "string"
+        },
+        "start_price": {
+          "type": "string"
+        },
+        "start_price_wei": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string"
+        },
+        "total_wei": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollectibleMetadata": {
+      "type": "object",
+      "properties": {
+        "animation_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetadataAttributes"
+          }
+        },
+        "background_color": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "youtube_url": {
+          "type": "string"
+        }
+      }
+    },
+    "MarketplaceCollection": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/MarketplaceCollectionAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "MarketplaceCollectionAttributes": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "github.com/ethereum/go-ethereum/common"
+            },
+            "type": "Address"
+          }
+        },
+        "banner": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "categoryId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "collectibles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarketplaceCollectible"
+          }
+        },
+        "created": {
+          "type": "string"
+        },
+        "creator": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "description": {
+          "type": "string"
+        },
+        "featured": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "fee": {
+          "type": "string"
+        },
+        "id": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true,
+              "nullable": true
+            },
+            "import": {
+              "package": "math/big"
+            },
+            "type": "Int"
+          }
+        },
+        "isApproved": {
+          "type": "boolean"
+        },
+        "isLocked": {
+          "type": "boolean"
+        },
+        "logo": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "maxItems": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "$ref": "#/definitions/PublicUser"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "animation_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MetadataAttributes"
+          }
+        },
+        "background_color": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "youtube_url": {
+          "type": "string"
+        }
+      }
+    },
+    "MetadataAttributes": {
+      "type": "object",
+      "properties": {
+        "trait_type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },
@@ -241,6 +964,133 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicFile": {
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "alt": {
+              "type": "string"
+            },
+            "caption": {
+              "type": "string"
+            },
+            "ext": {
+              "type": "string"
+            },
+            "hash": {
+              "type": "string"
+            },
+            "height": {
+              "type": "integer"
+            },
+            "mime": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number"
+            },
+            "url": {
+              "type": "string"
+            },
+            "width": {
+              "type": "integer"
+            }
+          }
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicFileAttributes": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "ext": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "mime": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "url": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "PublicUser": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "funds": {
+          "type": "string"
+        },
+        "gravatar": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "wallpaper": {
+          "type": "string"
+        },
+        "wallpaperId": {
+          "type": "integer",
+          "format": "bigInt"
+        }
       }
     }
   },

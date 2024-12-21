@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/swag"
 
+	"github.com/ole-larsen/plutonium/internal/blockchain"
 	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/internal/plutonium"
 	v1monitoringApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/monitoringApi"
@@ -57,6 +58,17 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 
 	// Initialize storage and set it on the service
 	store, err := storage.SetupStorage(ctx, cfg.DSN)
+	if err != nil {
+		panic(err)
+	}
+
+	// initialize web3 dialer
+	dialer, err := blockchain.NewWeb3Dialer(logger, cfg.Network, store.GetContractsRepository())
+	if err != nil {
+		panic(err)
+	}
+
+	err = dialer.Load(ctx)
 	if err != nil {
 		panic(err)
 	}
