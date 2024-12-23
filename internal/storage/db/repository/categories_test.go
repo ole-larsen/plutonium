@@ -1,7 +1,6 @@
 package repository_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -85,36 +84,4 @@ func TestCategoriesRepository_PingEdgeCase(t *testing.T) {
 	err = repository.Ping()
 	assert.Error(t, err)
 	assert.Equal(t, "timeout error", err.Error())
-}
-
-// TestCategoriesRepository_MigrateContext tests the MigrateContext method of CategoriesRepository.
-func TestCategoriesRepository_MigrateContext(t *testing.T) {
-	db, mock, _ := sqlmock.New()
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	defer db.Close()
-
-	repository := &repo.CategoriesRepository{
-		DB:  *sqlxDB,
-		TBL: "categories",
-	}
-
-	ctx := context.Background()
-
-	// Test successful migration
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS categories`).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	err := repository.MigrateContext(ctx)
-	assert.NoError(t, err, "MigrateContext() should not return an error")
-
-	// Test migration with an error
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS categories`).WillReturnError(errors.New("exec error"))
-
-	err = repository.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() should return an error")
-	assert.Equal(t, "exec error", err.Error(), "MigrateContext() should return the correct error message")
-
-	// Test case: repo is nil
-	var nilRepo *repo.CategoriesRepository
-	err = nilRepo.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() on nil repository should return error")
 }

@@ -80,38 +80,6 @@ func TestUsersRepository_Ping(t *testing.T) {
 	assert.Equal(t, repository.ErrDBNotInitialized, err, "Ping() should return ErrDBNotInitialized")
 }
 
-// TestUsersRepository_MigrateContext tests the MigrateContext method of UsersRepository.
-func TestUsersRepository_MigrateContext(t *testing.T) {
-	db, mock, _ := sqlmock.New()
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	defer db.Close()
-
-	repo := &repository.UsersRepository{
-		DB:  *sqlxDB,
-		TBL: "users",
-	}
-
-	ctx := context.Background()
-
-	// Test successful migration
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS users`).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	err := repo.MigrateContext(ctx)
-	assert.NoError(t, err, "MigrateContext() should not return an error")
-
-	// Test migration with an error
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS users`).WillReturnError(errors.New("exec error"))
-
-	err = repo.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() should return an error")
-	assert.Equal(t, "exec error", err.Error(), "MigrateContext() should return the correct error message")
-
-	// Test case: repo is nil
-	var nilRepo *repository.UsersRepository
-	err = nilRepo.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() on nil repository should return error")
-}
-
 // TestUsersRepository_Create tests the Create method of UsersRepository.
 func TestUsersRepository_Create(t *testing.T) {
 	db, mock, _ := sqlmock.New()

@@ -85,8 +85,12 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.MonitoringGetMetricsHandler = monitoring.GetMetricsHandlerFunc(v1monitoringApi.GetMetricsHandler)
 
 	// frontend handlers
-	api.FrontendGetFrontendHeaderHandler = frontend.GetFrontendHeaderHandlerFunc(v1frontendApi.GetHeaderHandler)
-	api.FrontendGetFrontendFooterHandler = frontend.GetFrontendFooterHandlerFunc(v1frontendApi.GetFooterHandler)
+	frontendAPI := v1frontendApi.NewFrontendAPI(service)
+
+	// applies when the "x-token" header is set
+	api.XTokenAuth = frontendAPI.XTokenAuth
+
+	api.FrontendGetFrontendMenuHandler = frontend.GetFrontendMenuHandlerFunc(frontendAPI.GetMenuHandler)
 
 	api.PreServerShutdown = func() {}
 

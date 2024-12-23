@@ -142,6 +142,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetContractsRepository() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContractsRepository))
 }
 
+// GetMenusRepository mocks base method.
+func (m *MockDBStorageInterface) GetMenusRepository() *repository.MenusRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMenusRepository")
+	ret0, _ := ret[0].(*repository.MenusRepository)
+	return ret0
+}
+
+// GetMenusRepository indicates an expected call of GetMenusRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetMenusRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenusRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetMenusRepository))
+}
+
 // GetUser mocks base method.
 func (m *MockDBStorageInterface) GetUser(ctx context.Context, login string) (*repository.User, error) {
 	m.ctrl.T.Helper()

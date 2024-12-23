@@ -13,6 +13,7 @@ type Settings struct {
 	DSN        string
 	PrivateKey string `mapstructure:"ETH_PRIVATE_KEY"`
 	Network    string `mapstructure:"ETH_NETWORK"`
+	XToken     string `mapstructure:"X_TOKEN"`
 	DB         DB
 }
 
@@ -34,7 +35,7 @@ var (
 // LoadConfig initializes and returns the settings singleton.
 func LoadConfig(cfgPath string) *Settings {
 	once.Do(func() {
-		config = InitConfig(cfgPath, WithMarketname(), WithDSN(), WithEthPK(), WithEthWeb())
+		config = InitConfig(cfgPath, WithMarketname(), WithDSN(), WithEthPK(), WithEthWeb(), WithXToken())
 	})
 
 	return config
@@ -114,5 +115,13 @@ func WithEthWeb() func(*Settings) {
 	return func(ss *Settings) {
 		network := viper.GetString("ETH_NETWORK")
 		ss.Network = network
+	}
+}
+
+// WithXToken is a functional option for initializing the XToken field in the Settings struct.//+.
+func WithXToken() func(*Settings) {
+	return func(ss *Settings) { //-
+		token := viper.GetString("XTOKEN")
+		ss.XToken = token
 	}
 }

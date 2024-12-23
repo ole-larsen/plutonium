@@ -47,11 +47,8 @@ func NewServiceAPI(spec *loads.Document) *ServiceAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		FrontendGetFrontendFooterHandler: frontend.GetFrontendFooterHandlerFunc(func(params frontend.GetFrontendFooterParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation frontend.GetFrontendFooter has not yet been implemented")
-		}),
-		FrontendGetFrontendHeaderHandler: frontend.GetFrontendHeaderHandlerFunc(func(params frontend.GetFrontendHeaderParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation frontend.GetFrontendHeader has not yet been implemented")
+		FrontendGetFrontendMenuHandler: frontend.GetFrontendMenuHandlerFunc(func(params frontend.GetFrontendMenuParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation frontend.GetFrontendMenu has not yet been implemented")
 		}),
 		MonitoringGetMetricsHandler: monitoring.GetMetricsHandlerFunc(func(params monitoring.GetMetricsParams) middleware.Responder {
 			return middleware.NotImplemented("operation monitoring.GetMetrics has not yet been implemented")
@@ -74,32 +71,31 @@ ServiceAPI The Plutonium Service API provides endpoints to support the operation
 This document outlines the API's structure, response formats, and capabilities for integration.
 */
 type ServiceAPI struct {
-	JSONConsumer                     runtime.Consumer
-	PublicGetPingHandler             public.GetPingHandler
-	MonitoringGetMetricsHandler      monitoring.GetMetricsHandler
-	formats                          strfmt.Registry
-	FrontendGetFrontendHeaderHandler frontend.GetFrontendHeaderHandler
-	FrontendGetFrontendFooterHandler frontend.GetFrontendFooterHandler
-	APIAuthorizer                    runtime.Authorizer
-	JSONProducer                     runtime.Producer
-	BearerAuthenticator              func(string, security.ScopedTokenAuthentication) runtime.Authenticator
-	customProducers                  map[string]runtime.Producer
-	BasicAuthenticator               func(security.UserPassAuthentication) runtime.Authenticator
-	APIKeyAuthenticator              func(string, string, security.TokenAuthentication) runtime.Authenticator
-	spec                             *loads.Document
-	Middleware                       func(middleware.Builder) http.Handler
-	Logger                           func(string, ...interface{})
-	XTokenAuth                       func(string) (*models.Principal, error)
-	ServerShutdown                   func()
-	PreServerShutdown                func()
-	customConsumers                  map[string]runtime.Consumer
-	handlers                         map[string]map[string]http.Handler
-	context                          *middleware.Context
-	ServeError                       func(http.ResponseWriter, *http.Request, error)
-	defaultConsumes                  string
-	defaultProduces                  string
-	CommandLineOptionsGroups         []swag.CommandLineOptionsGroup
-	useSwaggerUI                     bool
+	JSONConsumer                   runtime.Consumer
+	PublicGetPingHandler           public.GetPingHandler
+	MonitoringGetMetricsHandler    monitoring.GetMetricsHandler
+	formats                        strfmt.Registry
+	FrontendGetFrontendMenuHandler frontend.GetFrontendMenuHandler
+	APIAuthorizer                  runtime.Authorizer
+	JSONProducer                   runtime.Producer
+	BearerAuthenticator            func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+	customProducers                map[string]runtime.Producer
+	Logger                         func(string, ...interface{})
+	BasicAuthenticator             func(security.UserPassAuthentication) runtime.Authenticator
+	APIKeyAuthenticator            func(string, string, security.TokenAuthentication) runtime.Authenticator
+	spec                           *loads.Document
+	ServerShutdown                 func()
+	PreServerShutdown              func()
+	XTokenAuth                     func(string) (*models.Principal, error)
+	Middleware                     func(middleware.Builder) http.Handler
+	customConsumers                map[string]runtime.Consumer
+	handlers                       map[string]map[string]http.Handler
+	context                        *middleware.Context
+	ServeError                     func(http.ResponseWriter, *http.Request, error)
+	defaultConsumes                string
+	defaultProduces                string
+	CommandLineOptionsGroups       []swag.CommandLineOptionsGroup
+	useSwaggerUI                   bool
 }
 
 // UseRedoc for documentation at /docs
@@ -163,11 +159,8 @@ func (o *ServiceAPI) Validate() error {
 		unregistered = append(unregistered, "XTokenAuth")
 	}
 
-	if o.FrontendGetFrontendFooterHandler == nil {
-		unregistered = append(unregistered, "frontend.GetFrontendFooterHandler")
-	}
-	if o.FrontendGetFrontendHeaderHandler == nil {
-		unregistered = append(unregistered, "frontend.GetFrontendHeaderHandler")
+	if o.FrontendGetFrontendMenuHandler == nil {
+		unregistered = append(unregistered, "frontend.GetFrontendMenuHandler")
 	}
 	if o.MonitoringGetMetricsHandler == nil {
 		unregistered = append(unregistered, "monitoring.GetMetricsHandler")
@@ -277,11 +270,7 @@ func (o *ServiceAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/frontend/footer"] = frontend.NewGetFrontendFooter(o.context, o.FrontendGetFrontendFooterHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/frontend/header"] = frontend.NewGetFrontendHeader(o.context, o.FrontendGetFrontendHeaderHandler)
+	o.handlers["GET"]["/frontend/menu"] = frontend.NewGetFrontendMenu(o.context, o.FrontendGetFrontendMenuHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

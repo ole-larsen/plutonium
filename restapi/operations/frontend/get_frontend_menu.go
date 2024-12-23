@@ -13,40 +13,40 @@ import (
 	"github.com/ole-larsen/plutonium/models"
 )
 
-// GetHeaderHandlerFunc turns a function with the right signature into a get header handler
-type GetHeaderHandlerFunc func(GetHeaderParams, *models.Principal) middleware.Responder
+// GetFrontendMenuHandlerFunc turns a function with the right signature into a get frontend menu handler
+type GetFrontendMenuHandlerFunc func(GetFrontendMenuParams, *models.Principal) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn GetHeaderHandlerFunc) Handle(params GetHeaderParams, principal *models.Principal) middleware.Responder {
+func (fn GetFrontendMenuHandlerFunc) Handle(params GetFrontendMenuParams, principal *models.Principal) middleware.Responder {
 	return fn(params, principal)
 }
 
-// GetHeaderHandler interface for that can handle valid get header params
-type GetHeaderHandler interface {
-	Handle(GetHeaderParams, *models.Principal) middleware.Responder
+// GetFrontendMenuHandler interface for that can handle valid get frontend menu params
+type GetFrontendMenuHandler interface {
+	Handle(GetFrontendMenuParams, *models.Principal) middleware.Responder
 }
 
-// NewGetHeader creates a new http.Handler for the get header operation
-func NewGetHeader(ctx *middleware.Context, handler GetHeaderHandler) *GetHeader {
-	return &GetHeader{Context: ctx, Handler: handler}
+// NewGetFrontendMenu creates a new http.Handler for the get frontend menu operation
+func NewGetFrontendMenu(ctx *middleware.Context, handler GetFrontendMenuHandler) *GetFrontendMenu {
+	return &GetFrontendMenu{Context: ctx, Handler: handler}
 }
 
 /*
-	GetHeader swagger:route GET /header Frontend getHeader
+	GetFrontendMenu swagger:route GET /frontend/menu Frontend getFrontendMenu
 
-Fetches the public header for the frontend.
+Fetches the public menu for the frontend.
 */
-type GetHeader struct {
+type GetFrontendMenu struct {
 	Context *middleware.Context
-	Handler GetHeaderHandler
+	Handler GetFrontendMenuHandler
 }
 
-func (o *GetHeader) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *GetFrontendMenu) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		*r = *rCtx
 	}
-	var Params = NewGetHeaderParams()
+	var Params = NewGetFrontendMenuParams()
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {
 		o.Context.Respond(rw, r, route.Produces, route, err)

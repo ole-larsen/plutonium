@@ -336,3 +336,35 @@ func TestMockDBStorageInterface_GetContractsRepository(t *testing.T) {
 		}
 	})
 }
+
+func TestMockDBStorageInterface_GetMenusRepository(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
+	expectedRepo := &repository.MenusRepository{}
+
+	t.Run("Success", func(t *testing.T) {
+		// Set expectation for GetMenusRepository call to return the mock repository.
+		mockDBStorage.EXPECT().GetMenusRepository().Return(expectedRepo).Times(1)
+
+		repo := mockDBStorage.GetMenusRepository()
+
+		// Assertions
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
+
+	t.Run("NilRepository", func(t *testing.T) {
+		// Set expectation for GetMenusRepository call to return nil.
+		mockDBStorage.EXPECT().GetMenusRepository().Return(nil).Times(1)
+
+		repo := mockDBStorage.GetMenusRepository()
+
+		// Assertions
+		if repo != nil {
+			t.Errorf("Expected nil, got %v", repo)
+		}
+	})
+}

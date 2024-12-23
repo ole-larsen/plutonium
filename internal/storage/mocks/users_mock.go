@@ -79,20 +79,6 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) InnerDB() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InnerDB", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).InnerDB))
 }
 
-// MigrateContext mocks base method.
-func (m *MockUsersRepositoryInterface) MigrateContext(ctx context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MigrateContext", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// MigrateContext indicates an expected call of MigrateContext.
-func (mr *MockUsersRepositoryInterfaceMockRecorder) MigrateContext(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MigrateContext", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).MigrateContext), ctx)
-}
-
 // Ping mocks base method.
 func (m *MockUsersRepositoryInterface) Ping() error {
 	m.ctrl.T.Helper()

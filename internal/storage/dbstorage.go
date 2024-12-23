@@ -28,6 +28,7 @@ type DBStorageInterface interface {
 	CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error)
 	GetUser(ctx context.Context, login string) (*repository.User, error)
 	GetContractsRepository() *repository.ContractsRepository
+	GetMenusRepository() *repository.MenusRepository
 }
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
@@ -68,34 +69,49 @@ func (s *DBStorage) Init(ctx context.Context, sqlxDB *sqlx.DB) (*sqlx.DB, error)
 	return sqlxDB, nil
 }
 
-func (s *DBStorage) ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+func (s *DBStorage) ConnectUsersRepository(_ context.Context, sqlxDB *sqlx.DB) error {
 	s.Users = repository.NewUsersRepository(sqlxDB, "users")
+	if s.Users.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect users repository"))
+	}
 
-	return s.Users.MigrateContext(ctx)
+	return nil
 }
 
-func (s *DBStorage) ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+func (s *DBStorage) ConnectContractsRepository(_ context.Context, sqlxDB *sqlx.DB) error {
 	s.Contracts = repository.NewContractsRepository(sqlxDB, "contracts")
+	if s.Contracts.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect contracts repository"))
+	}
 
-	return s.Contracts.MigrateContext(ctx)
+	return nil
 }
 
-func (s *DBStorage) ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+func (s *DBStorage) ConnectPagesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
 	s.Pages = repository.NewPagesRepository(sqlxDB, "pages")
+	if s.Pages.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect pages repository"))
+	}
 
-	return s.Pages.MigrateContext(ctx)
+	return nil
 }
 
-func (s *DBStorage) ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+func (s *DBStorage) ConnectMenusRepository(_ context.Context, sqlxDB *sqlx.DB) error {
 	s.Menus = repository.NewMenusRepository(sqlxDB, "menus")
+	if s.Menus.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect menus repository"))
+	}
 
-	return s.Menus.MigrateContext(ctx)
+	return nil
 }
 
-func (s *DBStorage) ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+func (s *DBStorage) ConnectCategoriesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
 	s.Categories = repository.NewCategoriesRepository(sqlxDB, "categories")
+	if s.Categories.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect categories repository"))
+	}
 
-	return s.Categories.MigrateContext(ctx)
+	return nil
 }
 
 func (s *DBStorage) Ping() error {
@@ -127,6 +143,10 @@ func (s *DBStorage) GetUser(ctx context.Context, login string) (*repository.User
 
 func (s *DBStorage) GetContractsRepository() *repository.ContractsRepository {
 	return s.Contracts
+}
+
+func (s *DBStorage) GetMenusRepository() *repository.MenusRepository {
+	return s.Menus
 }
 
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {

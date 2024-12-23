@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	defaultENV  = ".env"
-	expectedDSN = "postgres://test_user:test_pass@localhost:5432/test_db?sslmode=disable"
+	defaultENV     = ".env"
+	expectedDSN    = "postgres://test_user:test_pass@localhost:5432/test_db?sslmode=disable"
+	expectedXToken = "1234567890"
 )
 
 func setupTestEnv() {
@@ -23,6 +24,7 @@ func setupTestEnv() {
 	os.Setenv("DB_SQL_PASSWORD", "test_pass")
 	os.Setenv("DB_SQL_DATABASE", "test_db")
 	os.Setenv("DB_SQL_SSL", "false")
+	os.Setenv("XTOKEN", expectedXToken)
 }
 
 func cleanupTestEnv() {
@@ -33,6 +35,7 @@ func cleanupTestEnv() {
 	os.Unsetenv("DB_SQL_PASSWORD")
 	os.Unsetenv("DB_SQL_DATABASE")
 	os.Unsetenv("DB_SQL_SSL")
+	os.Unsetenv("XTOKEN")
 }
 
 func TestLoadEnv(t *testing.T) {
@@ -47,6 +50,7 @@ DB_SQL_USERNAME=test_user
 DB_SQL_PASSWORD=test_pass
 DB_SQL_DATABASE=test_db
 DB_SQL_SSL=false
+XTOKEN=1234567890
 `), 0o644)
 	defer os.Remove(defaultENV) // Clean up after the test
 
@@ -84,6 +88,7 @@ DB_SQL_USERNAME=test_user
 DB_SQL_PASSWORD=test_pass
 DB_SQL_DATABASE=test_db
 DB_SQL_SSL=false
+XTOKEN=1234567890
 `), 0o644)
 	require.NoError(t, err)
 	defer os.Remove(defaultENV) // Clean up after the test
@@ -127,6 +132,7 @@ DB_SQL_USERNAME=test_user
 DB_SQL_PASSWORD=test_pass
 DB_SQL_DATABASE=test_db
 DB_SQL_SSL=false
+XTOKEN=1234567890
 `), 0o644)
 	require.NoError(t, err)
 
@@ -147,9 +153,10 @@ func TestReload(t *testing.T) {
 	defer cleanupTestEnv()
 
 	cfg := &settings.Settings{}
-	cfg.Reload(settings.WithDSN())
+	cfg.Reload(settings.WithDSN(), settings.WithXToken())
 
 	assert.Equal(t, expectedDSN, cfg.DSN, "DSN does not match expected value")
+	assert.Equal(t, expectedXToken, cfg.XToken, "X-Token does not match expected value")
 }
 
 func TestWithDSN(t *testing.T) {
@@ -172,4 +179,16 @@ func TestWithDSN(t *testing.T) {
 		Database: "test_db",
 	}
 	assert.Equal(t, expectedDB, cfg.DB, "Database configuration does not match expected values")
+}
+
+func TestWithXToken(t *testing.T) {
+	setupTestEnv()
+
+	defer cleanupTestEnv()
+
+	cfg := &settings.Settings{}
+	withXToken := settings.WithXToken()
+	withXToken(cfg)
+
+	assert.Equal(t, expectedXToken, cfg.XToken, "X-Token does not match expected value")
 }

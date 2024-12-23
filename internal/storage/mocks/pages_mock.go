@@ -10,7 +10,6 @@
 package mocks
 
 import (
-	context "context"
 	reflect "reflect"
 
 	sqlx "github.com/jmoiron/sqlx"
@@ -53,20 +52,6 @@ func (m *MockPagesRepositoryInterface) InnerDB() *sqlx.DB {
 func (mr *MockPagesRepositoryInterfaceMockRecorder) InnerDB() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InnerDB", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).InnerDB))
-}
-
-// MigrateContext mocks base method.
-func (m *MockPagesRepositoryInterface) MigrateContext(ctx context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MigrateContext", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// MigrateContext indicates an expected call of MigrateContext.
-func (mr *MockPagesRepositoryInterfaceMockRecorder) MigrateContext(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MigrateContext", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).MigrateContext), ctx)
 }
 
 // Ping mocks base method.

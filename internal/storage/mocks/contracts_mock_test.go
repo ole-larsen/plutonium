@@ -85,14 +85,6 @@ func TestMockContractsRepositoryInterface(t *testing.T) {
 		assert.Equal(t, expectedDB, db)
 	})
 
-	// Test: MigrateContext
-	t.Run("MigrateContext", func(t *testing.T) {
-		mockRepo.EXPECT().MigrateContext(ctx).Return(nil)
-
-		err := mockRepo.MigrateContext(ctx)
-		assert.NoError(t, err)
-	})
-
 	// Test: Ping
 	t.Run("Ping", func(t *testing.T) {
 		mockRepo.EXPECT().Ping().Return(nil)

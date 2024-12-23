@@ -26,7 +26,6 @@ type Contract struct {
 type ContractsRepositoryInterface interface {
 	InnerDB() *sqlx.DB
 	Ping() error
-	MigrateContext(ctx context.Context) error
 	Create(ctx context.Context, contractMap map[string]interface{}) error
 	GetOne(ctx context.Context, name string) (*models.Contract, error)
 	GetByAddress(ctx context.Context, address common.Address) (*models.Contract, error)
@@ -65,26 +64,6 @@ func (r *ContractsRepository) Ping() error {
 	}
 
 	return r.DB.Ping()
-}
-
-func (r *ContractsRepository) MigrateContext(ctx context.Context) error {
-	if r == nil {
-		return ErrDBNotInitialized
-	}
-
-	_, err := r.DB.ExecContext(ctx, fmt.Sprintf(`
-CREATE TABLE IF NOT EXISTS %s (
-	id                     SERIAL PRIMARY KEY,
-	name                   varchar(255) UNIQUE NOT NULL,
-	address                varchar(255) UNIQUE NOT NULL,
-	tx                     varchar(255) UNIQUE NOT NULL,
-	abi                    text,
-	created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-	updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-	deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
-);`, r.TBL))
-
-	return err
 }
 
 func (r *ContractsRepository) Create(ctx context.Context, contractMap map[string]interface{}) error {

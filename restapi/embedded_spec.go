@@ -30,7 +30,7 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
-    "/frontend/footer": {
+    "/frontend/menu": {
       "get": {
         "security": [
           {
@@ -43,76 +43,20 @@ func init() {
         "tags": [
           "Frontend"
         ],
-        "summary": "Fetches the public footer for the frontend.",
+        "summary": "Fetches the public menu for the frontend.",
         "parameters": [
           {
             "type": "string",
-            "description": "The provider to be used in the footer",
+            "description": "The provider to be used in the menu.",
             "name": "provider",
             "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successfully fetched the footer.",
+            "description": "Successfully fetched the menu.",
             "schema": {
-              "$ref": "#/definitions/PublicFooterResponse"
-            }
-          },
-          "400": {
-            "description": "Bad request due to missing or invalid parameters.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "401": {
-            "description": "Unauthorized. The request is missing valid authentication.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "404": {
-            "description": "Not found. The requested resource could not be found.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        }
-      }
-    },
-    "/frontend/header": {
-      "get": {
-        "security": [
-          {
-            "x-token": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Frontend"
-        ],
-        "summary": "Fetches the public header for the frontend.",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The provider to be used in the header.",
-            "name": "provider",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully fetched the header.",
-            "schema": {
-              "$ref": "#/definitions/PublicHeaderResponse"
+              "$ref": "#/definitions/PublicMenuResponse"
             }
           },
           "400": {
@@ -599,22 +543,6 @@ func init() {
         }
       }
     },
-    "PublicFooterResponse": {
-      "type": "object",
-      "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
-        }
-      }
-    },
-    "PublicHeaderResponse": {
-      "type": "object",
-      "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
-        }
-      }
-    },
     "PublicMenu": {
       "type": "object",
       "properties": {
@@ -646,6 +574,14 @@ func init() {
         "orderBy": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicMenuResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
         }
       }
     },
@@ -737,7 +673,7 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
-    "/frontend/footer": {
+    "/frontend/menu": {
       "get": {
         "security": [
           {
@@ -750,76 +686,20 @@ func init() {
         "tags": [
           "Frontend"
         ],
-        "summary": "Fetches the public footer for the frontend.",
+        "summary": "Fetches the public menu for the frontend.",
         "parameters": [
           {
             "type": "string",
-            "description": "The provider to be used in the footer",
+            "description": "The provider to be used in the menu.",
             "name": "provider",
             "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Successfully fetched the footer.",
+            "description": "Successfully fetched the menu.",
             "schema": {
-              "$ref": "#/definitions/PublicFooterResponse"
-            }
-          },
-          "400": {
-            "description": "Bad request due to missing or invalid parameters.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "401": {
-            "description": "Unauthorized. The request is missing valid authentication.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "404": {
-            "description": "Not found. The requested resource could not be found.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/ErrorResponse"
-            }
-          }
-        }
-      }
-    },
-    "/frontend/header": {
-      "get": {
-        "security": [
-          {
-            "x-token": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "tags": [
-          "Frontend"
-        ],
-        "summary": "Fetches the public header for the frontend.",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The provider to be used in the header.",
-            "name": "provider",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully fetched the header.",
-            "schema": {
-              "$ref": "#/definitions/PublicHeaderResponse"
+              "$ref": "#/definitions/PublicMenuResponse"
             }
           },
           "400": {
@@ -1344,22 +1224,6 @@ func init() {
         }
       }
     },
-    "PublicFooterResponse": {
-      "type": "object",
-      "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
-        }
-      }
-    },
-    "PublicHeaderResponse": {
-      "type": "object",
-      "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
-        }
-      }
-    },
     "PublicMenu": {
       "type": "object",
       "properties": {
@@ -1391,6 +1255,14 @@ func init() {
         "orderBy": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicMenuResponse": {
+      "type": "object",
+      "properties": {
+        "menu": {
+          "$ref": "#/definitions/PublicMenu"
         }
       }
     },

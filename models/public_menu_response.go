@@ -13,17 +13,17 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// PublicFooterResponse public footer response
+// PublicMenuResponse public menu response
 //
-// swagger:model PublicFooterResponse
-type PublicFooterResponse struct {
+// swagger:model PublicMenuResponse
+type PublicMenuResponse struct {
 
 	// menu
 	Menu *PublicMenu `json:"menu,omitempty"`
 }
 
-// Validate validates this public footer response
-func (m *PublicFooterResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this public menu response
+func (m *PublicMenuResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateMenu(formats); err != nil {
@@ -36,7 +36,7 @@ func (m *PublicFooterResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PublicFooterResponse) validateMenu(formats strfmt.Registry) error {
+func (m *PublicMenuResponse) validateMenu(formats strfmt.Registry) error {
 	if swag.IsZero(m.Menu) { // not required
 		return nil
 	}
@@ -55,8 +55,8 @@ func (m *PublicFooterResponse) validateMenu(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this public footer response based on the context it is used
-func (m *PublicFooterResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this public menu response based on the context it is used
+func (m *PublicMenuResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateMenu(ctx, formats); err != nil {
@@ -69,7 +69,7 @@ func (m *PublicFooterResponse) ContextValidate(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *PublicFooterResponse) contextValidateMenu(ctx context.Context, formats strfmt.Registry) error {
+func (m *PublicMenuResponse) contextValidateMenu(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Menu != nil {
 
@@ -91,7 +91,7 @@ func (m *PublicFooterResponse) contextValidateMenu(ctx context.Context, formats 
 }
 
 // MarshalBinary interface implementation
-func (m *PublicFooterResponse) MarshalBinary() ([]byte, error) {
+func (m *PublicMenuResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -99,8 +99,8 @@ func (m *PublicFooterResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *PublicFooterResponse) UnmarshalBinary(b []byte) error {
-	var res PublicFooterResponse
+func (m *PublicMenuResponse) UnmarshalBinary(b []byte) error {
+	var res PublicMenuResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

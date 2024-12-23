@@ -61,7 +61,7 @@ paths:
           schema:
                 $ref: "#/definitions/PrometheusResponse"
   # frontend API
-  /frontend/header:
+  /frontend/menu:
     get:
       security:
         - x-token: []
@@ -71,52 +71,16 @@ paths:
         - name: provider
           in: query
           type: string
-          description: "The provider to be used in the header."
+          description: "The provider to be used in the menu."
           required: false
-      summary: "Fetches the public header for the frontend."
+      summary: "Fetches the public menu for the frontend."
       produces:
         - "application/json"
       responses:
         200:
-          description: "Successfully fetched the header."
+          description: "Successfully fetched the menu."
           schema:
-            $ref: '#/definitions/PublicHeaderResponse'
-        400:
-          description: "Bad request due to missing or invalid parameters."
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        401:
-          description: "Unauthorized. The request is missing valid authentication."
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        404:
-          description: "Not found. The requested resource could not be found."
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        500:
-          description: "Internal server error."
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /frontend/footer:
-    get:
-      security:
-        - x-token: []
-      tags:
-        - Frontend
-      parameters:
-        - name: provider
-          in: query
-          type: string
-          description: "The provider to be used in the footer"
-          required: false
-      summary: "Fetches the public footer for the frontend."
-      produces:
-        - "application/json"
-      responses:
-        200:
-          description: "Successfully fetched the footer."
-          schema:
-            $ref: '#/definitions/PublicFooterResponse'
+            $ref: '#/definitions/PublicMenuResponse'
         400:
           description: "Bad request due to missing or invalid parameters."
           schema:
@@ -446,12 +410,7 @@ definitions:
           provider:
             type: string
   # frontend definitions
-  PublicHeaderResponse:
-    type: object
-    properties:
-      menu:
-        $ref: '#/definitions/PublicMenu'
-  PublicFooterResponse:
+  PublicMenuResponse:
     type: object
     properties:
       menu:

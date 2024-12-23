@@ -25,29 +25,6 @@ func TestMockUsersRepositoryInterface_InnerDB(t *testing.T) {
 	}
 }
 
-func TestMockUsersRepositoryInterface_MigrateContext(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-	ctx := context.Background()
-
-	// Test successful migration
-	mockRepo.EXPECT().MigrateContext(ctx).Return(nil).Times(1)
-
-	if err := mockRepo.MigrateContext(ctx); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test migration with error
-	mockError := &repository.Error{Err: fmt.Errorf("migration error")}
-	mockRepo.EXPECT().MigrateContext(ctx).Return(mockError).Times(1)
-
-	if err := mockRepo.MigrateContext(ctx); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
 func TestMockUsersRepositoryInterface_Ping(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

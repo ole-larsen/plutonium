@@ -448,35 +448,3 @@ func TestContractsRepository_GetOne_DefaultError(t *testing.T) {
 	// Ensure all expectations on the mock were met
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
-
-// TestContractsRepository_MigrateContext tests the MigrateContext method of UsersRepository.
-func TestContractsRepository_MigrateContext(t *testing.T) {
-	db, mock, _ := sqlmock.New()
-	sqlxDB := sqlx.NewDb(db, "sqlmock")
-	defer db.Close()
-
-	repository := &repo.ContractsRepository{
-		DB:  *sqlxDB,
-		TBL: "contracts",
-	}
-
-	ctx := context.Background()
-
-	// Test successful migration
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS contracts`).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	err := repository.MigrateContext(ctx)
-	assert.NoError(t, err, "MigrateContext() should not return an error")
-
-	// Test migration with an error
-	mock.ExpectExec(`CREATE TABLE IF NOT EXISTS contracts`).WillReturnError(errors.New("exec error"))
-
-	err = repository.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() should return an error")
-	assert.Equal(t, "exec error", err.Error(), "MigrateContext() should return the correct error message")
-
-	// Test case: repo is nil
-	var nilRepo *repo.ContractsRepository
-	err = nilRepo.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext() on nil repository should return error")
-}

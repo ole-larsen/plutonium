@@ -1,7 +1,6 @@
 package mocks_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -58,27 +57,6 @@ func TestMockMenusRepositoryInterface_InnerDB(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, db, result, "InnerDB should return the expected database instance")
-}
-
-func TestMockMenusRepositoryInterface_MigrateContext(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockMenusRepositoryInterface(ctrl)
-	ctx := context.Background()
-
-	// Success case
-	mockRepo.EXPECT().MigrateContext(ctx).Return(nil).Times(1)
-
-	err := mockRepo.MigrateContext(ctx)
-	assert.NoError(t, err, "MigrateContext should not return an error on success")
-
-	// Error case
-	mockRepo.EXPECT().MigrateContext(ctx).Return(errors.New("migration failed")).Times(1)
-
-	err = mockRepo.MigrateContext(ctx)
-	assert.Error(t, err, "MigrateContext should return an error when migration fails")
-	assert.Equal(t, "migration failed", err.Error())
 }
 
 func TestMockMenusRepositoryInterface_Ping(t *testing.T) {

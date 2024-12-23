@@ -19,8 +19,6 @@ import (
 const (
 	validDSN      = "valid_dsn"
 	connectionErr = "connection error"
-	defaultKVType = "kv"
-	mockDSN       = "mock_dsn"
 )
 
 func TestNewDBStorage(t *testing.T) {
@@ -228,7 +226,7 @@ func TestSetupStorage_ConnectContractsRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := mockDSN
+	dsn := validDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -296,7 +294,7 @@ func TestSetupStorage_ConnectPagesRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := mockDSN
+	dsn := validDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -366,7 +364,7 @@ func TestSetupStorage_ConnectCategoriesRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := mockDSN
+	dsn := validDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -436,7 +434,7 @@ func TestSetupStorage_ConnectMenusRepositoryFailure(t *testing.T) {
 	mockStorage := mocks.NewMockDBStorageInterface(mockCtrl)
 
 	ctx := context.Background()
-	dsn := mockDSN
+	dsn := validDSN
 
 	// Mock `NewPGSQLStorage` to return our mockStorage
 	storage.NewPGSQLStorage = func(string) storage.DBStorageInterface {
@@ -748,6 +746,37 @@ func TestDBStorage_GetContractsRepository(t *testing.T) {
 	}
 
 	assert.NotNil(t, s.Contracts, "ConnectContractsRepository() should still set the Contracts repository even if sqlxDB is nil")
+
+	// Ensure all expectations were met
+	err = mock.ExpectationsWereMet()
+	assert.NoError(t, err, "All expectations should be met")
+}
+
+func TestDBStorage_GetMenusRepository(t *testing.T) {
+	// Test case 1: Nil DBStorage
+	s := &storage.DBStorage{
+		DSN: "user=postgres password=secret dbname=testdb sslmode=disable",
+	}
+
+	menusRepo := s.GetMenusRepository()
+	assert.Nil(t, menusRepo, "GetMenusRepository() should return nil when Menus repository is not initialized")
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockDB, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+
+	// Test case 2: Nil Contracts repository
+	s = &storage.DBStorage{
+		DSN:   "user=postgres password=secret dbname=testdb sslmode=disable",
+		Menus: repository.NewMenusRepository(sqlxDB, "menus"),
+	}
+
+	assert.NotNil(t, s.Menus, "ConnectMenusRepository() should still set the Menus repository even if sqlxDB is nil")
 
 	// Ensure all expectations were met
 	err = mock.ExpectationsWereMet()
