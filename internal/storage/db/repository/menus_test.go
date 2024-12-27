@@ -1,6 +1,7 @@
 package repository_test
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"testing"
@@ -124,8 +125,9 @@ func TestMenusRepository_GetMenuByProvider(t *testing.T) {
 					`{"name":"Test Menu","link":"/test","items":[{"name":"Test Item","link":"/test-1"}]}`,
 				),
 		)
-
-	menu, err := repository.GetMenuByProvider(provider)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	menu, err := repository.GetMenuByProvider(ctx, provider)
 	assert.NoError(t, err)
 	assert.NotNil(t, menu)
 	assert.Equal(t, expectedMenu.ID, menu.ID)
@@ -136,7 +138,7 @@ func TestMenusRepository_GetMenuByProvider(t *testing.T) {
 		WithArgs(provider).
 		WillReturnError(sql.ErrNoRows)
 
-	menu, err = repository.GetMenuByProvider(provider)
+	menu, err = repository.GetMenuByProvider(ctx, provider)
 	assert.Error(t, err, "[repository]: menu not found")
 	assert.Nil(t, menu)
 
@@ -145,14 +147,14 @@ func TestMenusRepository_GetMenuByProvider(t *testing.T) {
 		WithArgs(provider).
 		WillReturnError(errors.New("query error"))
 
-	menu, err = repository.GetMenuByProvider(provider)
+	menu, err = repository.GetMenuByProvider(ctx, provider)
 	assert.Error(t, err)
 	assert.Equal(t, "query error", err.Error())
 	require.Nil(t, menu)
 
 	// Nil receiver case
 	var nilRepo *repo.MenusRepository
-	menu, err = nilRepo.GetMenuByProvider(provider)
+	menu, err = nilRepo.GetMenuByProvider(ctx, provider)
 	assert.Nil(t, menu)
 	assert.Equal(t, repo.ErrDBNotInitialized, err)
 }

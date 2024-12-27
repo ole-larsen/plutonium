@@ -1,6 +1,7 @@
 package mocks_test
 
 import (
+	context "context"
 	"errors"
 	"testing"
 
@@ -26,18 +27,20 @@ func TestMockMenusRepositoryInterface_GetMenuByProvider(t *testing.T) {
 			Items: nil,
 		},
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// Success case
-	mockRepo.EXPECT().GetMenuByProvider(provider).Return(expectedMenu, nil).Times(1)
+	mockRepo.EXPECT().GetMenuByProvider(ctx, provider).Return(expectedMenu, nil).Times(1)
 
-	menu, err := mockRepo.GetMenuByProvider(provider)
+	menu, err := mockRepo.GetMenuByProvider(ctx, provider)
 	assert.NoError(t, err, "GetMenuByProvider should not return an error on success")
 	assert.Equal(t, expectedMenu, menu, "GetMenuByProvider should return the expected menu")
 
 	// Error case
-	mockRepo.EXPECT().GetMenuByProvider(provider).Return(nil, errors.New("menu not found")).Times(1)
+	mockRepo.EXPECT().GetMenuByProvider(ctx, provider).Return(nil, errors.New("menu not found")).Times(1)
 
-	menu, err = mockRepo.GetMenuByProvider(provider)
+	menu, err = mockRepo.GetMenuByProvider(ctx, provider)
 	assert.Error(t, err, "GetMenuByProvider should return an error if the menu is not found")
 	assert.Nil(t, menu, "GetMenuByProvider should return nil when an error occurs")
 }

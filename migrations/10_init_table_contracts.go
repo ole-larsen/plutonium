@@ -11,16 +11,16 @@ func init() {
 		fmt.Println("creating table contracts")
 
 		_, err := db.Exec(`
-			CREATE TABLE IF NOT EXISTS contracts (
-				id                     SERIAL PRIMARY KEY,
-				name                   varchar(255) UNIQUE NOT NULL,
-			    address                varchar(255) UNIQUE NOT NULL,
-			    tx                     varchar(255) UNIQUE NOT NULL,
-			    abi                    text,
-				created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-				updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-				deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
-			);
+CREATE TABLE IF NOT EXISTS contracts (
+	id                     SERIAL PRIMARY KEY,
+	name                   varchar(255) UNIQUE NOT NULL,
+	address                varchar(255) UNIQUE NOT NULL,
+	tx                     varchar(255) UNIQUE NOT NULL,
+	abi                    text,
+	created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	deleted                TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);
 		`)
 
 		return err

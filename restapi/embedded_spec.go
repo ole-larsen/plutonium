@@ -30,6 +30,162 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/categories": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get market data categories",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicCategories"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/contracts": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get web3 market data",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicContracts"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/files/:file/": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Serve Static Images",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "format",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "name": "w",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "name": "dpr",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/FileResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/menu": {
       "get": {
         "security": [
@@ -56,7 +212,63 @@ func init() {
           "200": {
             "description": "Successfully fetched the menu.",
             "schema": {
-              "$ref": "#/definitions/PublicMenuResponse"
+              "$ref": "#/definitions/PublicMenu"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/slider": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "slider with slides",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the slider.",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicSlider"
             }
           },
           "400": {
@@ -174,6 +386,9 @@ func init() {
           "example": "Internal Server Error"
         }
       }
+    },
+    "FileResponse": {
+      "type": "string"
     },
     "MarketplaceCollectible": {
       "type": "object",
@@ -495,6 +710,94 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicCategories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PublicCategory"
+      }
+    },
+    "PublicCategory": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicCategoryAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicCategoryAttributes": {
+      "type": "object",
+      "properties": {
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarketplaceCollection"
+          }
+        },
+        "content": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContracts": {
+      "type": "object",
+      "properties": {
+        "contracts": {
+          "type": "object",
+          "properties": {
+            "auctions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicContract"
+              }
+            },
+            "collections": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/PublicContract"
+              }
+            },
+            "marketplace": {
+              "$ref": "#/definitions/PublicMarketplaceContract"
+            }
+          }
+        }
       }
     },
     "PublicFile": {
@@ -543,6 +846,46 @@ func init() {
         }
       }
     },
+    "PublicMarketplaceContract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "fee": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "math/big"
+            },
+            "type": "Int"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "github.com/ethereum/go-ethereum/common"
+            },
+            "type": "Address"
+          }
+        }
+      }
+    },
     "PublicMenu": {
       "type": "object",
       "properties": {
@@ -577,11 +920,56 @@ func init() {
         }
       }
     },
-    "PublicMenuResponse": {
+    "PublicSlider": {
       "type": "object",
       "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "slidesItem": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicSliderItem"
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicSliderItem": {
+      "type": "object",
+      "properties": {
+        "bg": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "btnLink1": {
+          "type": "string"
+        },
+        "btnLink2": {
+          "type": "string"
+        },
+        "btnText1": {
+          "type": "string"
+        },
+        "btnText2": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
         }
       }
     },
@@ -628,9 +1016,176 @@ func init() {
         }
       }
     },
+    "file": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "ext": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "thumb": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "principal": {
       "description": "A unique identifier for a principal (user or entity).",
       "type": "string"
+    },
+    "slider": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "slider-item": {
+      "type": "object",
+      "properties": {
+        "bg_image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "btn_link_1": {
+          "type": "string"
+        },
+        "btn_link_2": {
+          "type": "string"
+        },
+        "btn_text_1": {
+          "type": "string"
+        },
+        "btn_text_2": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "slider_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -673,6 +1228,162 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/categories": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get market data categories",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicCategories"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/contracts": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get web3 market data",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicContracts"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/files/:file/": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Serve Static Images",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "format",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "name": "w",
+            "in": "query"
+          },
+          {
+            "type": "number",
+            "name": "dpr",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/FileResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/menu": {
       "get": {
         "security": [
@@ -699,7 +1410,63 @@ func init() {
           "200": {
             "description": "Successfully fetched the menu.",
             "schema": {
-              "$ref": "#/definitions/PublicMenuResponse"
+              "$ref": "#/definitions/PublicMenu"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/slider": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "slider with slides",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The provider to be used in the slider.",
+            "name": "provider",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicSlider"
             }
           },
           "400": {
@@ -817,6 +1584,9 @@ func init() {
           "example": "Internal Server Error"
         }
       }
+    },
+    "FileResponse": {
+      "type": "string"
     },
     "MarketplaceCollectible": {
       "type": "object",
@@ -1138,6 +1908,114 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicCategories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PublicCategory"
+      }
+    },
+    "PublicCategory": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicCategoryAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicCategoryAttributes": {
+      "type": "object",
+      "properties": {
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarketplaceCollection"
+          }
+        },
+        "content": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContracts": {
+      "type": "object",
+      "properties": {
+        "contracts": {
+          "type": "object",
+          "properties": {
+            "auctions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicContract"
+              }
+            },
+            "collections": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/PublicContract"
+              }
+            },
+            "marketplace": {
+              "$ref": "#/definitions/PublicMarketplaceContract"
+            }
+          }
+        }
+      }
+    },
+    "PublicContractsContracts": {
+      "type": "object",
+      "properties": {
+        "auctions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicContract"
+          }
+        },
+        "collections": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/PublicContract"
+          }
+        },
+        "marketplace": {
+          "$ref": "#/definitions/PublicMarketplaceContract"
+        }
       }
     },
     "PublicFile": {
@@ -1224,6 +2102,46 @@ func init() {
         }
       }
     },
+    "PublicMarketplaceContract": {
+      "type": "object",
+      "properties": {
+        "abi": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "fee": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "math/big"
+            },
+            "type": "Int"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "object",
+          "x-go-type": {
+            "hints": {
+              "kind": "object",
+              "noValidation": true
+            },
+            "import": {
+              "package": "github.com/ethereum/go-ethereum/common"
+            },
+            "type": "Address"
+          }
+        }
+      }
+    },
     "PublicMenu": {
       "type": "object",
       "properties": {
@@ -1258,11 +2176,67 @@ func init() {
         }
       }
     },
-    "PublicMenuResponse": {
+    "PublicSlider": {
       "type": "object",
       "properties": {
-        "menu": {
-          "$ref": "#/definitions/PublicMenu"
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "slidesItem": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicSliderItem"
+              }
+            }
+          }
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicSliderAttributes": {
+      "type": "object",
+      "properties": {
+        "slidesItem": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicSliderItem"
+          }
+        }
+      }
+    },
+    "PublicSliderItem": {
+      "type": "object",
+      "properties": {
+        "bg": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "btnLink1": {
+          "type": "string"
+        },
+        "btnLink2": {
+          "type": "string"
+        },
+        "btnText1": {
+          "type": "string"
+        },
+        "btnText2": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
         }
       }
     },
@@ -1309,9 +2283,176 @@ func init() {
         }
       }
     },
+    "file": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "ext": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "thumb": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "principal": {
       "description": "A unique identifier for a principal (user or entity).",
       "type": "string"
+    },
+    "slider": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "slider-item": {
+      "type": "object",
+      "properties": {
+        "bg_image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "btn_link_1": {
+          "type": "string"
+        },
+        "btn_link_2": {
+          "type": "string"
+        },
+        "btn_text_1": {
+          "type": "string"
+        },
+        "btn_text_2": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "slider_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     }
   },
   "securityDefinitions": {

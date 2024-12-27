@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -37,7 +38,7 @@ type MenusRepositoryInterface interface {
 	InnerDB() *sqlx.DB
 	Ping() error
 
-	GetMenuByProvider(provider string) (*models.PublicMenu, error)
+	GetMenuByProvider(ctx context.Context, provider string) (*models.PublicMenu, error)
 }
 
 // MenusRepository - repository to store frontend menus.
@@ -73,7 +74,7 @@ func (r *MenusRepository) Ping() error {
 	return r.DB.Ping()
 }
 
-func (r *MenusRepository) GetMenuByProvider(provider string) (*models.PublicMenu, error) {
+func (r *MenusRepository) GetMenuByProvider(ctx context.Context, provider string) (*models.PublicMenu, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
@@ -91,7 +92,7 @@ SELECT
 			'id', ms.id,
 			'attributes', (SELECT JSON_BUILD_OBJECT(
 				'name',     ms.title,
-				'orderBy', ms.order_by,
+				'orderBy',  ms.order_by,
 				'items',    (SELECT ARRAY_AGG(JSON_BUILD_OBJECT(
 								'id', p.id,
 								'attributes', (SELECT JSON_BUILD_OBJECT(
@@ -107,7 +108,7 @@ SELECT
 FROM menus m1
 WHERE m1.title = $1 AND m1.enabled = TRUE AND m1.deleted isNull;`
 
-	row := r.DB.QueryRow(sqlStatement, provider)
+	row := r.DB.QueryRowContext(ctx, sqlStatement, provider)
 
 	err := row.Scan(&menu.ID, &attributes)
 	switch err {

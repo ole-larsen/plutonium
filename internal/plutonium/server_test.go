@@ -16,6 +16,7 @@ func TestNewServer(t *testing.T) {
 	assert.NotNil(t, s, "NewServer should return a non-nil Server instance")
 	assert.Nil(t, s.GetSettings(), "NewServer should initialize with nil settings")
 	assert.Nil(t, s.GetLogger(), "NewServer should initialize with nil logger")
+	assert.Nil(t, s.GetGRPC(), "NewServer should initialize with nil grpc")
 }
 
 func TestSetSettings(t *testing.T) {

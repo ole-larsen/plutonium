@@ -17,14 +17,30 @@ import (
 //
 // swagger:model MarketplaceCollectibleAttributes
 type MarketplaceCollectibleAttributes struct {
-	Creator      *PublicUser                     `json:"creator,omitempty"`
-	Details      *MarketplaceCollectibleDetails  `json:"details,omitempty"`
-	Metadata     *MarketplaceCollectibleMetadata `json:"metadata,omitempty"`
-	Owner        *PublicUser                     `json:"owner,omitempty"`
-	URI          string                          `json:"uri,omitempty"`
-	TokenIds     []int64                         `json:"tokenIds"`
-	CollectionID int64                           `json:"collectionId,omitempty"`
-	ItemID       int64                           `json:"itemId,omitempty"`
+
+	// collection Id
+	CollectionID int64 `json:"collectionId,omitempty"`
+
+	// creator
+	Creator *PublicUser `json:"creator,omitempty"`
+
+	// details
+	Details *MarketplaceCollectibleDetails `json:"details,omitempty"`
+
+	// item Id
+	ItemID int64 `json:"itemId,omitempty"`
+
+	// metadata
+	Metadata *MarketplaceCollectibleMetadata `json:"metadata,omitempty"`
+
+	// owner
+	Owner *PublicUser `json:"owner,omitempty"`
+
+	// token ids
+	TokenIds []int64 `json:"tokenIds"`
+
+	// uri
+	URI string `json:"uri,omitempty"`
 }
 
 // Validate validates this marketplace collectible attributes

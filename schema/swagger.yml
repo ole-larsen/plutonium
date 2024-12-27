@@ -80,7 +80,142 @@ paths:
         200:
           description: "Successfully fetched the menu."
           schema:
-            $ref: '#/definitions/PublicMenuResponse'
+            $ref: '#/definitions/PublicMenu'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/slider:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      parameters:
+        - type: string
+          name: provider
+          in: query
+          description: "The provider to be used in the slider."
+      summary: "slider with slides"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/PublicSlider'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/contracts:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      parameters: [ ]
+      summary: "get web3 market data"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/PublicContracts'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/categories:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      parameters: [ ]
+      summary: "get market data categories"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/PublicCategories'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/files/:file/:
+    get:
+      tags:
+        - Frontend
+      summary: "Serve Static Images"
+      produces:
+        - "application/json"
+      parameters:
+        - type: string
+          name: format
+          in: query
+        - type: number
+          name: w
+          in: query
+        - type: number
+          name: dpr
+          in: query      
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/FileResponse"
         400:
           description: "Bad request due to missing or invalid parameters."
           schema:
@@ -410,11 +545,6 @@ definitions:
           provider:
             type: string
   # frontend definitions
-  PublicMenuResponse:
-    type: object
-    properties:
-      menu:
-        $ref: '#/definitions/PublicMenu'
   PublicMenu:
     type: object
     properties:
@@ -438,6 +568,247 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/PublicMenu"
+  PublicSlider:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        properties:
+          slidesItem:
+            type: array
+            items:
+              $ref: '#/definitions/PublicSliderItem'
+  PublicSliderItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      heading:
+        type: string
+      description:
+        type: string
+      btnLink1:
+        type: string
+      btnText1:
+        type: string
+      btnLink2:
+        type: string
+      btnText2:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+      bg:
+        $ref: '#/definitions/PublicFile'
+  slider:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      provider:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  slider-item:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      heading:
+        type: string
+      description:
+        type: string
+      slider_id:
+        type: integer
+        format: bigInt
+      btn_link_1:
+        type: string
+      btn_text_1:
+        type: string
+      btn_link_2:
+        type: string
+      btn_text_2:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      bg_image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  FileResponse:
+    type: string
+  file:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      thumb:
+        type: string
+      alt:
+        type: string
+      caption:
+        type: string
+      hash:
+        type: string
+      type:
+        type: string
+      ext:
+        type: string
+      size:
+        type: number
+      width:
+        type: integer
+        format: int64
+      height:
+        type: integer
+        format: int64
+      provider:
+        type: string
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  PublicContracts:
+    type: object
+    properties:
+      contracts:
+        type: object
+        properties:
+          marketplace:
+            $ref: '#/definitions/PublicMarketplaceContract'
+          collections:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/PublicContract'
+          auctions:
+            type: array
+            items:
+              $ref: '#/definitions/PublicContract'
+  PublicContract:
+    type: object
+    properties:
+        name:
+          type: string
+        address:
+          type: string
+        abi:
+          type: string
+  PublicMarketplaceContract:
+    type: object
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+      abi:
+        type: string
+      fee:
+        type: object
+        x-go-type:
+          type: Int
+          import:
+            package: math/big
+          hints:
+            kind: object
+            noValidation: true
+      owner:
+        type: object
+        x-go-type:
+          type: Address
+          import:
+            package: github.com/ethereum/go-ethereum/common
+          hints:
+            kind: object
+            noValidation: true
+  PublicCategories:
+    type: array
+    items:
+      $ref: "#/definitions/PublicCategory"      
+  PublicCategory:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicCategoryAttributes'
+  PublicCategoryAttributes:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      slug:
+        type: string
+      description:
+        type: string
+      content:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+      collections:
+        type: array
+        items:
+          $ref: '#/definitions/MarketplaceCollection'
+  
 tags:
   - name: Frontend
     description: "Endpoints accessible to all clients for frontend API functionality."

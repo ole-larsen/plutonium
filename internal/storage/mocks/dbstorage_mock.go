@@ -13,7 +13,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	dgoogauth "github.com/dgryski/dgoogauth"
 	sqlx "github.com/jmoiron/sqlx"
 	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	gomock "go.uber.org/mock/gomock"
@@ -21,9 +20,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.
@@ -71,6 +70,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) ConnectContractsRepository(ctx, sq
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectContractsRepository), ctx, sqlxDB)
 }
 
+// ConnectFilesRepository mocks base method.
+func (m *MockDBStorageInterface) ConnectFilesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConnectFilesRepository", ctx, sqlxDB)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConnectFilesRepository indicates an expected call of ConnectFilesRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) ConnectFilesRepository(ctx, sqlxDB any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectFilesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectFilesRepository), ctx, sqlxDB)
+}
+
 // ConnectMenusRepository mocks base method.
 func (m *MockDBStorageInterface) ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
 	m.ctrl.T.Helper()
@@ -99,6 +112,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) ConnectPagesRepository(ctx, sqlxDB
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectPagesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectPagesRepository), ctx, sqlxDB)
 }
 
+// ConnectSlidersRepository mocks base method.
+func (m *MockDBStorageInterface) ConnectSlidersRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConnectSlidersRepository", ctx, sqlxDB)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConnectSlidersRepository indicates an expected call of ConnectSlidersRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) ConnectSlidersRepository(ctx, sqlxDB any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectSlidersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectSlidersRepository), ctx, sqlxDB)
+}
+
 // ConnectUsersRepository mocks base method.
 func (m *MockDBStorageInterface) ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
 	m.ctrl.T.Helper()
@@ -113,19 +140,18 @@ func (mr *MockDBStorageInterfaceMockRecorder) ConnectUsersRepository(ctx, sqlxDB
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectUsersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectUsersRepository), ctx, sqlxDB)
 }
 
-// CreateUser mocks base method.
-func (m *MockDBStorageInterface) CreateUser(ctx context.Context, userMap map[string]any) (*dgoogauth.OTPConfig, error) {
+// GetCategoriesRepository mocks base method.
+func (m *MockDBStorageInterface) GetCategoriesRepository() *repository.CategoriesRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", ctx, userMap)
-	ret0, _ := ret[0].(*dgoogauth.OTPConfig)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "GetCategoriesRepository")
+	ret0, _ := ret[0].(*repository.CategoriesRepository)
+	return ret0
 }
 
-// CreateUser indicates an expected call of CreateUser.
-func (mr *MockDBStorageInterfaceMockRecorder) CreateUser(ctx, userMap any) *gomock.Call {
+// GetCategoriesRepository indicates an expected call of GetCategoriesRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetCategoriesRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockDBStorageInterface)(nil).CreateUser), ctx, userMap)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoriesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetCategoriesRepository))
 }
 
 // GetContractsRepository mocks base method.
@@ -142,6 +168,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetContractsRepository() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContractsRepository))
 }
 
+// GetFilesRepository mocks base method.
+func (m *MockDBStorageInterface) GetFilesRepository() *repository.FilesRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFilesRepository")
+	ret0, _ := ret[0].(*repository.FilesRepository)
+	return ret0
+}
+
+// GetFilesRepository indicates an expected call of GetFilesRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetFilesRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetFilesRepository))
+}
+
 // GetMenusRepository mocks base method.
 func (m *MockDBStorageInterface) GetMenusRepository() *repository.MenusRepository {
 	m.ctrl.T.Helper()
@@ -156,19 +196,32 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetMenusRepository() *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenusRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetMenusRepository))
 }
 
-// GetUser mocks base method.
-func (m *MockDBStorageInterface) GetUser(ctx context.Context, login string) (*repository.User, error) {
+// GetSlidersRepository mocks base method.
+func (m *MockDBStorageInterface) GetSlidersRepository() *repository.SlidersRepository {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", ctx, login)
-	ret0, _ := ret[0].(*repository.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "GetSlidersRepository")
+	ret0, _ := ret[0].(*repository.SlidersRepository)
+	return ret0
 }
 
-// GetUser indicates an expected call of GetUser.
-func (mr *MockDBStorageInterfaceMockRecorder) GetUser(ctx, login any) *gomock.Call {
+// GetSlidersRepository indicates an expected call of GetSlidersRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetSlidersRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockDBStorageInterface)(nil).GetUser), ctx, login)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSlidersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetSlidersRepository))
+}
+
+// GetUsersRepository mocks base method.
+func (m *MockDBStorageInterface) GetUsersRepository() *repository.UsersRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersRepository")
+	ret0, _ := ret[0].(*repository.UsersRepository)
+	return ret0
+}
+
+// GetUsersRepository indicates an expected call of GetUsersRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetUsersRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetUsersRepository))
 }
 
 // Init mocks base method.
@@ -184,18 +237,4 @@ func (m *MockDBStorageInterface) Init(ctx context.Context, sqlxDB *sqlx.DB) (*sq
 func (mr *MockDBStorageInterfaceMockRecorder) Init(ctx, sqlxDB any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockDBStorageInterface)(nil).Init), ctx, sqlxDB)
-}
-
-// Ping mocks base method.
-func (m *MockDBStorageInterface) Ping() error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Ping")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Ping indicates an expected call of Ping.
-func (mr *MockDBStorageInterfaceMockRecorder) Ping() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockDBStorageInterface)(nil).Ping))
 }

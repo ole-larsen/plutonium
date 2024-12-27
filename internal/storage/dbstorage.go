@@ -25,19 +25,27 @@ type DBStorageInterface interface {
 	ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectSlidersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
+	ConnectFilesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
 	CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error)
 	GetUser(ctx context.Context, login string) (*repository.User, error)
+	GetUsersRepository() *repository.UsersRepository
 	GetContractsRepository() *repository.ContractsRepository
 	GetMenusRepository() *repository.MenusRepository
+	GetSlidersRepository() *repository.SlidersRepository
+	GetFilesRepository() *repository.FilesRepository
+	GetCategoriesRepository() *repository.CategoriesRepository
 }
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
-	Users      repository.UsersRepositoryInterface
+	Users      *repository.UsersRepository
 	Contracts  *repository.ContractsRepository
 	Pages      *repository.PagesRepository
 	Categories *repository.CategoriesRepository
 	Menus      *repository.MenusRepository
+	Sliders    *repository.SlidersRepository
+	Files      *repository.FilesRepository
 	DSN        string
 }
 
@@ -114,6 +122,24 @@ func (s *DBStorage) ConnectCategoriesRepository(_ context.Context, sqlxDB *sqlx.
 	return nil
 }
 
+func (s *DBStorage) ConnectSlidersRepository(_ context.Context, sqlxDB *sqlx.DB) error {
+	s.Sliders = repository.NewSlidersRepository(sqlxDB, "sliders")
+	if s.Sliders.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect sliders repository"))
+	}
+
+	return nil
+}
+
+func (s *DBStorage) ConnectFilesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
+	s.Files = repository.NewFilesRepository(sqlxDB, "files")
+	if s.Files.InnerDB() == nil {
+		return NewError(fmt.Errorf("failed to connect files repository"))
+	}
+
+	return nil
+}
+
 func (s *DBStorage) Ping() error {
 	if s == nil || s.Users == nil || s.Users.InnerDB() == nil {
 		return NewError(fmt.Errorf("DBStorage is nil or not initialized"))
@@ -141,12 +167,28 @@ func (s *DBStorage) GetUser(ctx context.Context, login string) (*repository.User
 	return s.Users.GetOne(ctx, login)
 }
 
+func (s *DBStorage) GetUsersRepository() *repository.UsersRepository {
+	return s.Users
+}
+
 func (s *DBStorage) GetContractsRepository() *repository.ContractsRepository {
 	return s.Contracts
 }
 
 func (s *DBStorage) GetMenusRepository() *repository.MenusRepository {
 	return s.Menus
+}
+
+func (s *DBStorage) GetSlidersRepository() *repository.SlidersRepository {
+	return s.Sliders
+}
+
+func (s *DBStorage) GetFilesRepository() *repository.FilesRepository {
+	return s.Files
+}
+
+func (s *DBStorage) GetCategoriesRepository() *repository.CategoriesRepository {
+	return s.Categories
 }
 
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
@@ -177,6 +219,14 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 	}
 
 	if err := store.ConnectMenusRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
+
+	if err := store.ConnectSlidersRepository(ctx, sqlxdb); err != nil {
+		return nil, err
+	}
+
+	if err := store.ConnectFilesRepository(ctx, sqlxdb); err != nil {
 		return nil, err
 	}
 

@@ -21,6 +21,7 @@ func init() {
 				password_reset_expires BIGINT,
 				token                  varchar(255),  -- // registration link
 				token_expires          bigint,        -- // registration link activation time
+				secret                 varchar(255),
 			    enabled                bool NOT NULL DEFAULT FALSE,
 				created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 				updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),

@@ -26,7 +26,7 @@ type GetFrontendMenuOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.PublicMenuResponse `json:"body,omitempty"`
+	Payload *models.PublicMenu `json:"body,omitempty"`
 }
 
 // NewGetFrontendMenuOK creates GetFrontendMenuOK with default headers values
@@ -36,13 +36,13 @@ func NewGetFrontendMenuOK() *GetFrontendMenuOK {
 }
 
 // WithPayload adds the payload to the get frontend menu o k response
-func (o *GetFrontendMenuOK) WithPayload(payload *models.PublicMenuResponse) *GetFrontendMenuOK {
+func (o *GetFrontendMenuOK) WithPayload(payload *models.PublicMenu) *GetFrontendMenuOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get frontend menu o k response
-func (o *GetFrontendMenuOK) SetPayload(payload *models.PublicMenuResponse) {
+func (o *GetFrontendMenuOK) SetPayload(payload *models.PublicMenu) {
 	o.Payload = payload
 }
 

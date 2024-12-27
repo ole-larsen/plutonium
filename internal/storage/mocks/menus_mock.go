@@ -10,6 +10,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	sqlx "github.com/jmoiron/sqlx"
@@ -19,9 +20,9 @@ import (
 
 // MockMenusRepositoryInterface is a mock of MenusRepositoryInterface interface.
 type MockMenusRepositoryInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockMenusRepositoryInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockMenusRepositoryInterfaceMockRecorder is the mock recorder for MockMenusRepositoryInterface.
@@ -42,18 +43,18 @@ func (m *MockMenusRepositoryInterface) EXPECT() *MockMenusRepositoryInterfaceMoc
 }
 
 // GetMenuByProvider mocks base method.
-func (m *MockMenusRepositoryInterface) GetMenuByProvider(provider string) (*models.PublicMenu, error) {
+func (m *MockMenusRepositoryInterface) GetMenuByProvider(ctx context.Context, provider string) (*models.PublicMenu, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMenuByProvider", provider)
+	ret := m.ctrl.Call(m, "GetMenuByProvider", ctx, provider)
 	ret0, _ := ret[0].(*models.PublicMenu)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMenuByProvider indicates an expected call of GetMenuByProvider.
-func (mr *MockMenusRepositoryInterfaceMockRecorder) GetMenuByProvider(provider any) *gomock.Call {
+func (mr *MockMenusRepositoryInterfaceMockRecorder) GetMenuByProvider(ctx, provider any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenuByProvider", reflect.TypeOf((*MockMenusRepositoryInterface)(nil).GetMenuByProvider), provider)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenuByProvider", reflect.TypeOf((*MockMenusRepositoryInterface)(nil).GetMenuByProvider), ctx, provider)
 }
 
 // InnerDB mocks base method.

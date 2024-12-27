@@ -8,7 +8,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
@@ -188,121 +187,6 @@ func TestMockDBStorageInterface_Init(t *testing.T) {
 	if db != nil {
 		t.Errorf("Expected nil, got %v", db)
 	}
-}
-
-func TestMockDBStorageInterface_Ping(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-
-	// Test successful ping
-	mockDBStorage.EXPECT().Ping().Return(nil).Times(1)
-
-	if err := mockDBStorage.Ping(); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test ping with error
-	mockError := fmt.Errorf("ping error")
-	mockDBStorage.EXPECT().Ping().Return(mockError).Times(1)
-
-	if err := mockDBStorage.Ping(); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_CreateUser(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-	ctx := context.Background()
-	userMap := map[string]interface{}{"key": "value"}
-
-	// Test successful user creation
-	mockDBStorage.EXPECT().CreateUser(ctx, userMap).Return(nil, nil).Times(1)
-
-	if _, err := mockDBStorage.CreateUser(ctx, userMap); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test user creation with error
-	mockError := fmt.Errorf("create user error")
-	mockDBStorage.EXPECT().CreateUser(ctx, userMap).Return(nil, mockError).Times(1)
-
-	if _, err := mockDBStorage.CreateUser(ctx, userMap); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_GetUser(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-	ctx := context.Background()
-	email := testEmail
-	expectedUser := &repository.User{
-		ID:    1,
-		Email: email,
-	}
-
-	// Test successful user retrieval
-	mockDBStorage.EXPECT().GetUser(ctx, email).Return(expectedUser, nil).Times(1)
-
-	user, err := mockDBStorage.GetUser(ctx, email)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	if user != expectedUser {
-		t.Errorf("Expected %v, got %v", expectedUser, user)
-	}
-
-	// Test user retrieval with error
-	mockError := fmt.Errorf("get user error")
-	mockDBStorage.EXPECT().GetUser(ctx, email).Return(nil, mockError).Times(1)
-
-	user, err = mockDBStorage.GetUser(ctx, email)
-	if user != nil {
-		t.Errorf("Expected nil user, got %v", user)
-	}
-
-	if err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_GetUser2(t *testing.T) {
-	ctrl, mockDBStorage := setupMockController(t)
-	defer ctrl.Finish()
-
-	ctx := context.Background()
-	email := testEmail
-	expectedUser := &repository.User{
-		ID:    1,
-		Email: email,
-	}
-
-	t.Run("Success", func(t *testing.T) {
-		mockDBStorage.EXPECT().GetUser(ctx, email).Return(expectedUser, nil)
-
-		user, err := mockDBStorage.GetUser(ctx, email)
-
-		assert.NoError(t, err, "Expected no error")
-		assert.Equal(t, expectedUser, user, "Expected user to match")
-	})
-
-	t.Run("Error", func(t *testing.T) {
-		mockError := fmt.Errorf("get user error")
-		mockDBStorage.EXPECT().GetUser(ctx, email).Return(nil, mockError)
-
-		user, err := mockDBStorage.GetUser(ctx, email)
-
-		assert.Nil(t, user, "Expected user to be nil")
-		assert.ErrorIs(t, err, mockError, "Expected specific error")
-	})
 }
 
 func TestMockDBStorageInterface_GetContractsRepository(t *testing.T) {

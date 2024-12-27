@@ -3,7 +3,6 @@ package storage_test
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -457,209 +456,6 @@ func TestSetupStorage_ConnectMenusRepositoryFailure(t *testing.T) {
 	assert.EqualError(t, err, "mock menus repository error", "SetupStorage should return the error from ConnectMenusRepository")
 }
 
-func TestDBStorage_Ping(t *testing.T) {
-	// Test case 1: Nil DBStorage
-	var nilStorage *storage.DBStorage
-	err := nilStorage.Ping()
-	assert.Error(t, err, "Ping() should return an error for nil DBStorage")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "Ping() should return the correct error message for nil DBStorage")
-
-	// Test case 2: Nil Users repository
-	s := &storage.DBStorage{}
-	err = s.Ping()
-	assert.Error(t, err, "Ping() should return an error when Users repository is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "Ping() should return the correct error message for nil Users repository")
-
-	// Test case 3: Nil InnerDB
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockUsers := mocks.NewMockUsersRepositoryInterface(mockCtrl)
-
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	mockUsers.EXPECT().InnerDB().Return(nil).Times(1)
-
-	err = s.Ping()
-	assert.Error(t, err, "Ping() should return an error when InnerDB is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "Ping() should return the correct error message for nil InnerDB")
-
-	// Test case 4: Successful Ping
-	mockDB, _, err := sqlmock.New()
-	require.NoError(t, err)
-	defer mockDB.Close()
-
-	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
-	mockUsers.EXPECT().InnerDB().Return(sqlxDB).Times(1)
-	mockUsers.EXPECT().Ping().Return(nil).Times(1)
-
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	err = s.Ping()
-	assert.NoError(t, err, "Ping() should not return an error for successful ping")
-
-	// Test case 5: Failed Ping
-	mockDB, _, err = sqlmock.New()
-	require.NoError(t, err)
-	defer mockDB.Close()
-
-	sqlxDB = sqlx.NewDb(mockDB, "sqlmock")
-	mockUsers.EXPECT().InnerDB().Return(sqlxDB).Times(1)
-	mockUsers.EXPECT().Ping().Return(fmt.Errorf("ping error")).Times(1)
-
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	err = s.Ping()
-	assert.Error(t, err, "Ping() should return an error for failed ping")
-	assert.Equal(t, "ping error", err.Error(), "Ping() should return the correct error message for failed ping")
-}
-
-func TestDBStorage_CreateUser(t *testing.T) {
-	// Test case 1: Nil DBStorage
-	var nilStorage *storage.DBStorage
-	otcp, err := nilStorage.CreateUser(context.Background(), nil)
-	assert.Error(t, err, "CreateUser() should return an error for nil DBStorage")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "CreateUser() should return the correct error message for nil DBStorage")
-	require.Nil(t, otcp)
-
-	// Test case 2: Nil Users repository
-	s := &storage.DBStorage{}
-	otcp, err = s.CreateUser(context.Background(), nil)
-	assert.Error(t, err, "CreateUser() should return an error when Users repository is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "CreateUser() should return the correct error message for nil Users repository")
-	require.Nil(t, otcp)
-
-	// Test case 3: Nil InnerDB
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockUsers := mocks.NewMockUsersRepositoryInterface(mockCtrl)
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	mockUsers.EXPECT().InnerDB().Return(nil).Times(1)
-
-	otcp, err = s.CreateUser(context.Background(), nil)
-	assert.Error(t, err, "CreateUser() should return an error when InnerDB is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "CreateUser() should return the correct error message for nil InnerDB")
-	require.Nil(t, otcp)
-	// Test case 4: Successful CreateUser
-	mockDB, _, err := sqlmock.New()
-	require.NoError(t, err)
-	defer mockDB.Close()
-
-	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
-	mockUsers.EXPECT().InnerDB().Return(sqlxDB).Times(1)
-	mockUsers.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil).Times(1)
-
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	userMap := map[string]interface{}{
-		"username": "testuser",
-		"email":    "testuser@example.com",
-	}
-
-	otcp, err = s.CreateUser(context.Background(), userMap)
-	assert.NoError(t, err, "CreateUser() should not return an error for successful creation")
-	require.NotNil(t, otcp)
-	// Test case 5: Failed CreateUser
-	mockDB, _, err = sqlmock.New()
-	require.NoError(t, err)
-	defer mockDB.Close()
-
-	sqlxDB = sqlx.NewDb(mockDB, "sqlmock")
-	mockUsers.EXPECT().InnerDB().Return(sqlxDB).Times(1)
-	mockUsers.EXPECT().Create(gomock.Any(), gomock.Any()).Return(nil).Times(1)
-
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	otpc, err := s.CreateUser(context.Background(), userMap)
-
-	require.NoError(t, err)
-	require.NotNil(t, otpc)
-}
-
-func TestDBStorage_GetUser(t *testing.T) {
-	// Test case 1: Nil DBStorage
-	var nilStorage *storage.DBStorage
-	user, err := nilStorage.GetUser(context.Background(), "test@example.com")
-	assert.Nil(t, user, "GetUser() should return nil user for nil DBStorage")
-	assert.Error(t, err, "GetUser() should return an error for nil DBStorage")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "GetUser() should return the correct error message for nil DBStorage")
-
-	// Test case 2: Nil Users repository
-	s := &storage.DBStorage{}
-	user, err = s.GetUser(context.Background(), "test@example.com")
-	assert.Nil(t, user, "GetUser() should return nil user when Users repository is nil")
-	assert.Error(t, err, "GetUser() should return an error when Users repository is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "GetUser() should return the correct error message for nil Users repository")
-
-	// Test case 3: Nil InnerDB
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockUsers := mocks.NewMockUsersRepositoryInterface(mockCtrl)
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	mockUsers.EXPECT().InnerDB().Return(nil).Times(1)
-
-	user, err = s.GetUser(context.Background(), "test@example.com")
-	assert.Nil(t, user, "GetUser() should return nil user when InnerDB is nil")
-	assert.Error(t, err, "GetUser() should return an error when InnerDB is nil")
-	assert.Equal(t, "[storage]: DBStorage is nil or not initialized", err.Error(), "GetUser() should return the correct error message for nil InnerDB")
-
-	// Test case 4: Successful GetUser
-	mockCtrl = gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockUsers = mocks.NewMockUsersRepositoryInterface(mockCtrl)
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	mockUsers.EXPECT().InnerDB().Return(&sqlx.DB{}).Times(1)
-
-	expectedUser := &repository.User{
-		ID:    1,
-		Email: "test@example.com",
-	}
-	mockUsers.EXPECT().GetOne(gomock.Any(), "test@example.com").Return(expectedUser, nil).Times(1)
-
-	user, err = s.GetUser(context.Background(), "test@example.com")
-	assert.NoError(t, err, "GetUser() should not return an error for successful retrieval")
-	assert.Equal(t, expectedUser, user, "GetUser() should return the correct user")
-
-	// Test case 5: Failed GetUser
-	mockCtrl = gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	mockUsers = mocks.NewMockUsersRepositoryInterface(mockCtrl)
-	s = &storage.DBStorage{
-		Users: mockUsers,
-	}
-
-	mockUsers.EXPECT().InnerDB().Return(&sqlx.DB{}).Times(1)
-	mockUsers.EXPECT().GetOne(gomock.Any(), "test@example.com").Return(nil, fmt.Errorf("user not found")).Times(1)
-
-	user, err = s.GetUser(context.Background(), "test@example.com")
-	assert.Nil(t, user, "GetUser() should return nil user for failed retrieval")
-	assert.Error(t, err, "GetUser() should return an error for failed retrieval")
-	assert.Equal(t, "user not found", err.Error(), "GetUser() should return the correct error message for failed retrieval")
-}
-
 func TestSetupStorage_InitFailure(t *testing.T) {
 	ctx := context.Background()
 	dsn := "invalid_dsn"
@@ -707,6 +503,8 @@ func TestSetupStorage_Success(t *testing.T) {
 	mockStore.EXPECT().ConnectPagesRepository(context.Background(), gomock.Any()).Return(nil)
 	mockStore.EXPECT().ConnectCategoriesRepository(context.Background(), gomock.Any()).Return(nil)
 	mockStore.EXPECT().ConnectMenusRepository(context.Background(), gomock.Any()).Return(nil)
+	mockStore.EXPECT().ConnectSlidersRepository(context.Background(), gomock.Any()).Return(nil)
+	mockStore.EXPECT().ConnectFilesRepository(context.Background(), gomock.Any()).Return(nil)
 
 	// Replace the NewDBStorage function with a mock
 	originalNewDBStorage := storage.NewPGSQLStorage

@@ -16,11 +16,21 @@ import (
 //
 // swagger:model Contract
 type Contract struct {
-	Abi     string `json:"abi,omitempty"`
+
+	// abi
+	Abi string `json:"abi,omitempty"`
+
+	// address
 	Address string `json:"address,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Tx      string `json:"tx,omitempty"`
-	ID      int64  `json:"id,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// tx
+	Tx string `json:"tx,omitempty"`
 }
 
 // Validate validates this contract

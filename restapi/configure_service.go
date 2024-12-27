@@ -19,6 +19,7 @@ import (
 	v1monitoringApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/monitoringApi"
 	v1publicApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/publicApi"
 	v1middleware "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/middleware"
+	"github.com/ole-larsen/plutonium/internal/plutonium/grpcserver"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
 	"github.com/ole-larsen/plutonium/restapi/operations"
@@ -64,21 +65,41 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 		panic(err)
 	}
 
-	// initialize web3 dialer
-	dialer, err := blockchain.NewWeb3Dialer(logger, cfg.Network, store.GetContractsRepository())
+	// initialize web3 web3Dialer
+	web3Dialer, err := blockchain.NewWeb3Dialer(logger, cfg.Network, store.GetContractsRepository())
 	if err != nil {
 		panic(err)
 	}
 
-	err = dialer.Load(ctx)
+	err = web3Dialer.Load(ctx)
 	if err != nil {
 		panic(err)
 	}
+
+	// initialize grpc server
+	grpc := grpcserver.SetupGRPC(
+		cfg.GRPC.Host,
+		cfg.GRPC.Port,
+	)
 
 	service.
 		SetSettings(cfg).
 		SetLogger(logger).
-		SetStorage(store)
+		SetStorage(store).
+		SetGRPC(grpc).
+		SetWeb3Dialer(web3Dialer)
+
+	go func() {
+		logger.Infoln("starting grpc server")
+
+		err := grpc.ListenAndServeTLS(cfg)
+		if err != nil {
+			logger.Errorln(err)
+		}
+	}()
+
+	// setup file server to serve images and files
+	http.Handle("/", http.FileServer(http.Dir("./uploads")))
 
 	api.PublicGetPingHandler = public.GetPingHandlerFunc(v1publicApi.GetPingHandler)
 
@@ -91,7 +112,10 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.XTokenAuth = frontendAPI.XTokenAuth
 
 	api.FrontendGetFrontendMenuHandler = frontend.GetFrontendMenuHandlerFunc(frontendAPI.GetMenuHandler)
-
+	api.FrontendGetFrontendSliderHandler = frontend.GetFrontendSliderHandlerFunc(frontendAPI.GetSliderHandler)
+	api.FrontendGetFrontendFilesFileHandler = frontend.GetFrontendFilesFileHandlerFunc(frontendAPI.GetFileHandler)
+	api.FrontendGetFrontendCategoriesHandler = frontend.GetFrontendCategoriesHandlerFunc(frontendAPI.GetCategoriesHandler)
+	api.FrontendGetFrontendContractsHandler = frontend.GetFrontendContractsHandlerFunc(frontendAPI.GetContractsHandler)
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}
@@ -117,15 +141,15 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation.
 func setupMiddlewares(handler http.Handler) http.Handler {
-	handler = v1middleware.CorsMiddleware(handler)
-	handler = v1middleware.CsrfMiddleware(handler)
-
+	fmt.Println("----------------------------------------------------------------")
 	return handler
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics.
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
+	handler = v1middleware.CorsMiddleware(handler)
+	handler = v1middleware.CsrfMiddleware(handler)
 	handler = v1middleware.PrometheusMiddleware(handler)
 	return handler
 }

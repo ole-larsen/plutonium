@@ -67,36 +67,40 @@ func (s *Server) ConfigureFlags() {
 
 // Server for the service API
 type Server struct {
-	handler           http.Handler
-	httpServerL       net.Listener
-	domainSocketL     net.Listener
+	EnabledListeners []string         `long:"scheme" description:"the listeners to enable, this can be repeated and defaults to the schemes in the swagger spec"`
+	CleanupTimeout   time.Duration    `long:"cleanup-timeout" description:"grace period for which to wait before killing idle connections" default:"10s"`
+	GracefulTimeout  time.Duration    `long:"graceful-timeout" description:"grace period for which to wait before shutting down the server" default:"15s"`
+	MaxHeaderSize    flagext.ByteSize `long:"max-header-size" description:"controls the maximum number of bytes the server will read parsing the request header's keys and values, including the request line. It does not limit the size of the request body." default:"1MiB"`
+
+	SocketPath    flags.Filename `long:"socket-path" description:"the unix socket to listen on" default:"/var/run/service.sock"`
+	domainSocketL net.Listener
+
+	Host         string        `long:"host" description:"the IP to listen on" default:"localhost" env:"HOST"`
+	Port         int           `long:"port" description:"the port to listen on for insecure connections, defaults to a random value" env:"PORT"`
+	ListenLimit  int           `long:"listen-limit" description:"limit the number of outstanding requests"`
+	KeepAlive    time.Duration `long:"keep-alive" description:"sets the TCP keep-alive timeouts on accepted connections. It prunes dead TCP connections ( e.g. closing laptop mid-download)" default:"3m"`
+	ReadTimeout  time.Duration `long:"read-timeout" description:"maximum duration before timing out read of the request" default:"30s"`
+	WriteTimeout time.Duration `long:"write-timeout" description:"maximum duration before timing out write of the response" default:"30s"`
+	httpServerL  net.Listener
+
+	TLSHost           string         `long:"tls-host" description:"the IP to listen on for tls, when not specified it's the same as --host" env:"TLS_HOST"`
+	TLSPort           int            `long:"tls-port" description:"the port to listen on for secure connections, defaults to a random value" env:"TLS_PORT"`
+	TLSCertificate    flags.Filename `long:"tls-certificate" description:"the certificate to use for secure connections" env:"TLS_CERTIFICATE"`
+	TLSCertificateKey flags.Filename `long:"tls-key" description:"the private key to use for secure connections" env:"TLS_PRIVATE_KEY"`
+	TLSCACertificate  flags.Filename `long:"tls-ca" description:"the certificate authority file to be used with mutual tls auth" env:"TLS_CA_CERTIFICATE"`
+	TLSListenLimit    int            `long:"tls-listen-limit" description:"limit the number of outstanding requests"`
+	TLSKeepAlive      time.Duration  `long:"tls-keep-alive" description:"sets the TCP keep-alive timeouts on accepted connections. It prunes dead TCP connections ( e.g. closing laptop mid-download)"`
+	TLSReadTimeout    time.Duration  `long:"tls-read-timeout" description:"maximum duration before timing out read of the request"`
+	TLSWriteTimeout   time.Duration  `long:"tls-write-timeout" description:"maximum duration before timing out write of the response"`
 	httpsServerL      net.Listener
-	api               *operations.ServiceAPI
-	interrupt         chan os.Signal
-	shutdown          chan struct{}
-	Host              string           `long:"host" description:"the IP to listen on" default:"localhost" env:"HOST"`
-	TLSCACertificate  flags.Filename   `long:"tls-ca" description:"the certificate authority file to be used with mutual tls auth" env:"TLS_CA_CERTIFICATE"`
-	TLSCertificateKey flags.Filename   `long:"tls-key" description:"the private key to use for secure connections" env:"TLS_PRIVATE_KEY"`
-	TLSCertificate    flags.Filename   `long:"tls-certificate" description:"the certificate to use for secure connections" env:"TLS_CERTIFICATE"`
-	SocketPath        flags.Filename   `long:"socket-path" description:"the unix socket to listen on" default:"/var/run/service.sock"`
-	TLSHost           string           `long:"tls-host" description:"the IP to listen on for tls, when not specified it's the same as --host" env:"TLS_HOST"`
-	EnabledListeners  []string         `long:"scheme" description:"the listeners to enable, this can be repeated and defaults to the schemes in the swagger spec"`
-	TLSPort           int              `long:"tls-port" description:"the port to listen on for secure connections, defaults to a random value" env:"TLS_PORT"`
-	TLSWriteTimeout   time.Duration    `long:"tls-write-timeout" description:"maximum duration before timing out write of the response"`
-	ReadTimeout       time.Duration    `long:"read-timeout" description:"maximum duration before timing out read of the request" default:"30s"`
-	KeepAlive         time.Duration    `long:"keep-alive" description:"sets the TCP keep-alive timeouts on accepted connections. It prunes dead TCP connections ( e.g. closing laptop mid-download)" default:"3m"`
-	TLSListenLimit    int              `long:"tls-listen-limit" description:"limit the number of outstanding requests"`
-	TLSKeepAlive      time.Duration    `long:"tls-keep-alive" description:"sets the TCP keep-alive timeouts on accepted connections. It prunes dead TCP connections ( e.g. closing laptop mid-download)"`
-	TLSReadTimeout    time.Duration    `long:"tls-read-timeout" description:"maximum duration before timing out read of the request"`
-	WriteTimeout      time.Duration    `long:"write-timeout" description:"maximum duration before timing out write of the response" default:"30s"`
-	ListenLimit       int              `long:"listen-limit" description:"limit the number of outstanding requests"`
-	Port              int              `long:"port" description:"the port to listen on for insecure connections, defaults to a random value" env:"PORT"`
-	MaxHeaderSize     flagext.ByteSize `long:"max-header-size" description:"controls the maximum number of bytes the server will read parsing the request header's keys and values, including the request line. It does not limit the size of the request body." default:"1MiB"`
-	CleanupTimeout    time.Duration    `long:"cleanup-timeout" description:"grace period for which to wait before killing idle connections" default:"10s"`
-	GracefulTimeout   time.Duration    `long:"graceful-timeout" description:"grace period for which to wait before shutting down the server" default:"15s"`
-	shuttingDown      int32
-	interrupted       bool
-	hasListeners      bool
+
+	api          *operations.ServiceAPI
+	handler      http.Handler
+	hasListeners bool
+	shutdown     chan struct{}
+	shuttingDown int32
+	interrupted  bool
+	interrupt    chan os.Signal
 }
 
 // Logf logs message either via defined user logger or via system one if no user logger is defined.

@@ -12,6 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // add lib
 	"github.com/ole-larsen/plutonium/internal/hash"
+	"github.com/ole-larsen/plutonium/models"
 )
 
 // ErrDBNotInitialized - default database connection error.
@@ -23,6 +24,7 @@ type UsersRepositoryInterface interface {
 	Ping() error
 	Create(ctx context.Context, userMap map[string]interface{}) error
 	GetOne(ctx context.Context, email string) (*User, error)
+	GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error)
 }
 
 type User struct {
@@ -36,6 +38,9 @@ type User struct {
 	Password             string      `db:"password"`
 	Secret               string      `db:"secret"`
 	ID                   int64       `db:"id"`
+	Uuid                 string      `db:"uuid"`
+	Username             string      `db:"username"`
+	Address              string      `db:"address"`
 	Enabled              bool        `db:"enabled"`
 }
 
@@ -144,4 +149,41 @@ WHERE email=$1;`, r.TBL)
 	}
 
 	return &user, nil
+}
+
+func (r *UsersRepository) GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error) {
+	if r == nil {
+		return nil, ErrDBNotInitialized
+	}
+
+	row := r.DB.QueryRowContext(ctx, `
+SELECT 
+	u.id, 
+	a.uuid,
+	u.username, 
+	u.email, 
+	a.address,
+	f.url
+FROM users u
+JOIN users_addresses a ON a.user_id = u.id
+WHERE u.deleted_at isNULL AND u.id=$1 AND u.deleted isNULL;`, id)
+
+	var user User
+
+	err := row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Address)
+	switch err {
+	case sql.ErrNoRows:
+		return nil, fmt.Errorf("user not found")
+	case nil:
+		publicUser := &models.PublicUser{
+			ID:       user.ID,
+			UUID:     user.Uuid,
+			Username: user.Username,
+			Email:    user.Email,
+			Address:  user.Address,
+		}
+		return publicUser, err
+	default:
+		return nil, err
+	}
 }

@@ -10,17 +10,20 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	sqlx "github.com/jmoiron/sqlx"
+	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
+	models "github.com/ole-larsen/plutonium/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
 // MockCategoriesRepositoryInterface is a mock of CategoriesRepositoryInterface interface.
 type MockCategoriesRepositoryInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockCategoriesRepositoryInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockCategoriesRepositoryInterfaceMockRecorder is the mock recorder for MockCategoriesRepositoryInterface.
@@ -38,6 +41,21 @@ func NewMockCategoriesRepositoryInterface(ctrl *gomock.Controller) *MockCategori
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockCategoriesRepositoryInterface) EXPECT() *MockCategoriesRepositoryInterfaceMockRecorder {
 	return m.recorder
+}
+
+// GetPublicCollectibleCategories mocks base method.
+func (m *MockCategoriesRepositoryInterface) GetPublicCollectibleCategories(ctx context.Context, users *repository.UsersRepository) ([]*models.PublicCategory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPublicCollectibleCategories", ctx, users)
+	ret0, _ := ret[0].([]*models.PublicCategory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPublicCollectibleCategories indicates an expected call of GetPublicCollectibleCategories.
+func (mr *MockCategoriesRepositoryInterfaceMockRecorder) GetPublicCollectibleCategories(ctx, users any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPublicCollectibleCategories", reflect.TypeOf((*MockCategoriesRepositoryInterface)(nil).GetPublicCollectibleCategories), ctx, users)
 }
 
 // InnerDB mocks base method.

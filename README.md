@@ -100,5 +100,7 @@ mockgen -source=internal/storage/db/repository/contracts.go -destination=interna
 mockgen -source=internal/storage/db/repository/categories.go -destination=internal/storage/mocks/categories_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/pages.go -destination=internal/storage/mocks/pages_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/menus.go -destination=internal/storage/mocks/menus_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/sliders.go -destination=internal/storage/mocks/sliders_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/files.go -destination=internal/storage/mocks/files_mock.go -package=mocks
 mockgen -source=internal/storage/dbstorage.go -destination=internal/storage/mocks/dbstorage_mock.go -package=mocks
 ```

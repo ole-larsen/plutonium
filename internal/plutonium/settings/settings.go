@@ -2,6 +2,8 @@ package settings
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/spf13/viper"
@@ -15,6 +17,14 @@ type Settings struct {
 	Network    string `mapstructure:"ETH_NETWORK"`
 	XToken     string `mapstructure:"X_TOKEN"`
 	DB         DB
+	GRPC       GRPC
+}
+
+type GRPC struct {
+	Host string `mapstructure:"GRPC_HOST"`
+	Port int    `mapstructure:"GRPC_PORT"`
+	Cert string `mapstructure:"GRPC_CERT"`
+	Key  string `mapstructure:"GRPC_KEY"`
 }
 
 type DB struct {
@@ -120,8 +130,29 @@ func WithEthWeb() func(*Settings) {
 
 // WithXToken is a functional option for initializing the XToken field in the Settings struct.//+.
 func WithXToken() func(*Settings) {
-	return func(ss *Settings) { //-
+	return func(ss *Settings) {
 		token := viper.GetString("XTOKEN")
 		ss.XToken = token
+	}
+}
+func WithGRPC() func(*Settings) {
+	return func(ss *Settings) {
+
+		addr := strings.Split(viper.GetString("GRPC_URL"), ":")
+
+		const reqLen = 2
+
+		if len(addr) != reqLen {
+			panic(fmt.Errorf("wrong a parameters"))
+		}
+
+		ss.GRPC.Host = addr[0]
+
+		port, err := strconv.Atoi(addr[1])
+		if err != nil {
+			panic(fmt.Errorf("wrong a parameters"))
+		}
+
+		ss.GRPC.Port = port
 	}
 }
