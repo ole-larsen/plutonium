@@ -11,20 +11,20 @@ import (
 
 // Settings represents the configuration settings for the server.
 type Settings struct {
+	GRPC       GRPC
 	MarketName string `mapstructure:"MARKETNAME"`
 	DSN        string
 	PrivateKey string `mapstructure:"ETH_PRIVATE_KEY"`
 	Network    string `mapstructure:"ETH_NETWORK"`
 	XToken     string `mapstructure:"X_TOKEN"`
 	DB         DB
-	GRPC       GRPC
 }
 
 type GRPC struct {
 	Host string `mapstructure:"GRPC_HOST"`
-	Port int    `mapstructure:"GRPC_PORT"`
 	Cert string `mapstructure:"GRPC_CERT"`
 	Key  string `mapstructure:"GRPC_KEY"`
+	Port int    `mapstructure:"GRPC_PORT"`
 }
 
 type DB struct {
@@ -137,7 +137,6 @@ func WithXToken() func(*Settings) {
 }
 func WithGRPC() func(*Settings) {
 	return func(ss *Settings) {
-
 		addr := strings.Split(viper.GetString("GRPC_URL"), ":")
 
 		const reqLen = 2

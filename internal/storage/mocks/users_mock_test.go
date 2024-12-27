@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
+	"github.com/ole-larsen/plutonium/models"
 	"go.uber.org/mock/gomock"
 )
 
@@ -120,5 +121,56 @@ func TestMockUsersRepositoryInterface_GetOne(t *testing.T) {
 
 	if user != nil {
 		t.Errorf("Expected user to be nil, got %v", user)
+	}
+}
+
+func TestMockUsersRepositoryInterface_GetPublicUserByID(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
+	ctx := context.Background()
+	userID := int64(123)
+
+	// Test successful retrieval of public user
+	expectedPublicUser := &models.PublicUser{
+		ID:       userID,
+		Username: "testuser",
+	}
+	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(expectedPublicUser, nil).Times(1)
+
+	publicUser, err := mockRepo.GetPublicUserByID(ctx, userID)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if publicUser != expectedPublicUser {
+		t.Errorf("Expected public user %v, got %v", expectedPublicUser, publicUser)
+	}
+
+	// Test GetPublicUserByID with user not found error
+	mockError := fmt.Errorf("public user not found")
+	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(nil, mockError).Times(1)
+
+	publicUser, err = mockRepo.GetPublicUserByID(ctx, userID)
+	if err == nil || err.Error() != mockError.Error() {
+		t.Errorf("Expected error %v, got %v", mockError, err)
+	}
+
+	if publicUser != nil {
+		t.Errorf("Expected public user to be nil, got %v", publicUser)
+	}
+
+	// Test GetPublicUserByID with database error
+	dbError := fmt.Errorf("db error")
+	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(nil, dbError).Times(1)
+
+	publicUser, err = mockRepo.GetPublicUserByID(ctx, userID)
+	if err == nil || err.Error() != dbError.Error() {
+		t.Errorf("Expected error %v, got %v", dbError, err)
+	}
+
+	if publicUser != nil {
+		t.Errorf("Expected public user to be nil, got %v", publicUser)
 	}
 }

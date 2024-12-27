@@ -18,57 +18,22 @@ import (
 //
 // swagger:model slider-item
 type SliderItem struct {
-
-	// bg image id
-	BgImageID int64 `json:"bg_image_id,omitempty"`
-
-	// btn link 1
-	BtnLink1 string `json:"btn_link_1,omitempty"`
-
-	// btn link 2
-	BtnLink2 string `json:"btn_link_2,omitempty"`
-
-	// btn text 1
-	BtnText1 string `json:"btn_text_1,omitempty"`
-
-	// btn text 2
-	BtnText2 string `json:"btn_text_2,omitempty"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// heading
-	Heading string `json:"heading,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// image id
-	ImageID int64 `json:"image_id,omitempty"`
-
-	// slider id
-	SliderID int64 `json:"slider_id,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Description string      `json:"description,omitempty"`
+	BtnText2    string      `json:"btn_text_2,omitempty"`
+	BtnText1    string      `json:"btn_text_1,omitempty"`
+	BtnLink2    string      `json:"btn_link_2,omitempty"`
+	Heading     string      `json:"heading,omitempty"`
+	BtnLink1    string      `json:"btn_link_1,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	BgImageID   int64       `json:"bg_image_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	ImageID     int64       `json:"image_id,omitempty"`
+	SliderID    int64       `json:"slider_id,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this slider item

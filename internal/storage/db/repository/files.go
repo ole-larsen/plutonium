@@ -14,26 +14,26 @@ import (
 const PublicDir = "/api/v1/files/"
 
 type File struct {
-	ID          int64       `db:"id"`
-	Name        string      `db:"name"`
-	Alt         string      `db:"alt"`
-	Caption     string      `db:"caption"`
-	Width       int64       `db:"width"`
-	Height      int64       `db:"height"`
+	Updated     strfmt.Date `db:"updated"`
+	Created     strfmt.Date `db:"created"`
+	Deleted     strfmt.Date `db:"deleted"`
+	Metadata    interface{} `db:"metadata"`
+	Formats     interface{} `db:"formats"`
 	Provider    *string     `db:"provider"`
+	Thumb       string      `db:"preview_url"`
 	Hash        string      `db:"hash"`
 	Ext         string      `db:"ext"`
-	Size        float64     `db:"size"`
-	Url         string      `db:"url"`
-	Formats     interface{} `db:"formats"`
-	Metadata    interface{} `db:"metadata"`
+	Caption     string      `db:"caption"`
+	URL         string      `db:"url"`
+	Alt         string      `db:"alt"`
+	Name        string      `db:"name"`
 	Mime        string      `db:"mime"`
-	Thumb       string      `db:"preview_url"`
+	Height      int64       `db:"height"`
 	CreatedByID int64       `db:"created_by_id"`
 	UpdatedByID int64       `db:"updated_by_id"`
-	Created     strfmt.Date `db:"created"`
-	Updated     strfmt.Date `db:"updated"`
-	Deleted     strfmt.Date `db:"deleted"`
+	Size        float64     `db:"size"`
+	ID          int64       `db:"id"`
+	Width       int64       `db:"width"`
 }
 
 type FilesRepositoryInterface interface {
@@ -92,6 +92,7 @@ func (r *FilesRepository) Create(ctx context.Context, fileMap map[string]interfa
 INSERT INTO files (name, alt, caption, hash, mime, ext, size, width, height, provider, url, created_by_id, updated_by_id)
 VALUES (:name, :alt, :caption, :hash, :mime, :ext, :size, :width, :height, :provider, :url, :created_by_id, :updated_by_id)
 ON CONFLICT DO NOTHING`, fileMap)
+
 	return err
 }
 
@@ -99,7 +100,9 @@ func (r *FilesRepository) Update(ctx context.Context, fileMap map[string]interfa
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	fileMap["url"] = fmt.Sprintf("%s%s%s", PublicDir, fileMap["name"], fileMap["ext"])
+
 	_, err := r.DB.NamedExecContext(ctx, `
 UPDATE files SET
 	name=:name,
@@ -116,6 +119,7 @@ UPDATE files SET
 	if err != nil {
 		return nil, err
 	}
+
 	return r.GetFiles(ctx)
 }
 
@@ -123,6 +127,7 @@ func (r *FilesRepository) GetFiles(ctx context.Context) ([]*models.File, error) 
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		files    []*models.File
@@ -133,10 +138,12 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var file File
+
 		err = rows.Scan(&file.ID, &file.Name, &file.Alt, &file.Caption, &file.Hash, &file.Mime, &file.Ext, &file.Size,
-			&file.Width, &file.Height, &file.Provider, &file.Url, &file.CreatedByID, &file.UpdatedByID)
+			&file.Width, &file.Height, &file.Provider, &file.URL, &file.CreatedByID, &file.UpdatedByID)
 		if err != nil {
 			return nil, err
 		}
@@ -145,10 +152,11 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 		if file.Provider != nil {
 			provider = *file.Provider
 		}
+
 		files = append(files, &models.File{
 			ID:          file.ID,
 			Name:        file.Name + file.Ext,
-			Thumb:       file.Url,
+			Thumb:       file.URL,
 			Alt:         file.Alt,
 			Caption:     file.Caption,
 			Hash:        file.Hash,
@@ -162,6 +170,7 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 			UpdatedByID: file.UpdatedByID,
 		})
 	}
+
 	defer rows.Close()
 
 	return files, multierr.ErrorOrNil()
@@ -171,11 +180,14 @@ func (r *FilesRepository) GetFileByName(ctx context.Context, name string) (*mode
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var file File
+
 	sqlStatement := `SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, url, created_by_id, updated_by_id from files WHERE name=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, name)
+
 	err := row.Scan(&file.ID, &file.Name, &file.Alt, &file.Caption, &file.Hash, &file.Mime, &file.Ext, &file.Size,
-		&file.Width, &file.Height, &file.Provider, &file.Url, &file.CreatedByID, &file.UpdatedByID)
+		&file.Width, &file.Height, &file.Provider, &file.URL, &file.CreatedByID, &file.UpdatedByID)
 	switch err {
 	case sql.ErrNoRows:
 		return nil, fmt.Errorf("file not found")
@@ -184,10 +196,11 @@ func (r *FilesRepository) GetFileByName(ctx context.Context, name string) (*mode
 		if file.Provider != nil {
 			provider = *file.Provider
 		}
+
 		return &models.File{
 			ID:          file.ID,
 			Name:        file.Name + file.Ext,
-			Thumb:       file.Url,
+			Thumb:       file.URL,
 			Alt:         file.Alt,
 			Caption:     file.Caption,
 			Hash:        file.Hash,
@@ -209,11 +222,14 @@ func (r *FilesRepository) GetFileByID(ctx context.Context, id int64) (*models.Fi
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var file File
+
 	sqlStatement := `SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, url, created_by_id, updated_by_id from files WHERE id=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
+
 	err := row.Scan(&file.ID, &file.Name, &file.Alt, &file.Caption, &file.Hash, &file.Mime, &file.Ext, &file.Size,
-		&file.Width, &file.Height, &file.Provider, &file.Url, &file.CreatedByID, &file.UpdatedByID)
+		&file.Width, &file.Height, &file.Provider, &file.URL, &file.CreatedByID, &file.UpdatedByID)
 	switch err {
 	case sql.ErrNoRows:
 		return nil, fmt.Errorf("file not found")
@@ -222,10 +238,11 @@ func (r *FilesRepository) GetFileByID(ctx context.Context, id int64) (*models.Fi
 		if file.Provider != nil {
 			provider = *file.Provider
 		}
+
 		return &models.File{
 			ID:          file.ID,
 			Name:        file.Name,
-			Thumb:       file.Url,
+			Thumb:       file.URL,
 			Alt:         file.Alt,
 			Caption:     file.Caption,
 			Hash:        file.Hash,
@@ -247,6 +264,7 @@ func (r *FilesRepository) GetPublicFilesByProvider(ctx context.Context, provider
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		files    []*models.PublicFile
@@ -261,8 +279,9 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 
 	for rows.Next() {
 		var file File
+
 		err = rows.Scan(&file.ID, &file.Name, &file.Alt, &file.Caption, &file.Hash, &file.Mime, &file.Ext, &file.Size,
-			&file.Width, &file.Height, &file.Provider, &file.Url)
+			&file.Width, &file.Height, &file.Provider, &file.URL)
 		if err != nil {
 			return nil, err
 		}
@@ -271,6 +290,7 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 		if file.Provider != nil {
 			provider = *file.Provider
 		}
+
 		files = append(files, &models.PublicFile{
 			ID: file.ID,
 			Attributes: &models.PublicFileAttributes{
@@ -284,7 +304,7 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 				Name:     file.Name,
 				Provider: provider,
 				Size:     file.Size,
-				URL:      file.Url,
+				URL:      file.URL,
 			},
 		})
 	}
@@ -298,6 +318,7 @@ func (r *FilesRepository) GetPublicFileByName(ctx context.Context, name string) 
 	if err != nil {
 		return nil, err
 	}
+
 	return &models.PublicFile{
 		ID: file.ID,
 		Attributes: &models.PublicFileAttributes{
@@ -321,6 +342,7 @@ func (r *FilesRepository) GetPublicFileByID(ctx context.Context, id int64) (*mod
 	if err != nil {
 		return nil, err
 	}
+
 	return &models.PublicFile{
 		ID: file.ID,
 		Attributes: &models.PublicFileAttributes{

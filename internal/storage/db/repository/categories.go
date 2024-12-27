@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -12,31 +13,30 @@ import (
 )
 
 type CategoryCollectionCollectible struct {
-	ID         int64 `db:"id"`
 	Attributes CategoryCollectionCollectibleAttributes
+	ID         int64 `db:"id"`
 }
 
 type CategoryCollectionCollectibleAttributes struct {
-	Item       int64               `db:"item"`
-	Tokens     []int64             `db:"tokens"`
-	Collection int64               `db:"collection"`
-	URI        string              `db:"uri"`
-	Creator    int64               `db:"creator"`
-	Owner      int64               `db:"owner"`
 	Created    time.Time           `db:"created"`
 	Metadata   CollectibleMetadata `db:"metadata"`
+	URI        string              `db:"uri"`
+	Tokens     []int64             `db:"tokens"`
 	Details    CollectibleDetails  `db:"details"`
+	Item       int64               `db:"item"`
+	Collection int64               `db:"collection"`
+	Creator    int64               `db:"creator"`
+	Owner      int64               `db:"owner"`
 }
 
 type CategoryCollectionAttributes struct {
-	CategoryID   int64                                         `db:"category_id"`
-	Name         string                                        `db:"name"`
-	Symbol       string                                        `db:"symbol"`
+	Deleted      time.Time                                     `db:"deleted_at"`
+	Updated      time.Time                                     `db:"updated_at"`
 	Description  string                                        `db:"description"`
 	Fee          string                                        `db:"fee"`
-	Creator      int64                                         `db:"creator"`
-	MaxItems     int64                                         `db:"max_items"`
-	Owner        int64                                         `db:"owner"`
+	Symbol       string                                        `db:"symbol"`
+	Name         string                                        `db:"name"`
+	Created      string                                        `db:"created"`
 	Address      string                                        `db:"address"`
 	Slug         string                                        `db:"slug"`
 	URL          string                                        `db:"url"`
@@ -44,35 +44,36 @@ type CategoryCollectionAttributes struct {
 	Featured     AggregatedImageJSON                           `db:"featured"`
 	Banner       AggregatedImageJSON                           `db:"banner"`
 	Collectibles AggregatedCategoryCollectionsCollectiblesJSON `db:"collectibles"`
+	Creator      int64                                         `db:"creator"`
+	Owner        int64                                         `db:"owner"`
+	MaxItems     int64                                         `db:"max_items"`
+	CategoryID   int64                                         `db:"category_id"`
 	isApproved   bool                                          `db:"is_approved"`
 	isLocked     bool                                          `db:"is_locked"`
-	Created      string                                        `db:"created"`
-	Updated      time.Time                                     `db:"updated_at"`
-	Deleted      time.Time                                     `db:"deleted_at"`
 }
 
 type CategoryCollection struct {
-	ID         int64 `db:"id"`
 	Attributes CategoryCollectionAttributes
+	ID         int64 `db:"id"`
 }
 
 type Category struct {
-	ID          int64                             `db:"id"`
+	Deleted     time.Time                         `db:"deleted"`
+	Updated     time.Time                         `db:"updated"`
+	Created     time.Time                         `db:"created"`
+	CreatedByID *int64                            `db:"created_by_id"`
 	ParentID    *int64                            `db:"parent_id"`
-	Provider    string                            `db:"provider"`
-	Title       string                            `db:"title"`
-	Slug        string                            `db:"slug"`
 	Description *string                           `db:"description"`
 	Content     *string                           `db:"content"`
 	ImageID     *int64                            `db:"image_id"`
-	Enabled     bool                              `db:"enabled"`
-	OrderBy     *int64                            `db:"order_by"`
-	CreatedByID *int64                            `db:"created_by_id"`
 	UpdatedByID *int64                            `db:"updated_by_id"`
-	Created     time.Time                         `db:"created"`
-	Updated     time.Time                         `db:"updated"`
-	Deleted     time.Time                         `db:"deleted"`
+	OrderBy     *int64                            `db:"order_by"`
+	Slug        string                            `db:"slug"`
+	Title       string                            `db:"title"`
+	Provider    string                            `db:"provider"`
 	Collections AggregatedCategoryCollectionsJSON `db:"collections"`
+	ID          int64                             `db:"id"`
+	Enabled     bool                              `db:"enabled"`
 }
 
 type CategoriesRepositoryInterface interface {
@@ -118,6 +119,7 @@ func (r *CategoriesRepository) GetPublicCollectibleCategories(ctx context.Contex
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr   multierror.Error
 		categories []*models.PublicCategory
@@ -224,15 +226,22 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var category Category
+
 		var image AggregatedImageJSON
-		collections := make([]*models.MarketplaceCollection, 0)
+
 		err = rows.Scan(&category.ID, &category.Title, &category.Slug, &category.Description, &category.Content, &category.Created, &image, &category.Collections)
 		if err != nil {
 			return nil, err
 		}
-		for _, collection := range category.Collections {
+
+		collections := make([]*models.MarketplaceCollection, len(category.Collections))
+
+		for index := 0; index < len(category.Collections); index++ {
+			collection := category.Collections[index]
+
 			owner, err := users.GetPublicUserByID(ctx, collection.Attributes.Owner)
 			if err != nil {
 				return nil, err
@@ -243,9 +252,11 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 				return nil, err
 			}
 
-			collectibles := make([]*models.MarketplaceCollectible, 0)
+			collectibles := make([]*models.MarketplaceCollectible, len(collection.Attributes.Collectibles))
 
-			for _, collectible := range collection.Attributes.Collectibles {
+			for i := 0; i < len(collection.Attributes.Collectibles); i++ {
+				collectible := collection.Attributes.Collectibles[i]
+
 				collectibleOwner, err := users.GetPublicUserByID(ctx, collectible.Attributes.Owner)
 
 				if err != nil {
@@ -258,7 +269,7 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 					return nil, err
 				}
 
-				collectibles = append(collectibles, &models.MarketplaceCollectible{
+				collectibles[i] = &models.MarketplaceCollectible{
 					Attributes: &models.MarketplaceCollectibleAttributes{
 						ItemID:       collectible.Attributes.Item,
 						CollectionID: collectible.Attributes.Collection,
@@ -296,9 +307,10 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 						},
 					},
 					ID: collectible.ID,
-				})
+				}
 			}
-			collections = append(collections, &models.MarketplaceCollection{
+
+			collections[index] = &models.MarketplaceCollection{
 				ID: collection.ID,
 				Attributes: &models.MarketplaceCollectionAttributes{
 					Address: common.HexToAddress(collection.Attributes.Address),
@@ -329,8 +341,9 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 					Created:      strings.Replace(collection.Attributes.Created, "    ", "", 1),
 					Collectibles: collectibles,
 				},
-			})
+			}
 		}
+
 		if err != nil {
 			return nil, err
 		}
@@ -358,10 +371,10 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 
 		categories = append(categories, publicCategory)
 	}
-	defer func(rows *sqlx.Rows) {
-		err = rows.Close()
-		if err != nil {
 
+	defer func(rows *sqlx.Rows) {
+		if err := rows.Close(); err != nil {
+			fmt.Println(err)
 		}
 	}(rows)
 

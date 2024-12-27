@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/go-openapi/strfmt"
@@ -12,16 +13,16 @@ import (
 )
 
 type Slider struct {
-	ID          int64       `db:"id"`
-	Provider    string      `db:"provider"`
-	Title       string      `db:"title"`
-	Description string      `db:"description"`
-	Enabled     bool        `db:"enabled"`
-	CreatedBy   int64       `db:"created_by"`
-	UpdatedBy   int64       `db:"updated_by"`
 	Created     strfmt.Date `db:"created"`
 	Updated     strfmt.Date `db:"updated"`
 	Deleted     strfmt.Date `db:"deleted"`
+	Provider    string      `db:"provider"`
+	Title       string      `db:"title"`
+	Description string      `db:"description"`
+	ID          int64       `db:"id"`
+	CreatedBy   int64       `db:"created_by"`
+	UpdatedBy   int64       `db:"updated_by"`
+	Enabled     bool        `db:"enabled"`
 }
 
 type SlidersRepositoryInterface interface {
@@ -72,10 +73,12 @@ func (r *SlidersRepository) Create(ctx context.Context, sliderMap map[string]int
 	if r == nil {
 		return ErrDBNotInitialized
 	}
+
 	_, err := r.DB.NamedExecContext(ctx, `
 INSERT INTO sliders (provider, title, description, enabled, created_by_id, updated_by_id)
 VALUES (:provider, :title, :description, :enabled, :created_by_id, :updated_by_id)
 ON CONFLICT DO NOTHING`, sliderMap)
+
 	return err
 }
 
@@ -83,6 +86,7 @@ func (r *SlidersRepository) Update(ctx context.Context, sliderMap map[string]int
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	_, err := r.DB.NamedExecContext(ctx, `
 UPDATE sliders SET
 	provider=:provider,
@@ -95,6 +99,7 @@ WHERE id =:id`, sliderMap)
 	if err != nil {
 		return nil, err
 	}
+
 	return r.GetSliders(ctx)
 }
 
@@ -102,6 +107,7 @@ func (r *SlidersRepository) GetSliders(ctx context.Context) ([]*models.Slider, e
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		sliders  []*models.Slider
@@ -113,8 +119,10 @@ SELECT id, provider, title, description, enabled, created_by_id, updated_by_id f
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var slider Slider
+
 		err = rows.Scan(&slider.ID, &slider.Provider, &slider.Title, &slider.Description, &slider.Enabled, &slider.CreatedBy, &slider.UpdatedBy)
 		if err != nil {
 			return nil, err
@@ -130,6 +138,7 @@ SELECT id, provider, title, description, enabled, created_by_id, updated_by_id f
 			UpdatedByID: slider.UpdatedBy,
 		})
 	}
+
 	defer rows.Close()
 
 	return sliders, multierr.ErrorOrNil()
@@ -139,11 +148,13 @@ func (r *SlidersRepository) GetSliderByTitle(ctx context.Context, title string) 
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var slider Slider
 
 	sqlStatement := `
 SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders where title=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, title)
+
 	err := row.Scan(&slider.ID, &slider.Provider, &slider.Title, &slider.Description, &slider.Enabled, &slider.CreatedBy, &slider.UpdatedBy)
 	switch err {
 	case sql.ErrNoRows:
@@ -157,7 +168,7 @@ SELECT id, provider, title, description, enabled, created_by_id, updated_by_id f
 			Enabled:     slider.Enabled,
 			CreatedByID: slider.CreatedBy,
 			UpdatedByID: slider.UpdatedBy,
-		}, err
+		}, nil
 	default:
 		return nil, err
 	}
@@ -167,11 +178,13 @@ func (r *SlidersRepository) GetSliderByID(ctx context.Context, id int64) (*model
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var slider Slider
 
 	sqlStatement := `
 SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders where id=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
+
 	err := row.Scan(&slider.ID, &slider.Provider, &slider.Title, &slider.Description, &slider.Enabled, &slider.CreatedBy, &slider.UpdatedBy)
 	switch err {
 	case sql.ErrNoRows:
@@ -185,7 +198,7 @@ SELECT id, provider, title, description, enabled, created_by_id, updated_by_id f
 			Enabled:     slider.Enabled,
 			CreatedByID: slider.CreatedBy,
 			UpdatedByID: slider.UpdatedBy,
-		}, err
+		}, nil
 	default:
 		return nil, err
 	}
@@ -197,6 +210,7 @@ func (r *SlidersRepository) GetSliderByProvider(ctx context.Context, provider st
 	}
 
 	var slider models.PublicSlider
+
 	var sliderItems AggregatedSliderItemJSON
 	// home-01
 	sqlStatement := `
@@ -252,10 +266,10 @@ WHERE
 
 	switch err {
 	case sql.ErrNoRows:
-		return nil, nil
+		return nil, NewError(errors.New("slider not found"))
 	case nil:
 		slider.Attributes = &models.PublicSliderAttributes{SlidesItem: sliderItems}
-		return &slider, err
+		return &slider, nil
 	default:
 		return nil, err
 	}

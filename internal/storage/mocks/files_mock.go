@@ -20,9 +20,9 @@ import (
 
 // MockFilesRepositoryInterface is a mock of FilesRepositoryInterface interface.
 type MockFilesRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockFilesRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockFilesRepositoryInterfaceMockRecorder is the mock recorder for MockFilesRepositoryInterface.

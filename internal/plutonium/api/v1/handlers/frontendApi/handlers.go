@@ -30,10 +30,11 @@ func NewFrontendAPI(s *plutonium.Server) *API {
 func (a *API) GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	if params.Provider == nil {
 		return frontend.NewGetFrontendMenuBadRequest().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusBadRequest,
-			Message: "provider is required",
+			Message: "menu provider is required",
 		})
 	}
 
@@ -61,29 +62,31 @@ func (a *API) GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Pr
 	return frontend.NewGetFrontendMenuOK().WithPayload(menu)
 }
 
-func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, principal *models.Principal) middleware.Responder {
+func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	if params.Provider == nil {
 		return frontend.NewGetFrontendSliderBadRequest().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusBadRequest,
-			Message: "provider is required",
+			Message: "slider provider is required",
 		})
 	}
+
 	slider, err := a.service.
 		GetStorage().
 		GetSlidersRepository().
 		GetSliderByProvider(ctx, *params.Provider)
 
 	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
 		if strings.Contains(err.Error(), SliderNotFound) {
 			return frontend.NewGetFrontendSliderNotFound().WithPayload(&models.ErrorResponse{
 				Code:    http.StatusNotFound,
 				Message: "[" + *params.Provider + "] " + SliderNotFound,
 			})
 		}
-
-		a.service.GetLogger().Error(err.Error())
 
 		return frontend.NewGetFrontendSliderInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
@@ -95,8 +98,7 @@ func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, principa
 }
 
 func (a *API) GetFileHandler(params frontend.GetFrontendFilesFileParams) middleware.Responder {
-	return middleware.ResponderFunc(func(w http.ResponseWriter, p runtime.Producer) {
-
+	return middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
 		path := strings.Split(params.HTTPRequest.URL.RequestURI(), "/")
 
 		encodedFilename := path[len(path)-1]
@@ -105,24 +107,30 @@ func (a *API) GetFileHandler(params frontend.GetFrontendFilesFileParams) middlew
 		if err != nil {
 			a.service.GetLogger().Errorln(err)
 		}
+
 		buf, err := os.ReadFile(fmt.Sprintf("%s/%s", UploadDir, filename))
 
 		if err != nil {
 			a.service.GetLogger().Errorln(err)
 		}
+
 		ext := strings.Replace(filepath.Ext(filename), ".", "", 1)
 		if ext == "svg" {
 			w.Header().Set("Content-Type", fmt.Sprintf("image/%s+xml", ext))
 		} else {
 			w.Header().Set("Content-Type", fmt.Sprintf("image/%s", ext))
 		}
-		w.Write(buf)
+
+		if _, err := w.Write(buf); err != nil {
+			a.service.GetLogger().Errorln(err)
+		}
 	})
 }
 
-func (a *API) GetCategoriesHandler(params frontend.GetFrontendCategoriesParams, principal *models.Principal) middleware.Responder {
+func (a *API) GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	categories, err := a.service.GetStorage().GetCategoriesRepository().GetPublicCollectibleCategories(ctx, a.service.GetStorage().GetUsersRepository())
 	if err != nil {
 		return frontend.NewGetFrontendCategoriesInternalServerError().WithPayload(&models.ErrorResponse{
@@ -130,15 +138,25 @@ func (a *API) GetCategoriesHandler(params frontend.GetFrontendCategoriesParams, 
 			Message: SomethingsWentWrong,
 		})
 	}
+
 	fmt.Println(categories)
 
 	return frontend.NewGetFrontendCategoriesOK().WithPayload(categories)
 }
-func (a *API) GetContractsHandler(params frontend.GetFrontendContractsParams, principal *models.Principal) middleware.Responder {
+func (a *API) GetContractsHandler(_ frontend.GetFrontendContractsParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	web3Dialer := a.service.GetWeb3Dialer()
-	web3Dialer.Load(ctx)
+
+	err := web3Dialer.Load(ctx)
+	if err != nil {
+		return frontend.NewGetFrontendContractsInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: SomethingsWentWrong,
+		})
+	}
+
 	collections := make(map[string]models.PublicContract)
 	for collectionID, collection := range web3Dialer.Market.Collections {
 		collections[collectionID] = models.PublicContract{
@@ -147,6 +165,7 @@ func (a *API) GetContractsHandler(params frontend.GetFrontendContractsParams, pr
 			Address: collection.Address.String(),
 		}
 	}
+
 	auctions := make([]*models.PublicContract, len(web3Dialer.Market.Auctions))
 	for i, auction := range web3Dialer.Market.Auctions {
 		auctions[i] = &models.PublicContract{
@@ -155,6 +174,7 @@ func (a *API) GetContractsHandler(params frontend.GetFrontendContractsParams, pr
 			Address: auction.Address.String(),
 		}
 	}
+
 	marketPlace := &models.PublicMarketplaceContract{
 		Name:    web3Dialer.Market.Marketplace.Name,
 		Abi:     web3Dialer.Market.Marketplace.ABI,
@@ -170,6 +190,7 @@ func (a *API) GetContractsHandler(params frontend.GetFrontendContractsParams, pr
 			Marketplace: marketPlace,
 		},
 	}
+
 	return frontend.NewGetFrontendContractsOK().WithPayload(payload)
 }
 func (a *API) XTokenAuth(token string) (*models.Principal, error) {

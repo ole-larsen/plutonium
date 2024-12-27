@@ -125,8 +125,10 @@ func TestMenusRepository_GetMenuByProvider(t *testing.T) {
 					`{"name":"Test Menu","link":"/test","items":[{"name":"Test Item","link":"/test-1"}]}`,
 				),
 		)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
 	menu, err := repository.GetMenuByProvider(ctx, provider)
 	assert.NoError(t, err)
 	assert.NotNil(t, menu)

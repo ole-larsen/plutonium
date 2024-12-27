@@ -12,40 +12,40 @@ type CollectibleMetadata struct {
 }
 
 type CollectibleDetails struct {
-	Address         string `json:"address"`
+	StartPrice      string `json:"start_price"`
 	Tags            string `json:"tags"`
 	Collection      string `json:"collection"`
-	Auction         bool   `json:"auction"`
-	Fulfilled       bool   `json:"fulfilled"`
-	Cancelled       bool   `json:"cancelled"`
-	PriceWei        string `json:"price_wei"`
-	Price           string `json:"price"`
 	TotalWei        string `json:"total_wei"`
+	ReservePriceWei string `json:"reserve_price_wei"`
 	Total           string `json:"total"`
+	PriceWei        string `json:"price_wei"`
 	FeeWei          string `json:"fee_wei"`
-	Fee             string `json:"fee"`
-	IsStarted       bool   `json:"is_started"`
-	StartTime       int64  `json:"start_time"`
-	EndTime         int64  `json:"end_time"`
-	StartPrice      string `json:"start_price"`
 	ReservePrice    string `json:"reserve_price"`
 	StartPriceWei   string `json:"start_price_wei"`
-	ReservePriceWei string `json:"reserve_price_wei"`
+	Price           string `json:"price"`
+	Fee             string `json:"fee"`
+	Address         string `json:"address"`
+	StartTime       int64  `json:"start_time"`
+	EndTime         int64  `json:"end_time"`
 	Quantity        int64  `json:"quantity"`
+	IsStarted       bool   `json:"is_started"`
+	Cancelled       bool   `json:"cancelled"`
+	Fulfilled       bool   `json:"fulfilled"`
+	Auction         bool   `json:"auction"`
 }
 
 type Collectible struct {
-	ID           int64               `db:"id"`
-	TokenIDs     []int64             `db:"token_ids"`
-	CollectionID int64               `db:"collection_id"`
-	Creator      string              `db:"creator"`
-	Owner        string              `db:"owner"`
-	URI          string              `db:"uri"`
-	Details      CollectibleDetails  `db:"details"`
-	Metadata     CollectibleMetadata `db:"metadata"`
 	Created      time.Time           `db:"created"`
 	Updated      time.Time           `db:"updated"`
 	Deleted      time.Time           `db:"deleted"`
+	Metadata     CollectibleMetadata `db:"metadata"`
+	Creator      string              `db:"creator"`
+	Owner        string              `db:"owner"`
+	URI          string              `db:"uri"`
+	TokenIDs     []int64             `db:"token_ids"`
+	Details      CollectibleDetails  `db:"details"`
+	ID           int64               `db:"id"`
+	CollectionID int64               `db:"collection_id"`
 }
 
 // type CollectibleRepository interface {

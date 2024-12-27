@@ -151,5 +151,6 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 	handler = v1middleware.CorsMiddleware(handler)
 	handler = v1middleware.CsrfMiddleware(handler)
 	handler = v1middleware.PrometheusMiddleware(handler)
+
 	return handler
 }

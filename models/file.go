@@ -18,60 +18,23 @@ import (
 //
 // swagger:model file
 type File struct {
-
-	// alt
-	Alt string `json:"alt,omitempty"`
-
-	// caption
-	Caption string `json:"caption,omitempty"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// ext
-	Ext string `json:"ext,omitempty"`
-
-	// hash
-	Hash string `json:"hash,omitempty"`
-
-	// height
-	Height int64 `json:"height,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
-
-	// provider
-	Provider string `json:"provider,omitempty"`
-
-	// size
-	Size float64 `json:"size,omitempty"`
-
-	// thumb
-	Thumb string `json:"thumb,omitempty"`
-
-	// type
-	Type string `json:"type,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
-
-	// width
-	Width int64 `json:"width,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Thumb       string      `json:"thumb,omitempty"`
+	Type        string      `json:"type,omitempty"`
+	Ext         string      `json:"ext,omitempty"`
+	Hash        string      `json:"hash,omitempty"`
+	Caption     string      `json:"caption,omitempty"`
+	Alt         string      `json:"alt,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Provider    string      `json:"provider,omitempty"`
+	Size        float64     `json:"size,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	Height      int64       `json:"height,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Width       int64       `json:"width,omitempty"`
 }
 
 // Validate validates this file

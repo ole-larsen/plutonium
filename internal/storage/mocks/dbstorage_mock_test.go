@@ -11,8 +11,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-const testEmail = "test@example.com"
-
 func setupMockController(t *testing.T) (*gomock.Controller, *mocks.MockDBStorageInterface) {
 	t.Helper()
 	ctrl := gomock.NewController(t)
@@ -20,234 +18,145 @@ func setupMockController(t *testing.T) (*gomock.Controller, *mocks.MockDBStorage
 	return ctrl, mocks.NewMockDBStorageInterface(ctrl)
 }
 
-func TestMockDBStorageInterface_ConnectUsersRepository(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	ctrl := gomock.NewController(t)
+func TestMockDBStorageInterface_ConnectRepository(t *testing.T) {
+	ctrl, mockDBStorage := setupMockController(t)
 	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
 
 	mockSQLxDB := &sqlx.DB{}
 
-	// Test successful connection
-	mockDBStorage.EXPECT().ConnectUsersRepository(ctx, mockSQLxDB).Return(nil).Times(1)
+	t.Run("Successful Connection", func(t *testing.T) {
+		mockDBStorage.EXPECT().ConnectRepository("users", mockSQLxDB).Return(nil).Times(1)
 
-	if err := mockDBStorage.ConnectUsersRepository(ctx, mockSQLxDB); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
+		err := mockDBStorage.ConnectRepository("users", mockSQLxDB)
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
+	})
 
-	// Test connection with error
-	mockError := fmt.Errorf("connection error")
-	mockDBStorage.EXPECT().ConnectUsersRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
+	t.Run("Error on Connection", func(t *testing.T) {
+		mockError := fmt.Errorf("connection error")
+		mockDBStorage.EXPECT().ConnectRepository("users", mockSQLxDB).Return(mockError).Times(1)
 
-	if err := mockDBStorage.ConnectUsersRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_ConnectContractsRepository(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-
-	mockSQLxDB := &sqlx.DB{}
-
-	// Test successful connection
-	mockDBStorage.EXPECT().ConnectContractsRepository(ctx, mockSQLxDB).Return(nil).Times(1)
-
-	if err := mockDBStorage.ConnectContractsRepository(ctx, mockSQLxDB); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test connection with error
-	mockError := fmt.Errorf("connection error")
-	mockDBStorage.EXPECT().ConnectContractsRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
-
-	if err := mockDBStorage.ConnectContractsRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_ConnectPagesRepository(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-
-	mockSQLxDB := &sqlx.DB{}
-
-	// Test successful connection
-	mockDBStorage.EXPECT().ConnectPagesRepository(ctx, mockSQLxDB).Return(nil).Times(1)
-
-	if err := mockDBStorage.ConnectPagesRepository(ctx, mockSQLxDB); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test connection with error
-	mockError := fmt.Errorf("connection error")
-	mockDBStorage.EXPECT().ConnectPagesRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
-
-	if err := mockDBStorage.ConnectPagesRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_ConnectCategoriesRepository(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-
-	mockSQLxDB := &sqlx.DB{}
-
-	// Test successful connection
-	mockDBStorage.EXPECT().ConnectCategoriesRepository(ctx, mockSQLxDB).Return(nil).Times(1)
-
-	if err := mockDBStorage.ConnectCategoriesRepository(ctx, mockSQLxDB); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test connection with error
-	mockError := fmt.Errorf("connection error")
-	mockDBStorage.EXPECT().ConnectCategoriesRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
-
-	if err := mockDBStorage.ConnectCategoriesRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockDBStorageInterface_ConnectMenusRepository(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-
-	mockSQLxDB := &sqlx.DB{}
-
-	// Test successful connection
-	mockDBStorage.EXPECT().ConnectMenusRepository(ctx, mockSQLxDB).Return(nil).Times(1)
-
-	if err := mockDBStorage.ConnectMenusRepository(ctx, mockSQLxDB); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test connection with error
-	mockError := fmt.Errorf("connection error")
-	mockDBStorage.EXPECT().ConnectMenusRepository(ctx, mockSQLxDB).Return(mockError).Times(1)
-
-	if err := mockDBStorage.ConnectMenusRepository(ctx, mockSQLxDB); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
+		err := mockDBStorage.ConnectRepository("users", mockSQLxDB)
+		if err == nil || err.Error() != mockError.Error() {
+			t.Errorf("Expected error %v, got %v", mockError, err)
+		}
+	})
 }
 
 func TestMockDBStorageInterface_Init(t *testing.T) {
-	ctrl := gomock.NewController(t)
+	ctrl, mockDBStorage := setupMockController(t)
 	defer ctrl.Finish()
 
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
 	ctx := context.Background()
-	sqlxDB := &sqlx.DB{} // Mock or create a dummy *sqlx.DB instance
+	mockSQLxDB := &sqlx.DB{}
 
-	// Test successful initialization
-	mockDBStorage.EXPECT().Init(ctx, sqlxDB).Return(sqlxDB, nil).Times(1)
+	t.Run("Successful Initialization", func(t *testing.T) {
+		mockDBStorage.EXPECT().Init(ctx, mockSQLxDB).Return(mockSQLxDB, nil).Times(1)
 
-	db, err := mockDBStorage.Init(ctx, sqlxDB)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
+		db, err := mockDBStorage.Init(ctx, mockSQLxDB)
+		if err != nil {
+			t.Errorf("Expected no error, got %v", err)
+		}
 
-	if db != sqlxDB {
-		t.Errorf("Expected %v, got %v", sqlxDB, db)
-	}
+		if db != mockSQLxDB {
+			t.Errorf("Expected %v, got %v", mockSQLxDB, db)
+		}
+	})
 
-	// Test initialization with error
-	mockError := fmt.Errorf("init error")
-	mockDBStorage.EXPECT().Init(ctx, sqlxDB).Return(nil, mockError).Times(1)
+	t.Run("Error on Initialization", func(t *testing.T) {
+		mockError := fmt.Errorf("init error")
+		mockDBStorage.EXPECT().Init(ctx, mockSQLxDB).Return(nil, mockError).Times(1)
 
-	db, err = mockDBStorage.Init(ctx, sqlxDB)
-	if err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
+		db, err := mockDBStorage.Init(ctx, mockSQLxDB)
+		if err == nil || err.Error() != mockError.Error() {
+			t.Errorf("Expected error %v, got %v", mockError, err)
+		}
 
-	if db != nil {
-		t.Errorf("Expected nil, got %v", db)
-	}
+		if db != nil {
+			t.Errorf("Expected nil, got %v", db)
+		}
+	})
 }
 
-func TestMockDBStorageInterface_GetContractsRepository(t *testing.T) {
-	ctrl := gomock.NewController(t)
+func TestMockDBStorageInterface_GetRepositories(t *testing.T) {
+	ctrl, mockDBStorage := setupMockController(t)
 	defer ctrl.Finish()
 
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-	expectedRepo := &repository.ContractsRepository{}
+	t.Run("GetCategoriesRepository", func(t *testing.T) {
+		expectedRepo := &repository.CategoriesRepository{}
+		mockDBStorage.EXPECT().GetCategoriesRepository().Return(expectedRepo).Times(1)
 
-	t.Run("Success", func(t *testing.T) {
-		// Set expectation for GetContractsRepository call to return the mock repository.
+		repo := mockDBStorage.GetCategoriesRepository()
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
+
+	t.Run("GetContractsRepository", func(t *testing.T) {
+		expectedRepo := &repository.ContractsRepository{}
 		mockDBStorage.EXPECT().GetContractsRepository().Return(expectedRepo).Times(1)
 
 		repo := mockDBStorage.GetContractsRepository()
-
-		// Assertions
 		if repo != expectedRepo {
 			t.Errorf("Expected %v, got %v", expectedRepo, repo)
 		}
 	})
 
-	t.Run("NilRepository", func(t *testing.T) {
-		// Set expectation for GetContractsRepository call to return nil.
-		mockDBStorage.EXPECT().GetContractsRepository().Return(nil).Times(1)
+	t.Run("GetFilesRepository", func(t *testing.T) {
+		expectedRepo := &repository.FilesRepository{}
+		mockDBStorage.EXPECT().GetFilesRepository().Return(expectedRepo).Times(1)
 
-		repo := mockDBStorage.GetContractsRepository()
+		repo := mockDBStorage.GetFilesRepository()
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
 
-		// Assertions
-		if repo != nil {
-			t.Errorf("Expected nil, got %v", repo)
+	t.Run("GetMenusRepository", func(t *testing.T) {
+		expectedRepo := &repository.MenusRepository{}
+		mockDBStorage.EXPECT().GetMenusRepository().Return(expectedRepo).Times(1)
+
+		repo := mockDBStorage.GetMenusRepository()
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
+
+	t.Run("GetSlidersRepository", func(t *testing.T) {
+		expectedRepo := &repository.SlidersRepository{}
+		mockDBStorage.EXPECT().GetSlidersRepository().Return(expectedRepo).Times(1)
+
+		repo := mockDBStorage.GetSlidersRepository()
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		}
+	})
+
+	t.Run("GetUsersRepository", func(t *testing.T) {
+		expectedRepo := &repository.UsersRepository{}
+		mockDBStorage.EXPECT().GetUsersRepository().Return(expectedRepo).Times(1)
+
+		repo := mockDBStorage.GetUsersRepository()
+		if repo != expectedRepo {
+			t.Errorf("Expected %v, got %v", expectedRepo, repo)
 		}
 	})
 }
 
-func TestMockDBStorageInterface_GetMenusRepository(t *testing.T) {
-	ctrl := gomock.NewController(t)
+func TestMockDBStorageInterface_ErrorScenarios(t *testing.T) {
+	ctrl, mockDBStorage := setupMockController(t)
 	defer ctrl.Finish()
 
-	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
-	expectedRepo := &repository.MenusRepository{}
+	t.Run("Nil Repositories", func(t *testing.T) {
+		mockDBStorage.EXPECT().GetCategoriesRepository().Return(nil).Times(1)
+		mockDBStorage.EXPECT().GetContractsRepository().Return(nil).Times(1)
 
-	t.Run("Success", func(t *testing.T) {
-		// Set expectation for GetMenusRepository call to return the mock repository.
-		mockDBStorage.EXPECT().GetMenusRepository().Return(expectedRepo).Times(1)
-
-		repo := mockDBStorage.GetMenusRepository()
-
-		// Assertions
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
+		if repo := mockDBStorage.GetCategoriesRepository(); repo != nil {
+			t.Errorf("Expected nil, got %v", repo)
 		}
-	})
 
-	t.Run("NilRepository", func(t *testing.T) {
-		// Set expectation for GetMenusRepository call to return nil.
-		mockDBStorage.EXPECT().GetMenusRepository().Return(nil).Times(1)
-
-		repo := mockDBStorage.GetMenusRepository()
-
-		// Assertions
-		if repo != nil {
+		if repo := mockDBStorage.GetContractsRepository(); repo != nil {
 			t.Errorf("Expected nil, got %v", repo)
 		}
 	})

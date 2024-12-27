@@ -143,7 +143,7 @@ func (s *GRPCServer) LoadTLS(cfg *settings.Settings) (*tls.Config, error) {
 }
 
 // Listen configures and returns an HTTP/2-enabled server.
-func (s *GRPCServer) Listen(cfg *settings.Settings) (*http.Server, error) {
+func (s *GRPCServer) Listen(_ *settings.Settings) (*http.Server, error) {
 	if s == nil || s.host == "" || s.port == 0 {
 		return nil, NewError(fmt.Errorf("server gRPC is disabled"))
 	}

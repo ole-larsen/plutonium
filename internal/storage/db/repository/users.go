@@ -33,14 +33,14 @@ type User struct {
 	Deleted              strfmt.Date `db:"deleted"`
 	PasswordResetToken   *string     `db:"password_reset_token"`
 	PasswordResetExpires *int64      `db:"password_reset_expires"`
-	RSASecret            string      `db:"rsa_secret"`
 	Email                string      `db:"email"`
+	RSASecret            string      `db:"rsa_secret"`
 	Password             string      `db:"password"`
 	Secret               string      `db:"secret"`
-	ID                   int64       `db:"id"`
-	Uuid                 string      `db:"uuid"`
+	UUID                 string      `db:"uuid"`
 	Username             string      `db:"username"`
 	Address              string      `db:"address"`
+	ID                   int64       `db:"id"`
 	Enabled              bool        `db:"enabled"`
 }
 
@@ -170,19 +170,20 @@ WHERE u.deleted_at isNULL AND u.id=$1 AND u.deleted isNULL;`, id)
 
 	var user User
 
-	err := row.Scan(&user.ID, &user.Uuid, &user.Username, &user.Email, &user.Address)
+	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Address)
 	switch err {
 	case sql.ErrNoRows:
 		return nil, fmt.Errorf("user not found")
 	case nil:
 		publicUser := &models.PublicUser{
 			ID:       user.ID,
-			UUID:     user.Uuid,
+			UUID:     user.UUID,
 			Username: user.Username,
 			Email:    user.Email,
 			Address:  user.Address,
 		}
-		return publicUser, err
+
+		return publicUser, nil
 	default:
 		return nil, err
 	}

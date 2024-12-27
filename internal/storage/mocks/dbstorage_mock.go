@@ -20,9 +20,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.
@@ -42,102 +42,18 @@ func (m *MockDBStorageInterface) EXPECT() *MockDBStorageInterfaceMockRecorder {
 	return m.recorder
 }
 
-// ConnectCategoriesRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
+// ConnectRepository mocks base method.
+func (m *MockDBStorageInterface) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectCategoriesRepository", ctx, sqlxDB)
+	ret := m.ctrl.Call(m, "ConnectRepository", name, sqlxDB)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// ConnectCategoriesRepository indicates an expected call of ConnectCategoriesRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectCategoriesRepository(ctx, sqlxDB any) *gomock.Call {
+// ConnectRepository indicates an expected call of ConnectRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) ConnectRepository(name, sqlxDB any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectCategoriesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectCategoriesRepository), ctx, sqlxDB)
-}
-
-// ConnectContractsRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectContractsRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectContractsRepository indicates an expected call of ConnectContractsRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectContractsRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectContractsRepository), ctx, sqlxDB)
-}
-
-// ConnectFilesRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectFilesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectFilesRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectFilesRepository indicates an expected call of ConnectFilesRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectFilesRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectFilesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectFilesRepository), ctx, sqlxDB)
-}
-
-// ConnectMenusRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectMenusRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectMenusRepository indicates an expected call of ConnectMenusRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectMenusRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectMenusRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectMenusRepository), ctx, sqlxDB)
-}
-
-// ConnectPagesRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectPagesRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectPagesRepository indicates an expected call of ConnectPagesRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectPagesRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectPagesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectPagesRepository), ctx, sqlxDB)
-}
-
-// ConnectSlidersRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectSlidersRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectSlidersRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectSlidersRepository indicates an expected call of ConnectSlidersRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectSlidersRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectSlidersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectSlidersRepository), ctx, sqlxDB)
-}
-
-// ConnectUsersRepository mocks base method.
-func (m *MockDBStorageInterface) ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConnectUsersRepository", ctx, sqlxDB)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ConnectUsersRepository indicates an expected call of ConnectUsersRepository.
-func (mr *MockDBStorageInterfaceMockRecorder) ConnectUsersRepository(ctx, sqlxDB any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectUsersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectUsersRepository), ctx, sqlxDB)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectRepository), name, sqlxDB)
 }
 
 // GetCategoriesRepository mocks base method.

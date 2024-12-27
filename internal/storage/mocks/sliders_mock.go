@@ -20,9 +20,9 @@ import (
 
 // MockSlidersRepositoryInterface is a mock of SlidersRepositoryInterface interface.
 type MockSlidersRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockSlidersRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockSlidersRepositoryInterfaceMockRecorder is the mock recorder for MockSlidersRepositoryInterface.

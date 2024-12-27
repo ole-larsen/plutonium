@@ -4,10 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dgryski/dgoogauth"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/ole-larsen/plutonium/internal/otp"
 	"github.com/ole-larsen/plutonium/internal/storage/db/repository"
 )
 
@@ -19,16 +17,7 @@ var NewPGSQLStorage = NewDBStorage
 
 type DBStorageInterface interface {
 	Init(ctx context.Context, sqlxDB *sqlx.DB) (*sqlx.DB, error)
-	Ping() error
-	ConnectUsersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectContractsRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectPagesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectCategoriesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectMenusRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectSlidersRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	ConnectFilesRepository(ctx context.Context, sqlxDB *sqlx.DB) error
-	CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error)
-	GetUser(ctx context.Context, login string) (*repository.User, error)
+	ConnectRepository(name string, sqlxDB *sqlx.DB) error
 	GetUsersRepository() *repository.UsersRepository
 	GetContractsRepository() *repository.ContractsRepository
 	GetMenusRepository() *repository.MenusRepository
@@ -39,14 +28,16 @@ type DBStorageInterface interface {
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
-	Users      *repository.UsersRepository
-	Contracts  *repository.ContractsRepository
-	Pages      *repository.PagesRepository
-	Categories *repository.CategoriesRepository
-	Menus      *repository.MenusRepository
-	Sliders    *repository.SlidersRepository
-	Files      *repository.FilesRepository
-	DSN        string
+	repositories struct {
+		users      *repository.UsersRepository
+		contracts  *repository.ContractsRepository
+		pages      *repository.PagesRepository
+		categories *repository.CategoriesRepository
+		menus      *repository.MenusRepository
+		sliders    *repository.SlidersRepository
+		files      *repository.FilesRepository
+	}
+	DSN string
 }
 
 func NewDBStorage(dsn string) DBStorageInterface {
@@ -77,118 +68,72 @@ func (s *DBStorage) Init(ctx context.Context, sqlxDB *sqlx.DB) (*sqlx.DB, error)
 	return sqlxDB, nil
 }
 
-func (s *DBStorage) ConnectUsersRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Users = repository.NewUsersRepository(sqlxDB, "users")
-	if s.Users.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect users repository"))
+func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
+	switch name {
+	case "users":
+		s.repositories.users = repository.NewUsersRepository(sqlxDB, name)
+		if s.repositories.users.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "contracts":
+		s.repositories.contracts = repository.NewContractsRepository(sqlxDB, name)
+		if s.repositories.users.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "pages":
+		s.repositories.pages = repository.NewPagesRepository(sqlxDB, name)
+		if s.repositories.pages.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "categories":
+		s.repositories.categories = repository.NewCategoriesRepository(sqlxDB, name)
+		if s.repositories.categories.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "menus":
+		s.repositories.menus = repository.NewMenusRepository(sqlxDB, name)
+		if s.repositories.menus.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "sliders":
+		s.repositories.sliders = repository.NewSlidersRepository(sqlxDB, name)
+		if s.repositories.sliders.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "files":
+		s.repositories.files = repository.NewFilesRepository(sqlxDB, name)
+		if s.repositories.files.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	default:
+		return NewError(fmt.Errorf("unknown repository: %s", name))
 	}
 
 	return nil
-}
-
-func (s *DBStorage) ConnectContractsRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Contracts = repository.NewContractsRepository(sqlxDB, "contracts")
-	if s.Contracts.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect contracts repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) ConnectPagesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Pages = repository.NewPagesRepository(sqlxDB, "pages")
-	if s.Pages.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect pages repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) ConnectMenusRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Menus = repository.NewMenusRepository(sqlxDB, "menus")
-	if s.Menus.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect menus repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) ConnectCategoriesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Categories = repository.NewCategoriesRepository(sqlxDB, "categories")
-	if s.Categories.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect categories repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) ConnectSlidersRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Sliders = repository.NewSlidersRepository(sqlxDB, "sliders")
-	if s.Sliders.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect sliders repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) ConnectFilesRepository(_ context.Context, sqlxDB *sqlx.DB) error {
-	s.Files = repository.NewFilesRepository(sqlxDB, "files")
-	if s.Files.InnerDB() == nil {
-		return NewError(fmt.Errorf("failed to connect files repository"))
-	}
-
-	return nil
-}
-
-func (s *DBStorage) Ping() error {
-	if s == nil || s.Users == nil || s.Users.InnerDB() == nil {
-		return NewError(fmt.Errorf("DBStorage is nil or not initialized"))
-	}
-
-	return s.Users.Ping()
-}
-
-func (s *DBStorage) CreateUser(ctx context.Context, userMap map[string]interface{}) (*dgoogauth.OTPConfig, error) {
-	if s == nil || s.Users == nil || s.Users.InnerDB() == nil {
-		return nil, NewError(fmt.Errorf("DBStorage is nil or not initialized"))
-	}
-
-	otpc := otp.CreateOTP()
-	userMap["secret"] = otpc.Secret
-
-	return otpc, s.Users.Create(ctx, userMap)
-}
-
-func (s *DBStorage) GetUser(ctx context.Context, login string) (*repository.User, error) {
-	if s == nil || s.Users == nil || s.Users.InnerDB() == nil {
-		return nil, NewError(fmt.Errorf("DBStorage is nil or not initialized"))
-	}
-
-	return s.Users.GetOne(ctx, login)
 }
 
 func (s *DBStorage) GetUsersRepository() *repository.UsersRepository {
-	return s.Users
+	return s.repositories.users
 }
 
 func (s *DBStorage) GetContractsRepository() *repository.ContractsRepository {
-	return s.Contracts
+	return s.repositories.contracts
 }
 
 func (s *DBStorage) GetMenusRepository() *repository.MenusRepository {
-	return s.Menus
+	return s.repositories.menus
 }
 
 func (s *DBStorage) GetSlidersRepository() *repository.SlidersRepository {
-	return s.Sliders
+	return s.repositories.sliders
 }
 
 func (s *DBStorage) GetFilesRepository() *repository.FilesRepository {
-	return s.Files
+	return s.repositories.files
 }
 
 func (s *DBStorage) GetCategoriesRepository() *repository.CategoriesRepository {
-	return s.Categories
+	return s.repositories.categories
 }
 
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
@@ -202,32 +147,10 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 		return nil, err
 	}
 
-	if err := store.ConnectUsersRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectContractsRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectPagesRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectCategoriesRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectMenusRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectSlidersRepository(ctx, sqlxdb); err != nil {
-		return nil, err
-	}
-
-	if err := store.ConnectFilesRepository(ctx, sqlxdb); err != nil {
-		return nil, err
+	for _, name := range []string{"users", "contracts", "pages", "categories", "menus", "sliders", "files"} {
+		if err := store.ConnectRepository(name, sqlxdb); err != nil {
+			return nil, err
+		}
 	}
 
 	return store, nil
