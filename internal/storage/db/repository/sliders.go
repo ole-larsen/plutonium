@@ -113,9 +113,7 @@ func (r *SlidersRepository) GetSliders(ctx context.Context) ([]*models.Slider, e
 		sliders  []*models.Slider
 	)
 
-	rows, err := r.DB.QueryxContext(ctx, `
-SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders;
-	`)
+	rows, err := r.DB.QueryxContext(ctx, `SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders;`)
 	if err != nil {
 		return nil, err
 	}
@@ -151,8 +149,7 @@ func (r *SlidersRepository) GetSliderByTitle(ctx context.Context, title string) 
 
 	var slider Slider
 
-	sqlStatement := `
-SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders where title=$1;`
+	sqlStatement := `SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders where title=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, title)
 
 	err := row.Scan(&slider.ID, &slider.Provider, &slider.Title, &slider.Description, &slider.Enabled, &slider.CreatedBy, &slider.UpdatedBy)
@@ -181,8 +178,7 @@ func (r *SlidersRepository) GetSliderByID(ctx context.Context, id int64) (*model
 
 	var slider Slider
 
-	sqlStatement := `
-SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders where id=$1;`
+	sqlStatement := "SELECT id, provider, title, description, enabled, created_by_id, updated_by_id FROM sliders WHERE id=$1;"
 	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
 
 	err := row.Scan(&slider.ID, &slider.Provider, &slider.Title, &slider.Description, &slider.Enabled, &slider.CreatedBy, &slider.UpdatedBy)
@@ -209,9 +205,10 @@ func (r *SlidersRepository) GetSliderByProvider(ctx context.Context, provider st
 		return nil, ErrDBNotInitialized
 	}
 
-	var slider models.PublicSlider
-
-	var sliderItems AggregatedSliderItemJSON
+	var (
+		slider      models.PublicSlider
+		sliderItems AggregatedSliderItemJSON
+	)
 	// home-01
 	sqlStatement := `
 SELECT
@@ -255,11 +252,11 @@ SELECT
 FROM sliders_items i
 WHERE i.slider_id = s.id AND
 	i.enabled = true AND
-	i.deleted isNULL) as attributes
+	i.deleted IS NULL) as attributes
 FROM sliders s
 WHERE
 	s.enabled = true AND
-	s.deleted isNULL AND
+	s.deleted IS NULL AND
 	s.provider = $1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, provider)
 	err := row.Scan(&slider.ID, &sliderItems)

@@ -174,3 +174,55 @@ func TestMockUsersRepositoryInterface_GetPublicUserByID(t *testing.T) {
 		t.Errorf("Expected public user to be nil, got %v", publicUser)
 	}
 }
+
+func TestMockUsersRepositoryInterface_GetUserByAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
+	ctx := context.Background()
+	address := "0x1234567890abcdef"
+
+	// Test successful retrieval
+	expectedUser := &repository.User{
+		ID:      1,
+		Email:   "test@example.com",
+		Address: address,
+	}
+	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(expectedUser, nil).Times(1)
+
+	user, err := mockRepo.GetUserByAddress(ctx, address)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if user != expectedUser {
+		t.Errorf("Expected user %v, got %v", expectedUser, user)
+	}
+
+	// Test GetUserByAddress with user not found error
+	notFoundError := fmt.Errorf("user not found")
+	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(nil, notFoundError).Times(1)
+
+	user, err = mockRepo.GetUserByAddress(ctx, address)
+	if err == nil || err.Error() != notFoundError.Error() {
+		t.Errorf("Expected error %v, got %v", notFoundError, err)
+	}
+
+	if user != nil {
+		t.Errorf("Expected user to be nil, got %v", user)
+	}
+
+	// Test GetUserByAddress with database error
+	dbError := fmt.Errorf("database error")
+	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(nil, dbError).Times(1)
+
+	user, err = mockRepo.GetUserByAddress(ctx, address)
+	if err == nil || err.Error() != dbError.Error() {
+		t.Errorf("Expected error %v, got %v", dbError, err)
+	}
+
+	if user != nil {
+		t.Errorf("Expected user to be nil, got %v", user)
+	}
+}

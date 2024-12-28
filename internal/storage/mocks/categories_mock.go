@@ -44,7 +44,7 @@ func (m *MockCategoriesRepositoryInterface) EXPECT() *MockCategoriesRepositoryIn
 }
 
 // GetPublicCollectibleCategories mocks base method.
-func (m *MockCategoriesRepositoryInterface) GetPublicCollectibleCategories(ctx context.Context, users *repository.UsersRepository) ([]*models.PublicCategory, error) {
+func (m *MockCategoriesRepositoryInterface) GetPublicCollectibleCategories(ctx context.Context, users repository.UsersRepositoryInterface) ([]*models.PublicCategory, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPublicCollectibleCategories", ctx, users)
 	ret0, _ := ret[0].([]*models.PublicCategory)

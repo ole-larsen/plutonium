@@ -87,6 +87,21 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) GetPublicUserByID(ctx, id an
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPublicUserByID", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetPublicUserByID), ctx, id)
 }
 
+// GetUserByAddress mocks base method.
+func (m *MockUsersRepositoryInterface) GetUserByAddress(ctx context.Context, address string) (*repository.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByAddress", ctx, address)
+	ret0, _ := ret[0].(*repository.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByAddress indicates an expected call of GetUserByAddress.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) GetUserByAddress(ctx, address any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByAddress", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetUserByAddress), ctx, address)
+}
+
 // InnerDB mocks base method.
 func (m *MockUsersRepositoryInterface) InnerDB() *sqlx.DB {
 	m.ctrl.T.Helper()

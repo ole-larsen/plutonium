@@ -79,7 +79,7 @@ type Category struct {
 type CategoriesRepositoryInterface interface {
 	InnerDB() *sqlx.DB
 	Ping() error
-	GetPublicCollectibleCategories(ctx context.Context, users *UsersRepository) ([]*models.PublicCategory, error)
+	GetPublicCollectibleCategories(ctx context.Context, users UsersRepositoryInterface) ([]*models.PublicCategory, error)
 }
 
 // CategoriesRepository - repository to store frontend categories.
@@ -115,7 +115,7 @@ func (r *CategoriesRepository) Ping() error {
 	return r.DB.Ping()
 }
 
-func (r *CategoriesRepository) GetPublicCollectibleCategories(ctx context.Context, users *UsersRepository) ([]*models.PublicCategory, error) {
+func (r *CategoriesRepository) GetPublicCollectibleCategories(ctx context.Context, users UsersRepositoryInterface) ([]*models.PublicCategory, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}

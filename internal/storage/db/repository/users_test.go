@@ -204,3 +204,122 @@ func TestUsersRepository_GetOne(t *testing.T) {
 	assert.Nil(t, user, "GetOne() on nil repository should return nil user")
 	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetOne() should return ErrDBNotInitialized")
 }
+
+func TestUsersRepository_GetPublicUserByID(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+	defer db.Close()
+
+	repo := &repository.UsersRepository{
+		DB:  *sqlxDB,
+		TBL: "users",
+	}
+
+	ctx := context.Background()
+	email := "test@example.com"
+	userID := int64(1)
+	uuid := "21e49d82-5240-423f-8d92-1ffd4a1cf600"
+	// Test successful GetOne
+	rows := sqlmock.NewRows([]string{"id", "uuid", "username", "email", "address"}).
+		AddRow(userID, uuid, "testuser", email, "0x1234567890abcdef")
+
+	// Updated query pattern to be more flexible with whitespace and new lines
+	queryPattern := `(?i)SELECT\s+u\.id,\s+a\.uuid,\s+u\.username,\s+u\.email,\s+a\.address\s+FROM\s+users\s+u\s+JOIN\s+users_addresses\s+a\s+ON\s+a\.user_id\s+=\s+u\.id\s+LEFT\s+JOIN\s+some_table\s+f\s+ON\s+f\.user_id\s+=\s+u\.id\s+WHERE\s+u\.deleted\s+IS\s+NULL\s+AND\s+u\.id\s+=\s+\$1\s+AND\s+u\.deleted\s+IS\s+NULL;`
+
+	mock.ExpectQuery(queryPattern).
+		WithArgs(userID).
+		WillReturnRows(rows)
+
+	user, err := repo.GetPublicUserByID(ctx, userID)
+	assert.NoError(t, err, "GetPublicUserByID() should not return an error")
+	assert.NotNil(t, user, "GetPublicUserByID() should return a user")
+	assert.Equal(t, userID, user.ID, "GetPublicUserByID() should return the correct user ID")
+	assert.Equal(t, uuid, user.UUID, "GetPublicUserByID() should return the correct UUID")
+	assert.Equal(t, "testuser", user.Username, "GetPublicUserByID() should return the correct username")
+	assert.Equal(t, email, user.Email, "GetPublicUserByID() should return the correct email")
+	assert.Equal(t, "0x1234567890abcdef", user.Address, "GetPublicUserByID() should return the correct address")
+
+	// Case: User not found
+	mock.ExpectQuery(queryPattern).
+		WithArgs(userID).
+		WillReturnError(sql.ErrNoRows)
+
+	user, err = repo.GetPublicUserByID(ctx, userID)
+	assert.Error(t, err, "GetPublicUserByID() should return an error when user is not found")
+	assert.Nil(t, user, "GetPublicUserByID() should return nil when user is not found")
+
+	// Case: Database error
+	mock.ExpectQuery(queryPattern).
+		WithArgs(userID).
+		WillReturnError(errors.New("database error"))
+
+	user, err = repo.GetPublicUserByID(ctx, userID)
+	assert.Error(t, err, "GetPublicUserByID() should return an error on database error")
+	assert.Nil(t, user, "GetPublicUserByID() should return nil on database error")
+
+	// Case: Nil repository
+	var nilRepo *repository.UsersRepository
+	user, err = nilRepo.GetPublicUserByID(ctx, userID)
+	assert.Error(t, err, "GetPublicUserByID() on nil repository should return an error")
+	assert.Nil(t, user, "GetPublicUserByID() on nil repository should return nil")
+	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetPublicUserByID() should return ErrDBNotInitialized")
+}
+
+// TestUsersRepository_GetUserByAddress tests the GetUserByAddress method of UsersRepository.
+func TestUsersRepository_GetUserByAddress(t *testing.T) {
+	db, mock, _ := sqlmock.New()
+	sqlxDB := sqlx.NewDb(db, "sqlmock")
+	defer db.Close()
+
+	repo := &repository.UsersRepository{
+		DB:  *sqlxDB,
+		TBL: "users",
+	}
+
+	ctx := context.Background()
+	address := "0x1234567890abcdef"
+
+	// Test successful GetUserByAddress
+	rows := sqlmock.NewRows([]string{"id", "uuid", "username", "email", "password", "address", "nonce"}).
+		AddRow(1, "uuid_value", "testuser", "testuser@example.com", "hashedpassword", address, "nonce_value")
+
+	queryPattern := `(?i)SELECT\s+u\.id,\s+a\.uuid,\s+u\.username,\s+u\.email,\s+u\.password,\s+a\.address,\s+a\.nonce\s+FROM\s+users\s+u\s+LEFT\s+JOIN\s+users_addresses\s+a\s+ON\s+a\.user_id\s+=\s+u\.id\s+WHERE\s+a\.address=\$1\s+AND\s+u\.deleted\s+IS\s+NULL;`
+
+	mock.ExpectQuery(queryPattern).
+		WithArgs(address).
+		WillReturnRows(rows)
+
+	user, err := repo.GetUserByAddress(ctx, address)
+	assert.NoError(t, err, "GetUserByAddress() should not return an error")
+	assert.NotNil(t, user, "GetUserByAddress() should return a user")
+	assert.Equal(t, address, user.Address, "GetUserByAddress() should return the correct address")
+	assert.Equal(t, "testuser", user.Username, "GetUserByAddress() should return the correct username")
+
+	// Test GetUserByAddress when user is not found
+	mock.ExpectQuery(queryPattern).
+		WithArgs(address).
+		WillReturnError(sql.ErrNoRows)
+
+	user, err = repo.GetUserByAddress(ctx, address)
+	assert.Error(t, err, "GetUserByAddress() should return an error when user is not found")
+	assert.Nil(t, user, "GetUserByAddress() should return nil when user is not found")
+
+	// Check if the error is the expected "user not found"
+	assert.EqualError(t, err, "user not found")
+
+	// Test GetUserByAddress with database error
+	mock.ExpectQuery(queryPattern).
+		WithArgs(address).
+		WillReturnError(errors.New("database error"))
+
+	user, err = repo.GetUserByAddress(ctx, address)
+	assert.Error(t, err, "GetUserByAddress() should return an error when there's a database error")
+	assert.Nil(t, user, "GetUserByAddress() should return nil when there's a database error")
+
+	// Test case: repo is nil
+	var nilRepo *repository.UsersRepository
+	user, err = nilRepo.GetUserByAddress(ctx, address)
+	assert.Error(t, err, "GetUserByAddress() on nil repository should return an error")
+	assert.Nil(t, user, "GetUserByAddress() on nil repository should return nil")
+	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetUserByAddress() should return ErrDBNotInitialized")
+}

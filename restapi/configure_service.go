@@ -116,6 +116,7 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.FrontendGetFrontendFilesFileHandler = frontend.GetFrontendFilesFileHandlerFunc(frontendAPI.GetFileHandler)
 	api.FrontendGetFrontendCategoriesHandler = frontend.GetFrontendCategoriesHandlerFunc(frontendAPI.GetCategoriesHandler)
 	api.FrontendGetFrontendContractsHandler = frontend.GetFrontendContractsHandlerFunc(frontendAPI.GetContractsHandler)
+	api.FrontendGetFrontendUsersHandler = frontend.GetFrontendUsersHandlerFunc(frontendAPI.GetUsersHandler)
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}

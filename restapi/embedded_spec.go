@@ -298,6 +298,64 @@ func init() {
         }
       }
     },
+    "/frontend/users": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "this route fetch public users who has address",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "address",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicUser"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "description": "This endpoint provides Prometheus-compatible metrics for monitoring the application. \nIt is typically used by Prometheus or similar monitoring tools to scrape metrics data.\n",
@@ -1467,6 +1525,64 @@ func init() {
             "description": "ok",
             "schema": {
               "$ref": "#/definitions/PublicSlider"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/users": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "this route fetch public users who has address",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "address",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicUser"
+              }
             }
           },
           "400": {

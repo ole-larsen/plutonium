@@ -25,6 +25,7 @@ type UsersRepositoryInterface interface {
 	Create(ctx context.Context, userMap map[string]interface{}) error
 	GetOne(ctx context.Context, email string) (*User, error)
 	GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error)
+	GetUserByAddress(ctx context.Context, address string) (*User, error)
 }
 
 type User struct {
@@ -33,13 +34,14 @@ type User struct {
 	Deleted              strfmt.Date `db:"deleted"`
 	PasswordResetToken   *string     `db:"password_reset_token"`
 	PasswordResetExpires *int64      `db:"password_reset_expires"`
-	Email                string      `db:"email"`
 	RSASecret            string      `db:"rsa_secret"`
+	Email                string      `db:"email"`
 	Password             string      `db:"password"`
 	Secret               string      `db:"secret"`
 	UUID                 string      `db:"uuid"`
 	Username             string      `db:"username"`
 	Address              string      `db:"address"`
+	Nonce                string      `db:"nonce"`
 	ID                   int64       `db:"id"`
 	Enabled              bool        `db:"enabled"`
 }
@@ -158,15 +160,17 @@ func (r *UsersRepository) GetPublicUserByID(ctx context.Context, id int64) (*mod
 
 	row := r.DB.QueryRowContext(ctx, `
 SELECT 
-	u.id, 
-	a.uuid,
-	u.username, 
-	u.email, 
-	a.address,
-	f.url
-FROM users u
-JOIN users_addresses a ON a.user_id = u.id
-WHERE u.deleted_at isNULL AND u.id=$1 AND u.deleted isNULL;`, id)
+    u.id, 
+    a.uuid, 
+    u.username, 
+    u.email, 
+    a.address
+FROM users u 
+JOIN users_addresses a ON a.user_id = u.id 
+LEFT JOIN some_table f ON f.user_id = u.id
+WHERE u.deleted IS NULL 
+  AND u.id = $1
+  AND u.deleted IS NULL;`, id)
 
 	var user User
 
@@ -184,6 +188,39 @@ WHERE u.deleted_at isNULL AND u.id=$1 AND u.deleted isNULL;`, id)
 		}
 
 		return publicUser, nil
+	default:
+		return nil, err
+	}
+}
+
+func (r *UsersRepository) GetUserByAddress(ctx context.Context, address string) (*User, error) {
+	if r == nil {
+		return nil, ErrDBNotInitialized
+	}
+
+	var user User
+
+	sqlStatement := `
+SELECT 
+	u.id, 
+	a.uuid,
+	u.username, 
+	u.email, 
+	u.password,
+	a.address,
+	a.nonce
+FROM users u
+LEFT JOIN users_addresses a ON a.user_id = u.id
+WHERE a.address=$1 AND u.deleted IS NULL;`
+
+	row := r.DB.QueryRowContext(ctx, sqlStatement, address)
+
+	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Password, &user.Address, &user.Nonce)
+	switch err {
+	case sql.ErrNoRows:
+		return nil, fmt.Errorf("user not found")
+	case nil:
+		return &user, nil
 	default:
 		return nil, err
 	}

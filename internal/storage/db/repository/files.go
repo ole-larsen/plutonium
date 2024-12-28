@@ -129,8 +129,7 @@ func (r *FilesRepository) GetFiles(ctx context.Context) ([]*models.File, error) 
 	}
 
 	var (
-		multierr multierror.Error
-		files    []*models.File
+		files []*models.File
 	)
 
 	rows, err := r.DB.QueryxContext(ctx, `
@@ -173,7 +172,7 @@ SELECT id, name, alt, caption, hash, mime, ext, size, width, height, provider, u
 
 	defer rows.Close()
 
-	return files, multierr.ErrorOrNil()
+	return files, nil
 }
 
 func (r *FilesRepository) GetFileByName(ctx context.Context, name string) (*models.File, error) {

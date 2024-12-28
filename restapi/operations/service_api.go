@@ -62,6 +62,9 @@ func NewServiceAPI(spec *loads.Document) *ServiceAPI {
 		FrontendGetFrontendSliderHandler: frontend.GetFrontendSliderHandlerFunc(func(params frontend.GetFrontendSliderParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation frontend.GetFrontendSlider has not yet been implemented")
 		}),
+		FrontendGetFrontendUsersHandler: frontend.GetFrontendUsersHandlerFunc(func(params frontend.GetFrontendUsersParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation frontend.GetFrontendUsers has not yet been implemented")
+		}),
 		MonitoringGetMetricsHandler: monitoring.GetMetricsHandlerFunc(func(params monitoring.GetMetricsParams) middleware.Responder {
 			return middleware.NotImplemented("operation monitoring.GetMetrics has not yet been implemented")
 		}),
@@ -84,30 +87,31 @@ This document outlines the API's structure, response formats, and capabilities f
 */
 type ServiceAPI struct {
 	FrontendGetFrontendSliderHandler     frontend.GetFrontendSliderHandler
-	APIAuthorizer                        runtime.Authorizer
+	JSONConsumer                         runtime.Consumer
 	JSONProducer                         runtime.Producer
 	formats                              strfmt.Registry
 	PublicGetPingHandler                 public.GetPingHandler
 	MonitoringGetMetricsHandler          monitoring.GetMetricsHandler
+	FrontendGetFrontendUsersHandler      frontend.GetFrontendUsersHandler
 	FrontendGetFrontendMenuHandler       frontend.GetFrontendMenuHandler
 	FrontendGetFrontendFilesFileHandler  frontend.GetFrontendFilesFileHandler
 	FrontendGetFrontendContractsHandler  frontend.GetFrontendContractsHandler
 	FrontendGetFrontendCategoriesHandler frontend.GetFrontendCategoriesHandler
-	JSONConsumer                         runtime.Consumer
+	APIAuthorizer                        runtime.Authorizer
 	Middleware                           func(middleware.Builder) http.Handler
-	ServeError                           func(http.ResponseWriter, *http.Request, error)
-	BasicAuthenticator                   func(security.UserPassAuthentication) runtime.Authenticator
-	handlers                             map[string]map[string]http.Handler
-	customConsumers                      map[string]runtime.Consumer
-	APIKeyAuthenticator                  func(string, string, security.TokenAuthentication) runtime.Authenticator
+	spec                                 *loads.Document
 	Logger                               func(string, ...interface{})
+	handlers                             map[string]map[string]http.Handler
+	APIKeyAuthenticator                  func(string, string, security.TokenAuthentication) runtime.Authenticator
+	BasicAuthenticator                   func(security.UserPassAuthentication) runtime.Authenticator
+	XTokenAuth                           func(string) (*models.Principal, error)
 	context                              *middleware.Context
 	ServerShutdown                       func()
-	PreServerShutdown                    func()
-	spec                                 *loads.Document
-	customProducers                      map[string]runtime.Producer
-	XTokenAuth                           func(string) (*models.Principal, error)
 	BearerAuthenticator                  func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+	PreServerShutdown                    func()
+	customProducers                      map[string]runtime.Producer
+	customConsumers                      map[string]runtime.Consumer
+	ServeError                           func(http.ResponseWriter, *http.Request, error)
 	defaultConsumes                      string
 	defaultProduces                      string
 	CommandLineOptionsGroups             []swag.CommandLineOptionsGroup
@@ -189,6 +193,9 @@ func (o *ServiceAPI) Validate() error {
 	}
 	if o.FrontendGetFrontendSliderHandler == nil {
 		unregistered = append(unregistered, "frontend.GetFrontendSliderHandler")
+	}
+	if o.FrontendGetFrontendUsersHandler == nil {
+		unregistered = append(unregistered, "frontend.GetFrontendUsersHandler")
 	}
 	if o.MonitoringGetMetricsHandler == nil {
 		unregistered = append(unregistered, "monitoring.GetMetricsHandler")
@@ -315,6 +322,10 @@ func (o *ServiceAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/frontend/slider"] = frontend.NewGetFrontendSlider(o.context, o.FrontendGetFrontendSliderHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/frontend/users"] = frontend.NewGetFrontendUsers(o.context, o.FrontendGetFrontendUsersHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

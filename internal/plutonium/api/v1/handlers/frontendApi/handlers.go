@@ -193,6 +193,41 @@ func (a *API) GetContractsHandler(_ frontend.GetFrontendContractsParams, _ *mode
 
 	return frontend.NewGetFrontendContractsOK().WithPayload(payload)
 }
+
+func (a *API) GetUsersHandler(params frontend.GetFrontendUsersParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if params.Address == nil {
+		return frontend.NewGetFrontendUsersInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: "users provider is required",
+		})
+	}
+
+	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, *params.Address)
+
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendUsersInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	payload := &models.PublicUser{
+		Address:  user.Address,
+		Email:    user.Email,
+		ID:       user.ID,
+		Nonce:    user.Nonce,
+		Username: user.Nonce,
+		UUID:     user.UUID,
+	}
+
+	return frontend.NewGetUsersOK().WithPayload([]*models.PublicUser{payload})
+}
+
 func (a *API) XTokenAuth(token string) (*models.Principal, error) {
 	if token == a.service.GetSettings().XToken {
 		principal := models.Principal(token)

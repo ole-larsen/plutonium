@@ -194,6 +194,42 @@ paths:
           description: "Internal server error."
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /frontend/users:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      parameters:
+        - name: address
+          in: query
+          type: string
+      summary: "this route fetch public users who has address"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/PublicUser"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /frontend/files/:file/:
     get:
       tags:
