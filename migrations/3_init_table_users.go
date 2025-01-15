@@ -13,12 +13,15 @@ func init() {
 		_, err := db.Exec(`
 			CREATE TABLE IF NOT EXISTS users (
 			    id                     SERIAL PRIMARY KEY,
+				uuid                   varchar(255) NOT NULL DEFAULT gen_random_uuid(),
 			    username               varchar(255) UNIQUE NOT NULL,
 				address                varchar(64)[],
 				email                  varchar(255) UNIQUE NOT NULL,
 			    password               varchar(255) NOT NULL,
 				password_reset_token   varchar(255),
 				password_reset_expires BIGINT,
+				nonce                  varchar(255),
+				rsa_secret             varchar(255),
 				token                  varchar(255),  -- // registration link
 				token_expires          bigint,        -- // registration link activation time
 				secret                 varchar(255),

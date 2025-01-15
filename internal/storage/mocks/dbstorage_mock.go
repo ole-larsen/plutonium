@@ -20,9 +20,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.
@@ -54,6 +54,20 @@ func (m *MockDBStorageInterface) ConnectRepository(name string, sqlxDB *sqlx.DB)
 func (mr *MockDBStorageInterfaceMockRecorder) ConnectRepository(name, sqlxDB any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConnectRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).ConnectRepository), name, sqlxDB)
+}
+
+// GetAuthorsRepository mocks base method.
+func (m *MockDBStorageInterface) GetAuthorsRepository() *repository.AuthorsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAuthorsRepository")
+	ret0, _ := ret[0].(*repository.AuthorsRepository)
+	return ret0
+}
+
+// GetAuthorsRepository indicates an expected call of GetAuthorsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetAuthorsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthorsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetAuthorsRepository))
 }
 
 // GetCategoriesRepository mocks base method.

@@ -18,14 +18,30 @@ import (
 //
 // swagger:model Metadata
 type Metadata struct {
-	AnimationURL    string                `json:"animation_url,omitempty"`
-	BackgroundColor string                `json:"background_color,omitempty"`
-	Description     string                `json:"description,omitempty"`
-	ExternalURL     string                `json:"external_url,omitempty"`
-	Image           string                `json:"image,omitempty"`
-	Name            string                `json:"name,omitempty"`
-	YoutubeURL      string                `json:"youtube_url,omitempty"`
-	Attributes      []*MetadataAttributes `json:"attributes"`
+
+	// animation url
+	AnimationURL string `json:"animation_url,omitempty"`
+
+	// attributes
+	Attributes []*MetadataAttributes `json:"attributes"`
+
+	// background color
+	BackgroundColor string `json:"background_color,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// external url
+	ExternalURL string `json:"external_url,omitempty"`
+
+	// image
+	Image string `json:"image,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// youtube url
+	YoutubeURL string `json:"youtube_url,omitempty"`
 }
 
 // Validate validates this metadata

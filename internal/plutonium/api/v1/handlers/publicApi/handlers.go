@@ -9,6 +9,10 @@ import (
 	"github.com/ole-larsen/plutonium/restapi/operations/public"
 )
 
+type PublicAPI interface {
+	GetPingHandler(_ public.GetPingParams) middleware.Responder
+}
+
 func GetPingHandler(_ public.GetPingParams) middleware.Responder {
 	return public.NewGetPingOK().
 		WithPayload(&models.PingResponse{Message: "pong", Timestamp: strfmt.DateTime(time.Now())})

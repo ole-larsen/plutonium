@@ -13,9 +13,11 @@ import (
 
 // GetFrontendUsersURL generates an URL for the get frontend users operation
 type GetFrontendUsersURL struct {
-	_         struct{}
-	Address   *string
+	Address *string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the

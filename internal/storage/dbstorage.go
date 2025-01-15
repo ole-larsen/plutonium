@@ -24,18 +24,20 @@ type DBStorageInterface interface {
 	GetSlidersRepository() *repository.SlidersRepository
 	GetFilesRepository() *repository.FilesRepository
 	GetCategoriesRepository() *repository.CategoriesRepository
+	GetAuthorsRepository() *repository.AuthorsRepository
 }
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
 	repositories struct {
-		users      *repository.UsersRepository
-		contracts  *repository.ContractsRepository
-		pages      *repository.PagesRepository
-		categories *repository.CategoriesRepository
-		menus      *repository.MenusRepository
-		sliders    *repository.SlidersRepository
-		files      *repository.FilesRepository
+		users      repository.UsersRepositoryInterface
+		contracts  repository.ContractsRepositoryInterface
+		pages      repository.PagesRepositoryInterface
+		categories repository.CategoriesRepositoryInterface
+		menus      repository.MenusRepositoryInterface
+		sliders    repository.SlidersRepositoryInterface
+		files      repository.FilesRepositoryInterface
+		authors    repository.AuthorsRepositoryInterface
 	}
 	DSN string
 }
@@ -105,6 +107,11 @@ func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 		if s.repositories.files.InnerDB() == nil {
 			return NewError(fmt.Errorf("failed to connect %s repository", name))
 		}
+	case "authors":
+		s.repositories.authors = repository.NewAuthorsRepository(sqlxDB, name)
+		if s.repositories.files.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
 	default:
 		return NewError(fmt.Errorf("unknown repository: %s", name))
 	}
@@ -113,27 +120,31 @@ func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 }
 
 func (s *DBStorage) GetUsersRepository() *repository.UsersRepository {
-	return s.repositories.users
+	return s.repositories.users.(*repository.UsersRepository)
 }
 
 func (s *DBStorage) GetContractsRepository() *repository.ContractsRepository {
-	return s.repositories.contracts
+	return s.repositories.contracts.(*repository.ContractsRepository)
 }
 
 func (s *DBStorage) GetMenusRepository() *repository.MenusRepository {
-	return s.repositories.menus
+	return s.repositories.menus.(*repository.MenusRepository)
 }
 
 func (s *DBStorage) GetSlidersRepository() *repository.SlidersRepository {
-	return s.repositories.sliders
+	return s.repositories.sliders.(*repository.SlidersRepository)
 }
 
 func (s *DBStorage) GetFilesRepository() *repository.FilesRepository {
-	return s.repositories.files
+	return s.repositories.files.(*repository.FilesRepository)
 }
 
 func (s *DBStorage) GetCategoriesRepository() *repository.CategoriesRepository {
-	return s.repositories.categories
+	return s.repositories.categories.(*repository.CategoriesRepository)
+}
+
+func (s *DBStorage) GetAuthorsRepository() *repository.AuthorsRepository {
+	return s.repositories.authors.(*repository.AuthorsRepository)
 }
 
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
@@ -147,7 +158,7 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 		return nil, err
 	}
 
-	for _, name := range []string{"users", "contracts", "pages", "categories", "menus", "sliders", "files"} {
+	for _, name := range []string{"users", "contracts", "pages", "categories", "menus", "sliders", "files", "authors"} {
 		if err := store.ConnectRepository(name, sqlxdb); err != nil {
 			return nil, err
 		}

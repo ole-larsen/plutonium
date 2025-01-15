@@ -21,9 +21,9 @@ import (
 
 // MockUsersRepositoryInterface is a mock of UsersRepositoryInterface interface.
 type MockUsersRepositoryInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockUsersRepositoryInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockUsersRepositoryInterfaceMockRecorder is the mock recorder for MockUsersRepositoryInterface.
@@ -57,21 +57,6 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) Create(ctx, userMap any) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).Create), ctx, userMap)
 }
 
-// GetOne mocks base method.
-func (m *MockUsersRepositoryInterface) GetOne(ctx context.Context, email string) (*repository.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOne", ctx, email)
-	ret0, _ := ret[0].(*repository.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetOne indicates an expected call of GetOne.
-func (mr *MockUsersRepositoryInterfaceMockRecorder) GetOne(ctx, email any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOne", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetOne), ctx, email)
-}
-
 // GetPublicUserByID mocks base method.
 func (m *MockUsersRepositoryInterface) GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error) {
 	m.ctrl.T.Helper()
@@ -102,6 +87,36 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) GetUserByAddress(ctx, addres
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByAddress", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetUserByAddress), ctx, address)
 }
 
+// GetUserByEmail mocks base method.
+func (m *MockUsersRepositoryInterface) GetUserByEmail(ctx context.Context, email string) (*repository.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
+	ret0, _ := ret[0].(*repository.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByEmail indicates an expected call of GetUserByEmail.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) GetUserByEmail(ctx, email any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetUserByEmail), ctx, email)
+}
+
+// GetUserByID mocks base method.
+func (m *MockUsersRepositoryInterface) GetUserByID(ctx context.Context, id int64) (*repository.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
+	ret0, _ := ret[0].(*repository.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByID indicates an expected call of GetUserByID.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) GetUserByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).GetUserByID), ctx, id)
+}
+
 // InnerDB mocks base method.
 func (m *MockUsersRepositoryInterface) InnerDB() *sqlx.DB {
 	m.ctrl.T.Helper()
@@ -128,4 +143,18 @@ func (m *MockUsersRepositoryInterface) Ping() error {
 func (mr *MockUsersRepositoryInterfaceMockRecorder) Ping() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).Ping))
+}
+
+// UpdateNonce mocks base method.
+func (m *MockUsersRepositoryInterface) UpdateNonce(ctx context.Context, userMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateNonce", ctx, userMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateNonce indicates an expected call of UpdateNonce.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) UpdateNonce(ctx, userMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNonce", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).UpdateNonce), ctx, userMap)
 }

@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/ole-larsen/plutonium/models"
+	"github.com/ole-larsen/plutonium/restapi/operations/auth"
 	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
 	"github.com/ole-larsen/plutonium/restapi/operations/monitoring"
 	"github.com/ole-larsen/plutonium/restapi/operations/public"
@@ -47,6 +48,12 @@ func NewServiceAPI(spec *loads.Document) *ServiceAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		AuthGetFrontendAuthCallbackHandler: auth.GetFrontendAuthCallbackHandlerFunc(func(params auth.GetFrontendAuthCallbackParams) middleware.Responder {
+			return middleware.NotImplemented("operation auth.GetFrontendAuthCallback has not yet been implemented")
+		}),
+		AuthGetFrontendAuthWalletConnectHandler: auth.GetFrontendAuthWalletConnectHandlerFunc(func(params auth.GetFrontendAuthWalletConnectParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation auth.GetFrontendAuthWalletConnect has not yet been implemented")
+		}),
 		FrontendGetFrontendCategoriesHandler: frontend.GetFrontendCategoriesHandlerFunc(func(params frontend.GetFrontendCategoriesParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation frontend.GetFrontendCategories has not yet been implemented")
 		}),
@@ -71,6 +78,9 @@ func NewServiceAPI(spec *loads.Document) *ServiceAPI {
 		PublicGetPingHandler: public.GetPingHandlerFunc(func(params public.GetPingParams) middleware.Responder {
 			return middleware.NotImplemented("operation public.GetPing has not yet been implemented")
 		}),
+		AuthPostFrontendAuthWalletConnectHandler: auth.PostFrontendAuthWalletConnectHandlerFunc(func(params auth.PostFrontendAuthWalletConnectParams) middleware.Responder {
+			return middleware.NotImplemented("operation auth.PostFrontendAuthWalletConnect has not yet been implemented")
+		}),
 
 		// Applies when the "x-token" header is set
 		XTokenAuth: func(token string) (*models.Principal, error) {
@@ -86,36 +96,84 @@ ServiceAPI The Plutonium Service API provides endpoints to support the operation
 This document outlines the API's structure, response formats, and capabilities for integration.
 */
 type ServiceAPI struct {
-	FrontendGetFrontendSliderHandler     frontend.GetFrontendSliderHandler
-	JSONConsumer                         runtime.Consumer
-	JSONProducer                         runtime.Producer
-	formats                              strfmt.Registry
-	PublicGetPingHandler                 public.GetPingHandler
-	MonitoringGetMetricsHandler          monitoring.GetMetricsHandler
-	FrontendGetFrontendUsersHandler      frontend.GetFrontendUsersHandler
-	FrontendGetFrontendMenuHandler       frontend.GetFrontendMenuHandler
-	FrontendGetFrontendFilesFileHandler  frontend.GetFrontendFilesFileHandler
-	FrontendGetFrontendContractsHandler  frontend.GetFrontendContractsHandler
+	spec            *loads.Document
+	context         *middleware.Context
+	handlers        map[string]map[string]http.Handler
+	formats         strfmt.Registry
+	customConsumers map[string]runtime.Consumer
+	customProducers map[string]runtime.Producer
+	defaultConsumes string
+	defaultProduces string
+	Middleware      func(middleware.Builder) http.Handler
+	useSwaggerUI    bool
+
+	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
+
+	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
+
+	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
+	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+
+	// JSONConsumer registers a consumer for the following mime types:
+	//   - application/json
+	JSONConsumer runtime.Consumer
+
+	// JSONProducer registers a producer for the following mime types:
+	//   - application/json
+	JSONProducer runtime.Producer
+
+	// XTokenAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key x-token provided in the header
+	XTokenAuth func(string) (*models.Principal, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
+
+	// AuthGetFrontendAuthCallbackHandler sets the operation handler for the get frontend auth callback operation
+	AuthGetFrontendAuthCallbackHandler auth.GetFrontendAuthCallbackHandler
+	// AuthGetFrontendAuthWalletConnectHandler sets the operation handler for the get frontend auth wallet connect operation
+	AuthGetFrontendAuthWalletConnectHandler auth.GetFrontendAuthWalletConnectHandler
+	// FrontendGetFrontendCategoriesHandler sets the operation handler for the get frontend categories operation
 	FrontendGetFrontendCategoriesHandler frontend.GetFrontendCategoriesHandler
-	APIAuthorizer                        runtime.Authorizer
-	Middleware                           func(middleware.Builder) http.Handler
-	spec                                 *loads.Document
-	Logger                               func(string, ...interface{})
-	handlers                             map[string]map[string]http.Handler
-	APIKeyAuthenticator                  func(string, string, security.TokenAuthentication) runtime.Authenticator
-	BasicAuthenticator                   func(security.UserPassAuthentication) runtime.Authenticator
-	XTokenAuth                           func(string) (*models.Principal, error)
-	context                              *middleware.Context
-	ServerShutdown                       func()
-	BearerAuthenticator                  func(string, security.ScopedTokenAuthentication) runtime.Authenticator
-	PreServerShutdown                    func()
-	customProducers                      map[string]runtime.Producer
-	customConsumers                      map[string]runtime.Consumer
-	ServeError                           func(http.ResponseWriter, *http.Request, error)
-	defaultConsumes                      string
-	defaultProduces                      string
-	CommandLineOptionsGroups             []swag.CommandLineOptionsGroup
-	useSwaggerUI                         bool
+	// FrontendGetFrontendContractsHandler sets the operation handler for the get frontend contracts operation
+	FrontendGetFrontendContractsHandler frontend.GetFrontendContractsHandler
+	// FrontendGetFrontendFilesFileHandler sets the operation handler for the get frontend files file operation
+	FrontendGetFrontendFilesFileHandler frontend.GetFrontendFilesFileHandler
+	// FrontendGetFrontendMenuHandler sets the operation handler for the get frontend menu operation
+	FrontendGetFrontendMenuHandler frontend.GetFrontendMenuHandler
+	// FrontendGetFrontendSliderHandler sets the operation handler for the get frontend slider operation
+	FrontendGetFrontendSliderHandler frontend.GetFrontendSliderHandler
+	// FrontendGetFrontendUsersHandler sets the operation handler for the get frontend users operation
+	FrontendGetFrontendUsersHandler frontend.GetFrontendUsersHandler
+	// MonitoringGetMetricsHandler sets the operation handler for the get metrics operation
+	MonitoringGetMetricsHandler monitoring.GetMetricsHandler
+	// PublicGetPingHandler sets the operation handler for the get ping operation
+	PublicGetPingHandler public.GetPingHandler
+	// AuthPostFrontendAuthWalletConnectHandler sets the operation handler for the post frontend auth wallet connect operation
+	AuthPostFrontendAuthWalletConnectHandler auth.PostFrontendAuthWalletConnectHandler
+
+	// ServeError is called when an error is received, there is a default handler
+	// but you can set your own with this
+	ServeError func(http.ResponseWriter, *http.Request, error)
+
+	// PreServerShutdown is called before the HTTP(S) server is shutdown
+	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
+	PreServerShutdown func()
+
+	// ServerShutdown is called when the HTTP(S) server is shut down and done
+	// handling all active connections and does not accept connections any more
+	ServerShutdown func()
+
+	// Custom command line argument groups with their descriptions
+	CommandLineOptionsGroups []swag.CommandLineOptionsGroup
+
+	// User defined logger function.
+	Logger func(string, ...interface{})
 }
 
 // UseRedoc for documentation at /docs
@@ -179,6 +237,12 @@ func (o *ServiceAPI) Validate() error {
 		unregistered = append(unregistered, "XTokenAuth")
 	}
 
+	if o.AuthGetFrontendAuthCallbackHandler == nil {
+		unregistered = append(unregistered, "auth.GetFrontendAuthCallbackHandler")
+	}
+	if o.AuthGetFrontendAuthWalletConnectHandler == nil {
+		unregistered = append(unregistered, "auth.GetFrontendAuthWalletConnectHandler")
+	}
 	if o.FrontendGetFrontendCategoriesHandler == nil {
 		unregistered = append(unregistered, "frontend.GetFrontendCategoriesHandler")
 	}
@@ -202,6 +266,9 @@ func (o *ServiceAPI) Validate() error {
 	}
 	if o.PublicGetPingHandler == nil {
 		unregistered = append(unregistered, "public.GetPingHandler")
+	}
+	if o.AuthPostFrontendAuthWalletConnectHandler == nil {
+		unregistered = append(unregistered, "auth.PostFrontendAuthWalletConnectHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -305,6 +372,14 @@ func (o *ServiceAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/frontend/auth/callback"] = auth.NewGetFrontendAuthCallback(o.context, o.AuthGetFrontendAuthCallbackHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/frontend/auth/wallet-connect"] = auth.NewGetFrontendAuthWalletConnect(o.context, o.AuthGetFrontendAuthWalletConnectHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/frontend/categories"] = frontend.NewGetFrontendCategories(o.context, o.FrontendGetFrontendCategoriesHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -334,6 +409,10 @@ func (o *ServiceAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/ping"] = public.NewGetPing(o.context, o.PublicGetPingHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/frontend/auth/wallet-connect"] = auth.NewPostFrontendAuthWalletConnect(o.context, o.AuthPostFrontendAuthWalletConnectHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

@@ -101,3 +101,79 @@ func (a *AggregatedImageJSON) Scan(val interface{}) error {
 func (a *AggregatedImageJSON) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
+
+type AggregatedWallet []*models.Wallet
+
+func (a *AggregatedWallet) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedWallet) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+type AggregatedSocial []*models.Social
+
+func (a *AggregatedSocial) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedSocial) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+type AggregatedAuthorJSON models.PublicAuthor
+
+func (a *AggregatedAuthorJSON) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedAuthorJSON) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+type AggregatedAuthorAttributes models.PublicAuthorAttributes
+
+func (a *AggregatedAuthorAttributes) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedAuthorAttributes) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}

@@ -10,10 +10,14 @@ import (
 	"github.com/go-openapi/strfmt"
 	_ "github.com/go-sql-driver/mysql" // add driver
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq" // add lib
 	"github.com/ole-larsen/plutonium/internal/hash"
+	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/models"
 )
+
+var logger = log.NewLogger("info", log.DefaultBuildLogger)
 
 // ErrDBNotInitialized - default database connection error.
 var ErrDBNotInitialized = fmt.Errorf("db not initialised")
@@ -23,27 +27,29 @@ type UsersRepositoryInterface interface {
 	InnerDB() *sqlx.DB
 	Ping() error
 	Create(ctx context.Context, userMap map[string]interface{}) error
-	GetOne(ctx context.Context, email string) (*User, error)
-	GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error)
 	GetUserByAddress(ctx context.Context, address string) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetUserByID(ctx context.Context, id int64) (*User, error)
+	GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error)
+	UpdateNonce(ctx context.Context, userMap map[string]interface{}) error
 }
 
 type User struct {
-	Created              strfmt.Date `db:"created"`
-	Updated              strfmt.Date `db:"updated"`
-	Deleted              strfmt.Date `db:"deleted"`
-	PasswordResetToken   *string     `db:"password_reset_token"`
-	PasswordResetExpires *int64      `db:"password_reset_expires"`
-	RSASecret            string      `db:"rsa_secret"`
-	Email                string      `db:"email"`
-	Password             string      `db:"password"`
-	Secret               string      `db:"secret"`
-	UUID                 string      `db:"uuid"`
-	Username             string      `db:"username"`
-	Address              string      `db:"address"`
-	Nonce                string      `db:"nonce"`
-	ID                   int64       `db:"id"`
-	Enabled              bool        `db:"enabled"`
+	Created              strfmt.Date    `db:"created"`
+	Updated              strfmt.Date    `db:"updated"`
+	Deleted              strfmt.Date    `db:"deleted"`
+	PasswordResetToken   sql.NullString `db:"password_reset_token"`
+	PasswordResetExpires sql.NullInt64  `db:"password_reset_expires"`
+	RSASecret            string         `db:"rsa_secret"`
+	Email                string         `db:"email"`
+	Password             string         `db:"password"`
+	Secret               string         `db:"secret"`
+	UUID                 sql.NullString `db:"uuid"`
+	Username             string         `db:"username"`
+	Address              pq.StringArray `db:"address"`
+	Nonce                sql.NullString `db:"nonce"`
+	ID                   int64          `db:"id"`
+	Enabled              bool           `db:"enabled"`
 }
 
 // UsersRepository - repository to store users.
@@ -98,24 +104,52 @@ func (r *UsersRepository) Create(ctx context.Context, userMap map[string]interfa
 		return ErrDBNotInitialized
 	}
 
-	var err error
-	if userMap["password"], err = SetPassword(userMap["password"]); err != nil {
-		return NewError(err)
-	}
-	// JNUGNHA27JMIHA5I
-	// generate secret per user
-	length := 16
-	userMap["rsa_secret"] = hash.RandStringBytes(length)
-
 	_, dbErr := r.DB.NamedExecContext(ctx, fmt.Sprintf(`
-INSERT INTO %s (email, password, secret, rsa_secret)
-VALUES (:email, :password, :secret, :rsa_secret)
+INSERT INTO %s (email, username, password, secret, rsa_secret, address, nonce)
+VALUES (:email, :username, :password, :secret, :rsa_secret, :address, :nonce)
 ON CONFLICT DO NOTHING`, r.TBL), userMap)
 
 	return dbErr
 }
 
-func (r *UsersRepository) GetOne(ctx context.Context, email string) (*User, error) {
+func (r *UsersRepository) GetUserByID(ctx context.Context, id int64) (*User, error) {
+	if r == nil {
+		return nil, ErrDBNotInitialized
+	}
+
+	var user User
+
+	sqlStatement := fmt.Sprintf(`
+SELECT 
+	id,
+	email,
+	password,
+	password_reset_token,
+	password_reset_expires,
+	enabled,
+	secret,
+	rsa_secret,
+	created,
+	updated,
+	deleted
+FROM %s 
+WHERE id=$1;`, r.TBL)
+
+	row := r.DB.QueryRowxContext(ctx, sqlStatement, id)
+
+	err := row.StructScan(&user)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, NewError(fmt.Errorf("user not found"))
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
@@ -142,11 +176,10 @@ WHERE email=$1;`, r.TBL)
 
 	err := row.StructScan(&user)
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, NewError(fmt.Errorf("user not found"))
-	}
-
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, NewError(fmt.Errorf("user not found"))
+		}
 		return nil, err
 	}
 
@@ -161,32 +194,26 @@ func (r *UsersRepository) GetPublicUserByID(ctx context.Context, id int64) (*mod
 	row := r.DB.QueryRowContext(ctx, `
 SELECT 
     u.id, 
-    a.uuid, 
+    u.uuid, 
     u.username, 
-    u.email, 
-    a.address
-FROM users u 
-JOIN users_addresses a ON a.user_id = u.id 
-LEFT JOIN some_table f ON f.user_id = u.id
-WHERE u.deleted IS NULL 
+    u.email
+FROM users u
+WHERE u.deleted IS NULL
   AND u.id = $1
   AND u.deleted IS NULL;`, id)
 
 	var user User
 
-	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Address)
+	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email)
 	switch err {
 	case sql.ErrNoRows:
 		return nil, fmt.Errorf("user not found")
 	case nil:
 		publicUser := &models.PublicUser{
 			ID:       user.ID,
-			UUID:     user.UUID,
 			Username: user.Username,
 			Email:    user.Email,
-			Address:  user.Address,
 		}
-
 		return publicUser, nil
 	default:
 		return nil, err
@@ -203,25 +230,32 @@ func (r *UsersRepository) GetUserByAddress(ctx context.Context, address string) 
 	sqlStatement := `
 SELECT 
 	u.id, 
-	a.uuid,
+	u.uuid,
 	u.username, 
 	u.email, 
 	u.password,
-	a.address,
-	a.nonce
+	u.address,
+	u.nonce
 FROM users u
-LEFT JOIN users_addresses a ON a.user_id = u.id
-WHERE a.address=$1 AND u.deleted IS NULL;`
+WHERE $1 = ANY(u.address) AND u.deleted IS NULL;`
 
 	row := r.DB.QueryRowContext(ctx, sqlStatement, address)
 
-	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Password, &user.Address, &user.Nonce)
-	switch err {
-	case sql.ErrNoRows:
-		return nil, fmt.Errorf("user not found")
-	case nil:
-		return &user, nil
-	default:
+	if err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Password, &user.Address, &user.Nonce); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, NewError(fmt.Errorf("user not found"))
+		}
 		return nil, err
 	}
+
+	return &user, nil
+}
+
+func (r *UsersRepository) UpdateNonce(ctx context.Context, userMap map[string]interface{}) error {
+	if r == nil {
+		return ErrDBNotInitialized
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET nonce=:nonce WHERE id=:id`, userMap)
+	return err
 }

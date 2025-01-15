@@ -23,7 +23,17 @@ type API struct {
 	service *plutonium.Server
 }
 
-func NewFrontendAPI(s *plutonium.Server) *API {
+type FrontendAPI interface {
+	GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Principal) middleware.Responder
+	GetSliderHandler(params frontend.GetFrontendSliderParams, _ *models.Principal) middleware.Responder
+	GetFileHandler(params frontend.GetFrontendFilesFileParams) middleware.Responder
+	GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *models.Principal) middleware.Responder
+	GetContractsHandler(_ frontend.GetFrontendContractsParams, _ *models.Principal) middleware.Responder
+	GetUsersHandler(params frontend.GetFrontendUsersParams, _ *models.Principal) middleware.Responder
+	XTokenAuth(token string) (*models.Principal, error)
+}
+
+func NewFrontendAPI(s *plutonium.Server) FrontendAPI {
 	return &API{service: s}
 }
 
@@ -79,8 +89,6 @@ func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *model
 		GetSliderByProvider(ctx, *params.Provider)
 
 	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
 		if strings.Contains(err.Error(), SliderNotFound) {
 			return frontend.NewGetFrontendSliderNotFound().WithPayload(&models.ErrorResponse{
 				Code:    http.StatusNotFound,
@@ -217,12 +225,12 @@ func (a *API) GetUsersHandler(params frontend.GetFrontendUsersParams, _ *models.
 	}
 
 	payload := &models.PublicUser{
-		Address:  user.Address,
-		Email:    user.Email,
-		ID:       user.ID,
-		Nonce:    user.Nonce,
-		Username: user.Nonce,
-		UUID:     user.UUID,
+		//Address:  user.Address,
+		Email: user.Email,
+		ID:    user.ID,
+		//Nonce:    user.Nonce,
+		//Username: user.Nonce,
+		//UUID: user.UUID,
 	}
 
 	return frontend.NewGetUsersOK().WithPayload([]*models.PublicUser{payload})

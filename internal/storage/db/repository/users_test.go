@@ -144,8 +144,8 @@ func TestUsersRepository_Create(t *testing.T) {
 	require.Equal(t, "[repository]: password must be a string", err.Error())
 }
 
-// TestUsersRepository_GetOne tests the GetOne method of UsersRepository.
-func TestUsersRepository_GetOne(t *testing.T) {
+// TestUsersRepository_GetUserByEmail tests the GetUserByEmail method of UsersRepository.
+func TestUsersRepository_GetUserByEmail(t *testing.T) {
 	db, mock, _ := sqlmock.New()
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 	defer db.Close()
@@ -158,7 +158,7 @@ func TestUsersRepository_GetOne(t *testing.T) {
 	ctx := context.Background()
 	email := "test@example.com"
 
-	// Test successful GetOne
+	// Test successful GetUserByEmail
 	rows := sqlmock.NewRows([]string{"id", "email", "password", "password_reset_token", "password_reset_expires", "enabled", "secret", "rsa_secret", "created", "updated", "deleted"}).
 		AddRow(1, email, "hashedpassword", "resetToken", 1234567890, true, "mysecret", "auth-token", "2024-01-01", "2024-01-01", "2024-01-01")
 
@@ -169,40 +169,40 @@ func TestUsersRepository_GetOne(t *testing.T) {
 		WithArgs(email).
 		WillReturnRows(rows)
 
-	user, err := repo.GetOne(ctx, email)
-	assert.NoError(t, err, "GetOne() should not return an error")
-	assert.NotNil(t, user, "GetOne() should return a user")
-	assert.Equal(t, email, user.Email, "GetOne() should return the correct user")
+	user, err := repo.GetUserByEmail(ctx, email)
+	assert.NoError(t, err, "GetUserByEmail() should not return an error")
+	assert.NotNil(t, user, "GetUserByEmail() should return a user")
+	assert.Equal(t, email, user.Email, "GetUserByEmail() should return the correct user")
 
-	// Test GetOne when user not found
+	// Test GetUserByEmail when user not found
 	mock.ExpectQuery(queryPattern).
 		WithArgs(email).
 		WillReturnError(sql.ErrNoRows) // Simulate user not found error
 
-	user, err = repo.GetOne(ctx, email)
-	assert.Error(t, err, "GetOne() should return an error when user is not found")
+	user, err = repo.GetUserByEmail(ctx, email)
+	assert.Error(t, err, "GetUserByEmail() should return an error when user is not found")
 
 	// Check if the error is wrapped by NewError
 	var customErr *repository.Error
 
-	assert.True(t, errors.As(err, &customErr), "GetOne() should return a NewError when user is not found")
-	assert.Nil(t, user, "GetOne() should return nil user when not found")
+	assert.True(t, errors.As(err, &customErr), "GetUserByEmail() should return a NewError when user is not found")
+	assert.Nil(t, user, "GetUserByEmail() should return nil user when not found")
 
-	// Test GetOne with database error
+	// Test GetUserByEmail with database error
 	mock.ExpectQuery(queryPattern).
 		WithArgs(email).
 		WillReturnError(repository.NewError(errors.New("user not found")))
 
-	user, err = repo.GetOne(ctx, email)
-	assert.Error(t, err, "GetOne() should return an error when there's a database error")
-	assert.Nil(t, user, "GetOne() should return nil user when there's a database error")
+	user, err = repo.GetUserByEmail(ctx, email)
+	assert.Error(t, err, "GetUserByEmail() should return an error when there's a database error")
+	assert.Nil(t, user, "GetUserByEmail() should return nil user when there's a database error")
 
 	// Test case: repo is nil
 	var nilRepo *repository.UsersRepository
-	user, err = nilRepo.GetOne(ctx, email)
-	assert.Error(t, err, "GetOne() on nil repository should return an error")
-	assert.Nil(t, user, "GetOne() on nil repository should return nil user")
-	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetOne() should return ErrDBNotInitialized")
+	user, err = nilRepo.GetUserByEmail(ctx, email)
+	assert.Error(t, err, "GetUserByEmail() on nil repository should return an error")
+	assert.Nil(t, user, "GetUserByEmail() on nil repository should return nil user")
+	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetUserByEmail() should return ErrDBNotInitialized")
 }
 
 func TestUsersRepository_GetPublicUserByID(t *testing.T) {
@@ -219,7 +219,7 @@ func TestUsersRepository_GetPublicUserByID(t *testing.T) {
 	email := "test@example.com"
 	userID := int64(1)
 	uuid := "21e49d82-5240-423f-8d92-1ffd4a1cf600"
-	// Test successful GetOne
+	// Test successful GetUserByEmail
 	rows := sqlmock.NewRows([]string{"id", "uuid", "username", "email", "address"}).
 		AddRow(userID, uuid, "testuser", email, "0x1234567890abcdef")
 

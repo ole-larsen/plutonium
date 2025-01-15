@@ -7,28 +7,42 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
+	"runtime/pprof"
+	"time"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/swag"
+	"golang.org/x/oauth2"
+
+	_ "net/http/pprof"
+
+	genericRuntime "runtime"
 
 	"github.com/ole-larsen/plutonium/internal/blockchain"
 	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/internal/plutonium"
+	v1authApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/authApi"
 	v1frontendApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/frontendApi"
 	v1monitoringApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/monitoringApi"
 	v1publicApi "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/handlers/publicApi"
 	v1middleware "github.com/ole-larsen/plutonium/internal/plutonium/api/v1/middleware"
 	"github.com/ole-larsen/plutonium/internal/plutonium/grpcserver"
+	"github.com/ole-larsen/plutonium/internal/plutonium/httpclient"
+	"github.com/ole-larsen/plutonium/internal/plutonium/oauth2client"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
 	"github.com/ole-larsen/plutonium/restapi/operations"
+	"github.com/ole-larsen/plutonium/restapi/operations/auth"
 	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
 	"github.com/ole-larsen/plutonium/restapi/operations/monitoring"
 	"github.com/ole-larsen/plutonium/restapi/operations/public"
 )
 
 //go:generate swagger generate server --target ../../plutonium --name Service --spec ../schema/swagger.yml --principal models.Principal
+
+const defaultTimeout = 30
 
 func configureFlags(api *operations.ServiceAPI) {
 	api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{}
@@ -38,6 +52,28 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	logger := log.NewLogger("info", log.DefaultBuildLogger)
 	cfg := settings.LoadConfig(".env")
 	fmt.Println(cfg.DSN)
+
+	// profileling cpu
+	fcpu, err := os.Create(`cpu.profile`)
+	if err != nil {
+		panic(err)
+	}
+	defer fcpu.Close()
+	if err := pprof.StartCPUProfile(fcpu); err != nil {
+		panic(err)
+	}
+	defer pprof.StopCPUProfile()
+
+	// memory profile
+	fmem, err := os.Create(`mem.profile`)
+	if err != nil {
+		panic(err)
+	}
+	defer fmem.Close()
+	genericRuntime.GC() //memory usage stat
+	if err := pprof.WriteHeapProfile(fmem); err != nil {
+		panic(err)
+	}
 
 	// configure the api here
 	api.ServeError = errors.ServeError
@@ -82,12 +118,21 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 		cfg.GRPC.Port,
 	)
 
+	httpDialer := httpclient.NewHTTPClient().
+		SetTimeout(defaultTimeout * time.Second).
+		SetSettings(cfg).
+		SetTransport(httpclient.SetDefaultTransport())
 	service.
 		SetSettings(cfg).
 		SetLogger(logger).
 		SetStorage(store).
 		SetGRPC(grpc).
-		SetWeb3Dialer(web3Dialer)
+		SetWeb3Dialer(web3Dialer).
+		SetHTTPDialer(httpDialer).
+		SetOauth2(&oauth2client.Oauth2{
+			Client: oauth2client.NewClient().SetSettings(cfg),
+			Config: make(map[string]oauth2.Config),
+		})
 
 	go func() {
 		logger.Infoln("starting grpc server")
@@ -117,6 +162,13 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.FrontendGetFrontendCategoriesHandler = frontend.GetFrontendCategoriesHandlerFunc(frontendAPI.GetCategoriesHandler)
 	api.FrontendGetFrontendContractsHandler = frontend.GetFrontendContractsHandlerFunc(frontendAPI.GetContractsHandler)
 	api.FrontendGetFrontendUsersHandler = frontend.GetFrontendUsersHandlerFunc(frontendAPI.GetUsersHandler)
+
+	authAPI := v1authApi.NewAuthAPI(service)
+
+	api.AuthGetFrontendAuthWalletConnectHandler = auth.GetFrontendAuthWalletConnectHandlerFunc(authAPI.GetWalletConnect)
+	api.AuthPostFrontendAuthWalletConnectHandler = auth.PostFrontendAuthWalletConnectHandlerFunc(authAPI.PostWalletConnect)
+	api.AuthGetFrontendAuthCallbackHandler = auth.GetFrontendAuthCallbackHandlerFunc(authAPI.GetOauth2Callback)
+
 	api.PreServerShutdown = func() {}
 
 	api.ServerShutdown = func() {}

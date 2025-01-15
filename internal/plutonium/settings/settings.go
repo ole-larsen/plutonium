@@ -9,15 +9,23 @@ import (
 	"github.com/spf13/viper"
 )
 
+type OAUTH2 struct {
+	Callback string `mapstructure:"OAUTH2_CALLBACK"`
+	Provider string `mapstructure:"OAUTH2_PROVIDER"`
+}
+
 // Settings represents the configuration settings for the server.
 type Settings struct {
 	GRPC       GRPC
 	MarketName string `mapstructure:"MARKETNAME"`
+	Domain     string `mapstructure:"DOMAIN"`
 	DSN        string
 	PrivateKey string `mapstructure:"ETH_PRIVATE_KEY"`
 	Network    string `mapstructure:"ETH_NETWORK"`
 	XToken     string `mapstructure:"X_TOKEN"`
+	Secret     string `mapstructure:"SECRET"`
 	DB         DB
+	OAUTH2     OAUTH2
 }
 
 type GRPC struct {
@@ -45,7 +53,7 @@ var (
 // LoadConfig initializes and returns the settings singleton.
 func LoadConfig(cfgPath string) *Settings {
 	once.Do(func() {
-		config = InitConfig(cfgPath, WithMarketname(), WithDSN(), WithEthPK(), WithEthWeb(), WithXToken())
+		config = InitConfig(cfgPath, WithMarketname(), WithDomain(), WithDSN(), WithEthPK(), WithEthWeb(), WithXToken(), WithSecret(), WithOauth2Provider(), WithOauth2Callback())
 	})
 
 	return config
@@ -85,6 +93,27 @@ func WithMarketname() func(*Settings) {
 	return func(ss *Settings) {
 		name := viper.GetString("MARKETNAME")
 		ss.MarketName = name
+	}
+}
+
+func WithDomain() func(*Settings) {
+	return func(ss *Settings) {
+		name := viper.GetString("DOMAIN")
+		ss.MarketName = name
+	}
+}
+
+func WithOauth2Provider() func(*Settings) {
+	return func(ss *Settings) {
+		provider := viper.GetString("OAUTH2_PROVIDER")
+		ss.OAUTH2.Provider = provider
+	}
+}
+
+func WithOauth2Callback() func(*Settings) {
+	return func(ss *Settings) {
+		callback := viper.GetString("OAUTH2_CALLBACK")
+		ss.OAUTH2.Callback = callback
 	}
 }
 
@@ -135,6 +164,14 @@ func WithXToken() func(*Settings) {
 		ss.XToken = token
 	}
 }
+
+func WithSecret() func(*Settings) {
+	return func(ss *Settings) {
+		token := viper.GetString("SECRET")
+		ss.Secret = token
+	}
+}
+
 func WithGRPC() func(*Settings) {
 	return func(ss *Settings) {
 		addr := strings.Split(viper.GetString("GRPC_URL"), ":")

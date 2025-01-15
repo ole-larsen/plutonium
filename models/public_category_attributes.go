@@ -18,13 +18,27 @@ import (
 //
 // swagger:model PublicCategoryAttributes
 type PublicCategoryAttributes struct {
-	Image       *PublicFile              `json:"image,omitempty"`
-	Content     string                   `json:"content,omitempty"`
-	Description string                   `json:"description,omitempty"`
-	Slug        string                   `json:"slug,omitempty"`
-	Title       string                   `json:"title,omitempty"`
+
+	// collections
 	Collections []*MarketplaceCollection `json:"collections"`
-	ID          int64                    `json:"id,omitempty"`
+
+	// content
+	Content string `json:"content,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// image
+	Image *PublicFile `json:"image,omitempty"`
+
+	// slug
+	Slug string `json:"slug,omitempty"`
+
+	// title
+	Title string `json:"title,omitempty"`
 }
 
 // Validate validates this public category attributes

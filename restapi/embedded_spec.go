@@ -30,6 +30,184 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/auth/callback": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "oauth2 callback from provider",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "code",
+            "name": "code",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "state",
+            "name": "state",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "callback from oauth",
+            "schema": {
+              "$ref": "#/definitions/Callback"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/auth/wallet-connect": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "This API endpoint create, store and returns credentials for new user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "operation type",
+            "name": "operation",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "public address",
+            "name": "address",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "check public address in db",
+            "schema": {
+              "$ref": "#/definitions/Nonce"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "This API endpoint create, store and returns credentials for new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/VerifySignature"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "auth using signature verification",
+            "schema": {
+              "$ref": "#/definitions/LoginMetamaskOK"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/categories": {
       "get": {
         "security": [
@@ -404,6 +582,105 @@ func init() {
     }
   },
   "definitions": {
+    "Author": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "socials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Social"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "wallets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Wallet"
+          }
+        }
+      }
+    },
+    "Callback": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "expiry": {
+          "type": "string",
+          "x-go-type": {
+            "hints": {
+              "noValidation": true
+            },
+            "import": {
+              "package": "time"
+            },
+            "type": "Time"
+          }
+        },
+        "originalUrl": {
+          "type": "string"
+        },
+        "refresh_token": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "token_type": {
+          "type": "string"
+        }
+      }
+    },
     "Contract": {
       "type": "object",
       "properties": {
@@ -421,6 +698,25 @@ func init() {
           "type": "string"
         },
         "tx": {
+          "type": "string"
+        }
+      }
+    },
+    "Credentials": {
+      "type": "object",
+      "required": [
+        "client_id",
+        "client_secret",
+        "domain"
+      ],
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        },
+        "domain": {
           "type": "string"
         }
       }
@@ -447,6 +743,33 @@ func init() {
     },
     "FileResponse": {
       "type": "string"
+    },
+    "LoginMetamaskOK": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
     },
     "MarketplaceCollectible": {
       "type": "object",
@@ -744,6 +1067,20 @@ func init() {
         }
       }
     },
+    "Nonce": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    },
     "PingResponse": {
       "type": "object",
       "properties": {
@@ -768,6 +1105,81 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicAuthor": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicAuthorAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicAuthorAttributes": {
+      "type": "object",
+      "properties": {
+        "btnLink": {
+          "type": "string"
+        },
+        "btnText": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicAuthorItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "socials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicSocial"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "wallets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicWallet"
+          }
+        }
       }
     },
     "PublicCategories": {
@@ -1031,6 +1443,31 @@ func init() {
         }
       }
     },
+    "PublicSocial": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicTag": {
+      "type": "object",
+      "properties": {
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicUser": {
       "type": "object",
       "properties": {
@@ -1071,6 +1508,56 @@ func init() {
         "wallpaperId": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicWallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Social": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "VerifySignature": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -1261,6 +1748,10 @@ func init() {
   "tags": [
     {
       "description": "Endpoints accessible to all clients for frontend API functionality.",
+      "name": "Auth"
+    },
+    {
+      "description": "Endpoints accessible to all clients for frontend API functionality.",
       "name": "Frontend"
     },
     {
@@ -1286,6 +1777,184 @@ func init() {
   "host": "plutonium",
   "basePath": "/api/v1",
   "paths": {
+    "/frontend/auth/callback": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "oauth2 callback from provider",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "code",
+            "name": "code",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "state",
+            "name": "state",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "callback from oauth",
+            "schema": {
+              "$ref": "#/definitions/Callback"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/auth/wallet-connect": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "auth"
+        ],
+        "summary": "This API endpoint create, store and returns credentials for new user",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "operation type",
+            "name": "operation",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "public address",
+            "name": "address",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "check public address in db",
+            "schema": {
+              "$ref": "#/definitions/Nonce"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Auth"
+        ],
+        "summary": "This API endpoint create, store and returns credentials for new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/VerifySignature"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "auth using signature verification",
+            "schema": {
+              "$ref": "#/definitions/LoginMetamaskOK"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/categories": {
       "get": {
         "security": [
@@ -1660,6 +2329,105 @@ func init() {
     }
   },
   "definitions": {
+    "Author": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "name": {
+          "type": "string"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "socials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Social"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "wallets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Wallet"
+          }
+        }
+      }
+    },
+    "Callback": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "expiry": {
+          "type": "string",
+          "x-go-type": {
+            "hints": {
+              "noValidation": true
+            },
+            "import": {
+              "package": "time"
+            },
+            "type": "Time"
+          }
+        },
+        "originalUrl": {
+          "type": "string"
+        },
+        "refresh_token": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "token_type": {
+          "type": "string"
+        }
+      }
+    },
     "Contract": {
       "type": "object",
       "properties": {
@@ -1677,6 +2445,25 @@ func init() {
           "type": "string"
         },
         "tx": {
+          "type": "string"
+        }
+      }
+    },
+    "Credentials": {
+      "type": "object",
+      "required": [
+        "client_id",
+        "client_secret",
+        "domain"
+      ],
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        },
+        "domain": {
           "type": "string"
         }
       }
@@ -1703,6 +2490,33 @@ func init() {
     },
     "FileResponse": {
       "type": "string"
+    },
+    "LoginMetamaskOK": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
     },
     "MarketplaceCollectible": {
       "type": "object",
@@ -2000,6 +2814,20 @@ func init() {
         }
       }
     },
+    "Nonce": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "nonce": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        }
+      }
+    },
     "PingResponse": {
       "type": "object",
       "properties": {
@@ -2024,6 +2852,81 @@ func init() {
       "additionalProperties": {
         "type": "string",
         "format": "number"
+      }
+    },
+    "PublicAuthor": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicAuthorAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicAuthorAttributes": {
+      "type": "object",
+      "properties": {
+        "btnLink": {
+          "type": "string"
+        },
+        "btnText": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicAuthorItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "socials": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicSocial"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "wallets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicWallet"
+          }
+        }
       }
     },
     "PublicCategories": {
@@ -2356,6 +3259,31 @@ func init() {
         }
       }
     },
+    "PublicSocial": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicTag": {
+      "type": "object",
+      "properties": {
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicUser": {
       "type": "object",
       "properties": {
@@ -2396,6 +3324,56 @@ func init() {
         "wallpaperId": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicWallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Social": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "VerifySignature": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -2584,6 +3562,10 @@ func init() {
     }
   },
   "tags": [
+    {
+      "description": "Endpoints accessible to all clients for frontend API functionality.",
+      "name": "Auth"
+    },
     {
       "description": "Endpoints accessible to all clients for frontend API functionality.",
       "name": "Frontend"

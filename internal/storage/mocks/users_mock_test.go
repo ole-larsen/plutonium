@@ -76,7 +76,7 @@ func TestMockUsersRepositoryInterface_Create(t *testing.T) {
 	}
 }
 
-func TestMockUsersRepositoryInterface_GetOne(t *testing.T) {
+func TestMockUsersRepositoryInterface_GetUserByEmail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -86,9 +86,9 @@ func TestMockUsersRepositoryInterface_GetOne(t *testing.T) {
 
 	// Test successful retrieval
 	expectedUser := &repository.User{Email: email}
-	mockRepo.EXPECT().GetOne(ctx, email).Return(expectedUser, nil).Times(1)
+	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(expectedUser, nil).Times(1)
 
-	user, err := mockRepo.GetOne(ctx, email)
+	user, err := mockRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -97,11 +97,11 @@ func TestMockUsersRepositoryInterface_GetOne(t *testing.T) {
 		t.Errorf("Expected user %v, got %v", expectedUser, user)
 	}
 
-	// Test GetOne with user not found error
+	// Test GetUserByEmail with user not found error
 	mockError := fmt.Errorf("user not found")
-	mockRepo.EXPECT().GetOne(ctx, email).Return(nil, mockError).Times(1)
+	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(nil, mockError).Times(1)
 
-	user, err = mockRepo.GetOne(ctx, email)
+	user, err = mockRepo.GetUserByEmail(ctx, email)
 	if err == nil || err.Error() != mockError.Error() {
 		t.Errorf("Expected error %v, got %v", mockError, err)
 	}
@@ -110,11 +110,11 @@ func TestMockUsersRepositoryInterface_GetOne(t *testing.T) {
 		t.Errorf("Expected user to be nil, got %v", user)
 	}
 
-	// Test GetOne with database error
+	// Test GetUserByEmail with database error
 	dbError := fmt.Errorf("db error")
-	mockRepo.EXPECT().GetOne(ctx, email).Return(nil, dbError).Times(1)
+	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(nil, dbError).Times(1)
 
-	user, err = mockRepo.GetOne(ctx, email)
+	user, err = mockRepo.GetUserByEmail(ctx, email)
 	if err == nil || err.Error() != dbError.Error() {
 		t.Errorf("Expected error %v, got %v", dbError, err)
 	}

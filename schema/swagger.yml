@@ -268,6 +268,120 @@ paths:
           description: "Internal server error."
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /frontend/auth/wallet-connect:
+    get:
+      security:
+        - x-token: [ ]
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - type: string
+          name: operation
+          in: query
+          description: "operation type"
+        - type: string
+          name: address
+          in: query
+          description: "public address"
+      responses:
+        200:
+          description: "check public address in db"
+          schema:
+            "$ref": "#/definitions/Nonce"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      tags:
+        - auth
+      summary: "This API endpoint create, store and returns credentials for new user"
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/VerifySignature"
+      responses:
+        200:
+          description: "auth using signature verification"
+          schema:
+            "$ref": "#/definitions/LoginMetamaskOK"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      tags:
+        - Auth
+      summary: "This API endpoint create, store and returns credentials for new user"
+  /frontend/auth/callback:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - type: string
+          name: code
+          in: query
+          description: "code"
+        - type: string
+          name: state
+          in: query
+          description: "state"
+      responses:
+        200:
+          description: "callback from oauth"
+          schema:
+            "$ref": "#/definitions/Callback"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      tags:
+        - Auth
+      summary: "oauth2 callback from provider"
 definitions:
   principal:
     type: string
@@ -844,8 +958,215 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/MarketplaceCollection'
-  
+  PublicAuthor:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicAuthorAttributes'
+  PublicAuthorAttributes:
+    type: object
+    properties:
+      title:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      btnLink:
+        type: string
+      btnText:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+  PublicAuthorItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+      socials:
+        type: array
+        items:
+          $ref: "#/definitions/PublicSocial"
+      wallets:
+        type: array
+        items:
+          $ref: "#/definitions/PublicWallet"
+  PublicTag:
+    type: object
+    properties:
+      title:
+        type: string
+      link:
+        type: string
+  PublicSocial:
+    type: object
+    properties:
+      name:
+        type: string
+      icon:
+        type: string
+      link:
+        type: string
+  PublicWallet:
+    type: object
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+  Author:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      socials:
+        type: array
+        items:
+          $ref: "#/definitions/Social"
+      wallets:
+        type: array
+        items:
+          $ref: "#/definitions/Wallet"
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Social:
+    type: object
+    properties:
+      name:
+        type: string
+      icon:
+        type: string
+      link:
+        type: string
+  Wallet:
+    type: object
+    properties:
+      name:
+        type: string
+      address:
+        type: string
+  Nonce:
+    type: object
+    properties:
+      nonce:
+        type: string
+      address:
+        type: string
+      uuid:
+        type: string
+  VerifySignature:
+    type: object
+    properties:
+      msg:
+        type: string
+      signature:
+        type: string
+      address:
+        type: string
+  LoginMetamaskOK:
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      uuid:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      token:
+        type: string
+      address:
+        type: string
+      nonce:
+        type: string
+    type: object
+  Credentials:
+    properties:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      domain:
+        type: string
+    required:
+      - client_id
+      - client_secret
+      - domain
+    type: object
+  Callback:
+    type: object
+    properties:
+      access_token:
+        type: string
+      token_type:
+        type: string
+      refresh_token:
+        type: string
+      expiry:
+        type: string
+        x-go-type:
+          type: Time
+          import:
+            package: time
+          hints:
+            noValidation: true
+      code:
+        type: string
+      state:
+        type: string
+      originalUrl:
+        type: string
 tags:
+  - name: Auth
+    description: "Endpoints accessible to all clients for frontend API functionality."
   - name: Frontend
     description: "Endpoints accessible to all clients for frontend API functionality."
   - name: Public

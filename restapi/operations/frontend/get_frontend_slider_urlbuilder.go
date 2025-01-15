@@ -13,9 +13,11 @@ import (
 
 // GetFrontendSliderURL generates an URL for the get frontend slider operation
 type GetFrontendSliderURL struct {
-	_         struct{}
-	Provider  *string
+	Provider *string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
