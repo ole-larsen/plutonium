@@ -20,9 +20,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.
@@ -70,6 +70,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetAuthorsRepository() *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthorsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetAuthorsRepository))
 }
 
+// GetBlogsRepository mocks base method.
+func (m *MockDBStorageInterface) GetBlogsRepository() *repository.BlogsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBlogsRepository")
+	ret0, _ := ret[0].(*repository.BlogsRepository)
+	return ret0
+}
+
+// GetBlogsRepository indicates an expected call of GetBlogsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetBlogsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlogsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetBlogsRepository))
+}
+
 // GetCategoriesRepository mocks base method.
 func (m *MockDBStorageInterface) GetCategoriesRepository() *repository.CategoriesRepository {
 	m.ctrl.T.Helper()
@@ -82,6 +96,34 @@ func (m *MockDBStorageInterface) GetCategoriesRepository() *repository.Categorie
 func (mr *MockDBStorageInterfaceMockRecorder) GetCategoriesRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoriesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetCategoriesRepository))
+}
+
+// GetContactFormsRepository mocks base method.
+func (m *MockDBStorageInterface) GetContactFormsRepository() *repository.ContactFormRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetContactFormsRepository")
+	ret0, _ := ret[0].(*repository.ContactFormRepository)
+	return ret0
+}
+
+// GetContactFormsRepository indicates an expected call of GetContactFormsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetContactFormsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContactFormsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContactFormsRepository))
+}
+
+// GetContactsRepository mocks base method.
+func (m *MockDBStorageInterface) GetContactsRepository() *repository.ContactsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetContactsRepository")
+	ret0, _ := ret[0].(*repository.ContactsRepository)
+	return ret0
+}
+
+// GetContactsRepository indicates an expected call of GetContactsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetContactsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContactsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContactsRepository))
 }
 
 // GetContractsRepository mocks base method.
@@ -98,6 +140,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetContractsRepository() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContractsRepository))
 }
 
+// GetFaqsRepository mocks base method.
+func (m *MockDBStorageInterface) GetFaqsRepository() *repository.FaqsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFaqsRepository")
+	ret0, _ := ret[0].(*repository.FaqsRepository)
+	return ret0
+}
+
+// GetFaqsRepository indicates an expected call of GetFaqsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetFaqsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFaqsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetFaqsRepository))
+}
+
 // GetFilesRepository mocks base method.
 func (m *MockDBStorageInterface) GetFilesRepository() *repository.FilesRepository {
 	m.ctrl.T.Helper()
@@ -110,6 +166,20 @@ func (m *MockDBStorageInterface) GetFilesRepository() *repository.FilesRepositor
 func (mr *MockDBStorageInterfaceMockRecorder) GetFilesRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetFilesRepository))
+}
+
+// GetHelpCenterRepository mocks base method.
+func (m *MockDBStorageInterface) GetHelpCenterRepository() *repository.HelpCenterRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHelpCenterRepository")
+	ret0, _ := ret[0].(*repository.HelpCenterRepository)
+	return ret0
+}
+
+// GetHelpCenterRepository indicates an expected call of GetHelpCenterRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetHelpCenterRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHelpCenterRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetHelpCenterRepository))
 }
 
 // GetMenusRepository mocks base method.
@@ -126,6 +196,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetMenusRepository() *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMenusRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetMenusRepository))
 }
 
+// GetPagesRepository mocks base method.
+func (m *MockDBStorageInterface) GetPagesRepository() *repository.PagesRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPagesRepository")
+	ret0, _ := ret[0].(*repository.PagesRepository)
+	return ret0
+}
+
+// GetPagesRepository indicates an expected call of GetPagesRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetPagesRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPagesRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetPagesRepository))
+}
+
 // GetSlidersRepository mocks base method.
 func (m *MockDBStorageInterface) GetSlidersRepository() *repository.SlidersRepository {
 	m.ctrl.T.Helper()
@@ -138,6 +222,20 @@ func (m *MockDBStorageInterface) GetSlidersRepository() *repository.SlidersRepos
 func (mr *MockDBStorageInterfaceMockRecorder) GetSlidersRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSlidersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetSlidersRepository))
+}
+
+// GetTagsRepository mocks base method.
+func (m *MockDBStorageInterface) GetTagsRepository() *repository.TagsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTagsRepository")
+	ret0, _ := ret[0].(*repository.TagsRepository)
+	return ret0
+}
+
+// GetTagsRepository indicates an expected call of GetTagsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetTagsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTagsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetTagsRepository))
 }
 
 // GetUsersRepository mocks base method.

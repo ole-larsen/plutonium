@@ -230,6 +230,36 @@ paths:
           description: "Internal server error."
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /frontend/page/:slug:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "page"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/PublicPage'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /frontend/files/:file/:
     get:
       tags:
@@ -252,6 +282,201 @@ paths:
           description: ok
           schema:
             $ref: "#/definitions/FileResponse"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/contact:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      parameters:
+        - type: string
+          name: id
+          in: query
+      summary: "get contact form for page contact"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/PublicContact'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/contact-form:
+    post:
+      tags:
+        - Frontend
+      summary: Send contact form.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/PublicContactForm"
+      responses:
+        200:
+          description: successful create
+          schema:
+            $ref: "#/definitions/FormSuccess"
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/faq:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "faq"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicFaqItem'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/help-center:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "help center"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicHelpCenterItem'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/blog:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "blog"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicBlogItem'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/blog/:slug:
+    get:
+      security:
+        - bearer: [ ]
+      tags:
+        - Frontend
+      summary: "Serve Blog Item"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/PublicBlogItem"
         400:
           description: "Bad request due to missing or invalid parameters."
           schema:
@@ -753,126 +978,30 @@ definitions:
         $ref: '#/definitions/PublicFile'
       bg:
         $ref: '#/definitions/PublicFile'
-  slider:
+  PublicPage:
     type: object
     properties:
       id:
         type: integer
         format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicPageAttributes'
+  PublicPageAttributes:
+    type: object
+    properties:
       title:
         type: string
-      provider:
-        type: string
       description:
         type: string
-      enabled:
-        type: boolean
-      created_by_id:
-        type: integer
-        format: int64
-      updated_by_id:
-        type: integer
-        format: int64
-      created:
+      content:
         type: string
-        format: date
-      updated:
+      link:
         type: string
-        format: date
-      deleted:
+      category:
         type: string
-        format: date
-  slider-item:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: bigInt
-      heading:
-        type: string
-      description:
-        type: string
-      slider_id:
-        type: integer
-        format: bigInt
-      btn_link_1:
-        type: string
-      btn_text_1:
-        type: string
-      btn_link_2:
-        type: string
-      btn_text_2:
-        type: string
-      image_id:
-        type: integer
-        format: bigInt
-      bg_image_id:
-        type: integer
-        format: bigInt
-      enabled:
-        type: boolean
-      created_by_id:
-        type: integer
-        format: int64
-      updated_by_id:
-        type: integer
-        format: int64
-      created:
-        type: string
-        format: date
-      updated:
-        type: string
-        format: date
-      deleted:
-        type: string
-        format: date
-  FileResponse:
-    type: string
-  file:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      name:
-        type: string
-      thumb:
-        type: string
-      alt:
-        type: string
-      caption:
-        type: string
-      hash:
-        type: string
-      type:
-        type: string
-      ext:
-        type: string
-      size:
-        type: number
-      width:
-        type: integer
-        format: int64
-      height:
-        type: integer
-        format: int64
-      provider:
-        type: string
-      created_by_id:
-        type: integer
-        format: int64
-      updated_by_id:
-        type: integer
-        format: int64
-      created:
-        type: string
-        format: date
-      updated:
-        type: string
-        format: date
-      deleted:
-        type: string
-        format: date
+      image:
+        $ref: '#/definitions/PublicFile'
   PublicContracts:
     type: object
     properties:
@@ -1031,6 +1160,202 @@ definitions:
         type: string
       address:
         type: string
+  PublicContact:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicContactAttributes'
+  PublicContactAttributes:
+    type: object
+    properties:
+      heading:
+        type: string
+      subHeading:
+        type: string
+      link:
+        type: string
+      text:
+        type: string
+      csrf:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+  PublicContactForm:
+    type: object
+    properties:
+      pageId:
+        type: integer
+        format: bigInt
+      provider:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      subject:
+        type: string
+      message:
+        type: string
+      csrf:
+        type: string
+  PublicSubscribeForm:
+    type: object
+    properties:
+      provider:
+        type: string
+      email:
+        type: string
+      csrf:
+        type: string
+  PublicFaqItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      question:
+        type: string
+      answer:
+        type: string
+  PublicHelpCenterItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      link:
+        type: string
+      description:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+  PublicBlogItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      orderBy:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      link:
+        type: string
+      date:
+        type: string
+        format: date
+      description:
+        type: string
+      description1:
+        type: string
+      description2:
+        type: string
+      description3:
+        type: string
+      content:
+        type: string
+      author:
+        $ref: '#/definitions/PublicAuthor'
+      image:
+        $ref: '#/definitions/PublicFile'
+      image1:
+        $ref: '#/definitions/PublicFile'
+      image2:
+        $ref: '#/definitions/PublicFile'
+      image3:
+        $ref: '#/definitions/PublicFile'
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/PublicTag'
+      popularTags:
+        type: array
+        items:
+          $ref: '#/definitions/PublicTag'
+  PublicAuthor:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicAuthorAttributes'
+  PublicAuthorAttributes:
+    type: object
+    properties:
+      title:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      btnLink:
+        type: string
+      btnText:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+  PublicAuthorItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      link:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      btnLink:
+        type: string
+      btnText:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+      socials:
+        type: array
+        items:
+          $ref: "#/definitions/PublicSocial"
+      wallets:
+        type: array
+        items:
+          $ref: "#/definitions/PublicWallet"
+  PublicTag:
+    type: object
+    properties:
+      title:
+        type: string
+      link:
+        type: string
+  PublicSocial:
+    type: object
+    properties:
+      name:
+        type: string
+      icon:
+        type: string
+      link:
+        type: string
+  PublicWallet:
+    type: object
+    properties:
+      name:
+        type: string
+      address:
+        type: string
   Author:
     type: object
     properties:
@@ -1101,6 +1426,167 @@ definitions:
         type: string
       uuid:
         type: string
+  Slider:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      provider:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Slider-item:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      heading:
+        type: string
+      description:
+        type: string
+      slider_id:
+        type: integer
+        format: bigInt
+      btn_link_1:
+        type: string
+      btn_text_1:
+        type: string
+      btn_link_2:
+        type: string
+      btn_text_2:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      bg_image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  FileResponse:
+    type: string
+  File:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      thumb:
+        type: string
+      alt:
+        type: string
+      caption:
+        type: string
+      hash:
+        type: string
+      type:
+        type: string
+      ext:
+        type: string
+      size:
+        type: number
+      width:
+        type: integer
+        format: int64
+      height:
+        type: integer
+        format: int64
+      provider:
+        type: string
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Contact:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      page_id:
+        type: integer
+        format: bigInt
+      heading:
+        type: string
+      sub_heading:
+        type: string
+      btn_link:
+        type: string
+      btn_text:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  FormSuccess:
+    properties:
+      message:
+        type: string
   VerifySignature:
     type: object
     properties:
@@ -1164,6 +1650,213 @@ definitions:
         type: string
       originalUrl:
         type: string
+  Faq:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      question:
+        type: string
+      answer:
+        type: string
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  HelpCenter:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      slug:
+        type: string
+      description:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Blog:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      tag_id:
+        type: array
+        items:
+          type: integer
+          format: bigInt
+      title:
+        type: string
+      slug:
+        type: string
+      description:
+        type: string
+      content:
+        type: string
+      author_id:
+        type: integer
+        format: bigInt
+      image_id:
+        type: integer
+        format: bigInt
+      image_1_id:
+        type: integer
+        format: bigInt
+      image_2_id:
+        type: integer
+        format: bigInt
+      image_3_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      public_date:
+        type: string
+        format: date
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Tag:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      parent_id:
+        type: integer
+        format: bigInt
+      blog_id:
+        type: array
+        items:
+          type: integer
+          format: bigInt
+      page_id:
+        type: array
+        items:
+          type: integer
+          format: bigInt
+      title:
+        type: string
+      slug:
+        type: string
+      enabled:
+        type: boolean
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  Page:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      tag_id:
+        type: array
+        items:
+          type: integer
+          format: bigInt
+      category_id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      slug:
+        type: string
+      description:
+        type: string
+      content:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
 tags:
   - name: Auth
     description: "Endpoints accessible to all clients for frontend API functionality."

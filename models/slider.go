@@ -16,41 +16,18 @@ import (
 
 // Slider slider
 //
-// swagger:model slider
+// swagger:model Slider
 type Slider struct {
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// provider
-	Provider string `json:"provider,omitempty"`
-
-	// title
-	Title string `json:"title,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Provider    string      `json:"provider,omitempty"`
+	Title       string      `json:"title,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this slider

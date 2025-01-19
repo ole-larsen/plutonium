@@ -3,36 +3,37 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/go-multierror"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // import from pq package
 	"github.com/ole-larsen/plutonium/models"
 )
 
 type Social struct {
-	ID       int64  `db:"id"`
-	AuthorID int64  `db:"author_id"`
 	Name     string `db:"name"`
 	Link     string `db:"link"`
 	Icon     string `db:"icon"`
+	ID       int64  `db:"id"`
+	AuthorID int64  `db:"author_id"`
 }
 type Author struct {
-	ID          int64       `db:"id"`
+	Created     strfmt.Date `db:"created"`
+	Deleted     strfmt.Date `db:"deleted"`
+	Updated     strfmt.Date `db:"updated"`
 	Title       string      `db:"title"`
 	Description string      `db:"description"`
 	Name        string      `db:"name"`
 	Slug        string      `db:"slug"`
+	UpdatedBy   int64       `db:"updated_by"`
+	CreatedBy   int64       `db:"created_by"`
+	ID          int64       `db:"id"`
+	OrderBy     int64       `db:"order_by"`
 	ImageID     int64       `db:"image_id"`
 	Enabled     bool        `db:"enabled"`
-	OrderBy     int64       `db:"order_by"`
-	CreatedBy   int64       `db:"created_by"`
-	UpdatedBy   int64       `db:"updated_by"`
-	Created     strfmt.Date `db:"created"`
-	Updated     strfmt.Date `db:"updated"`
-	Deleted     strfmt.Date `db:"deleted"`
 }
 
 type AuthorsRepositoryInterface interface {
@@ -94,14 +95,18 @@ func (r *AuthorsRepository) Create(ctx context.Context, authorMap map[string]int
 		ON CONFLICT DO NOTHING`, authorMap)
 
 	if socials != nil {
-		var lastInsertId int64
+		var lastInsertID int64
+
 		sqlStatement := `SELECT id FROM authors WHERE slug=$1;`
 		row := r.DB.QueryRow(sqlStatement, authorMap["slug"])
-		err = row.Scan(&lastInsertId)
+
+		err = row.Scan(&lastInsertID)
 		if err != nil {
 			return err
 		}
-		authorMap["id"] = lastInsertId
+
+		authorMap["id"] = lastInsertID
+
 		for _, social := range socials {
 			socialMap := make(map[string]interface{})
 			socialMap["author_id"] = authorMap["id"]
@@ -116,6 +121,7 @@ func (r *AuthorsRepository) Create(ctx context.Context, authorMap map[string]int
 				return err
 			}
 		}
+
 		for _, wallet := range wallets {
 			walletMap := make(map[string]interface{})
 			walletMap["author_id"] = authorMap["id"]
@@ -130,6 +136,7 @@ func (r *AuthorsRepository) Create(ctx context.Context, authorMap map[string]int
 			}
 		}
 	}
+
 	return err
 }
 
@@ -137,6 +144,7 @@ func (r *AuthorsRepository) Update(ctx context.Context, authorMap map[string]int
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	_, err := r.DB.NamedExecContext(ctx, `UPDATE authors SET
                 title=:title,
                 description=:description,
@@ -150,37 +158,35 @@ func (r *AuthorsRepository) Update(ctx context.Context, authorMap map[string]int
 		return nil, err
 	}
 
-	if socials != nil {
-		for _, social := range socials {
-			socialMap := make(map[string]interface{})
-			socialMap["author_id"] = authorMap["id"]
-			socialMap["name"] = social.Name
-			socialMap["link"] = social.Link
-			socialMap["icon"] = social.Icon
-			socialMap["updated_by_id"] = authorMap["updated_by_id"]
-			socialMap["created_by_id"] = authorMap["created_by_id"]
+	for _, social := range socials {
+		socialMap := make(map[string]interface{})
+		socialMap["author_id"] = authorMap["id"]
+		socialMap["name"] = social.Name
+		socialMap["link"] = social.Link
+		socialMap["icon"] = social.Icon
+		socialMap["updated_by_id"] = authorMap["updated_by_id"]
+		socialMap["created_by_id"] = authorMap["created_by_id"]
 
-			err = r.BindSocial(ctx, socialMap)
-			if err != nil {
-				return nil, err
-			}
+		err = r.BindSocial(ctx, socialMap)
+		if err != nil {
+			return nil, err
 		}
 	}
-	if wallets != nil {
-		for _, wallet := range wallets {
-			walletMap := make(map[string]interface{})
-			walletMap["author_id"] = authorMap["id"]
-			walletMap["name"] = wallet.Name
-			walletMap["address"] = wallet.Address
-			walletMap["updated_by_id"] = authorMap["updated_by_id"]
-			walletMap["created_by_id"] = authorMap["created_by_id"]
 
-			err = r.BindWallet(ctx, walletMap)
-			if err != nil {
-				return nil, err
-			}
+	for _, wallet := range wallets {
+		walletMap := make(map[string]interface{})
+		walletMap["author_id"] = authorMap["id"]
+		walletMap["name"] = wallet.Name
+		walletMap["address"] = wallet.Address
+		walletMap["updated_by_id"] = authorMap["updated_by_id"]
+		walletMap["created_by_id"] = authorMap["created_by_id"]
+
+		err = r.BindWallet(ctx, walletMap)
+		if err != nil {
+			return nil, err
 		}
 	}
+
 	return r.GetAuthors(ctx)
 }
 
@@ -188,6 +194,7 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		authors  []*models.Author
@@ -219,9 +226,12 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var author Author
+
 		var socials AggregatedSocial
+
 		var wallets AggregatedWallet
 		err = rows.Scan(
 			&author.ID,
@@ -240,6 +250,7 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 		if err != nil {
 			return nil, err
 		}
+
 		authorSocials := make([]*models.Social, 0)
 		for _, social := range socials {
 			authorSocials = append(authorSocials, &models.Social{
@@ -248,6 +259,7 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 				Icon: social.Icon,
 			})
 		}
+
 		authorWallets := make([]*models.Wallet, 0)
 		for _, wallet := range wallets {
 			authorWallets = append(authorWallets, &models.Wallet{
@@ -255,6 +267,7 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 				Address: wallet.Address,
 			})
 		}
+
 		authors = append(authors, &models.Author{
 			ID:          author.ID,
 			Title:       author.Title,
@@ -270,6 +283,7 @@ func (r *AuthorsRepository) GetAuthors(ctx context.Context) ([]*models.Author, e
 			Wallets:     authorWallets,
 		})
 	}
+
 	defer rows.Close()
 
 	return authors, multierr.ErrorOrNil()
@@ -279,9 +293,13 @@ func (r *AuthorsRepository) GetAuthorByID(ctx context.Context, id int64) (*model
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var author Author
+
 	var socials AggregatedSocial
+
 	var wallets AggregatedWallet
+
 	sqlStatement := `SELECT 
     	a.id, 
     	a.title, 
@@ -304,6 +322,7 @@ func (r *AuthorsRepository) GetAuthorByID(ctx context.Context, id int64) (*model
 		))) FROM authors_wallets w WHERE w.author_id = a.id) as wallets
 	FROM authors a where a.id=$1;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
+
 	err := row.Scan(&author.ID, &author.Title, &author.Description,
 		&author.Name, &author.Slug, &author.ImageID, &author.Enabled, &author.OrderBy, &author.CreatedBy, &author.UpdatedBy, &socials, &wallets)
 	switch err {
@@ -318,6 +337,7 @@ func (r *AuthorsRepository) GetAuthorByID(ctx context.Context, id int64) (*model
 				Icon: social.Icon,
 			})
 		}
+
 		authorWallets := make([]*models.Wallet, 0)
 		for _, wallet := range wallets {
 			authorWallets = append(authorWallets, &models.Wallet{
@@ -325,6 +345,7 @@ func (r *AuthorsRepository) GetAuthorByID(ctx context.Context, id int64) (*model
 				Address: wallet.Address,
 			})
 		}
+
 		return &models.Author{
 			ID:          author.ID,
 			Title:       author.Title,
@@ -348,6 +369,7 @@ func (r *AuthorsRepository) GetPublicAuthors(ctx context.Context) ([]*models.Pub
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		authors  []*models.PublicAuthorItem
@@ -388,11 +410,16 @@ func (r *AuthorsRepository) GetPublicAuthors(ctx context.Context) ([]*models.Pub
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var author Author
+
 		var image AggregatedImageJSON
+
 		var socials AggregatedSocial
+
 		var wallets AggregatedWallet
+
 		err = rows.Scan(&author.ID, &author.Title, &author.Description,
 			&author.Name, &author.Slug, &image, &socials, &wallets)
 		if err != nil {
@@ -430,6 +457,7 @@ func (r *AuthorsRepository) GetPublicAuthors(ctx context.Context) ([]*models.Pub
 			Wallets: authorWallets,
 		})
 	}
+
 	defer rows.Close()
 
 	return authors, multierr.ErrorOrNil()
@@ -473,9 +501,13 @@ func (r *AuthorsRepository) GetPublicAuthor(ctx context.Context, slug string) (*
 		        a.slug = $1 AND
 			    a.enabled = true AND a.deleted isNULL  GROUP BY a.id ORDER BY a.order_by ASC;`
 	row := r.DB.QueryRowContext(ctx, sqlStatement, slug)
+
 	var author Author
+
 	var image AggregatedImageJSON
+
 	var socials AggregatedSocial
+
 	var wallets AggregatedWallet
 	err := row.Scan(&author.ID, &author.Title, &author.Description,
 		&author.Name, &author.Slug, &image, &socials, &wallets)
@@ -492,6 +524,7 @@ func (r *AuthorsRepository) GetPublicAuthor(ctx context.Context, slug string) (*
 				Icon: social.Icon,
 			})
 		}
+
 		authorWallets := make([]*models.PublicWallet, 0)
 		for _, wallet := range wallets {
 			authorWallets = append(authorWallets, &models.PublicWallet{
@@ -499,6 +532,7 @@ func (r *AuthorsRepository) GetPublicAuthor(ctx context.Context, slug string) (*
 				Address: wallet.Address,
 			})
 		}
+
 		return &models.PublicAuthorItem{
 			ID:          author.ID,
 			Title:       author.Title,
@@ -518,62 +552,68 @@ func (r *AuthorsRepository) GetPublicAuthor(ctx context.Context, slug string) (*
 }
 
 func (r *AuthorsRepository) BindSocial(ctx context.Context, socialMap map[string]interface{}) error {
-	var lastInsertId int64
+	var lastInsertID int64
+
 	sqlStatement := `SELECT a.id FROM authors_socials a
 		    WHERE a.author_id = $1 AND a.name = $2;`
 
 	row := r.DB.QueryRowContext(ctx, sqlStatement, socialMap["author_id"], socialMap["name"])
 
-	err := row.Scan(&lastInsertId)
-
-	switch err {
-	case sql.ErrNoRows:
-		_, err = r.DB.NamedExecContext(ctx, `
-					INSERT INTO authors_socials (author_id, name, link, icon, created_by_id, updated_by_id)
-					VALUES (:author_id, :name, :link, :icon, :created_by_id, :updated_by_id)
-					ON CONFLICT DO NOTHING`, socialMap)
-		if err != nil {
-			return err
+	if err := row.Scan(&lastInsertID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			_, err := r.DB.NamedExecContext(ctx, `
+			INSERT INTO authors_socials (author_id, name, link, icon, created_by_id, updated_by_id)
+			VALUES (:author_id, :name, :link, :icon, :created_by_id, :updated_by_id)
+			ON CONFLICT DO NOTHING`, socialMap)
+			if err != nil {
+				return err
+			}
 		}
-	case nil:
-		_, err = r.DB.NamedExecContext(ctx, `UPDATE authors_socials SET
+
+		return err
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE authors_socials SET
 				   	name=:name,
 				   	link=:link,
 				   	icon=:icon,
 				   	updated_by_id=:updated_by_id WHERE author_id=:author_id AND name=:name`, socialMap)
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
 	}
-	return err
+
+	return nil
 }
 
 func (r *AuthorsRepository) BindWallet(ctx context.Context, walletMap map[string]interface{}) error {
-	var lastInsertId int64
+	var lastInsertID int64
+
 	sqlStatement := `SELECT a.id FROM authors_wallets a
 		    WHERE a.author_id = $1 AND a.name = $2;`
 
 	row := r.DB.QueryRowContext(ctx, sqlStatement, walletMap["author_id"], walletMap["name"])
 
-	err := row.Scan(&lastInsertId)
+	if err := row.Scan(&lastInsertID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			_, err = r.DB.NamedExecContext(ctx, `
+			INSERT INTO authors_wallets(author_id, name, address, created_by_id, updated_by_id)
+			VALUES (:author_id, :name, :address, :created_by_id, :updated_by_id)
+			ON CONFLICT DO NOTHING`, walletMap)
+			if err != nil {
+				return err
+			}
+		}
 
-	switch err {
-	case sql.ErrNoRows:
-		_, err = r.DB.NamedExecContext(ctx, `
-					INSERT INTO authors_wallets(author_id, name, address, created_by_id, updated_by_id)
-					VALUES (:author_id, :name, :address, :created_by_id, :updated_by_id)
-					ON CONFLICT DO NOTHING`, walletMap)
-		if err != nil {
-			return err
-		}
-	case nil:
-		_, err = r.DB.NamedExecContext(ctx, `UPDATE authors_wallets SET
-				   	name=:name,
-				   	address=:address,
-				   	updated_by_id=:updated_by_id WHERE author_id=:author_id AND name=:name`, walletMap)
-		if err != nil {
-			return err
-		}
+		return err
 	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE authors_wallets SET
+	name=:name,
+	address=:address,
+	updated_by_id=:updated_by_id WHERE author_id=:author_id AND name=:name`, walletMap)
+	if err != nil {
+		return err
+	}
+
 	return err
 }

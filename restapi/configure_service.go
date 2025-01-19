@@ -16,8 +16,6 @@ import (
 	"github.com/go-openapi/swag"
 	"golang.org/x/oauth2"
 
-	_ "net/http/pprof"
-
 	genericRuntime "runtime"
 
 	"github.com/ole-larsen/plutonium/internal/blockchain"
@@ -58,10 +56,13 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	if err != nil {
 		panic(err)
 	}
+
 	defer fcpu.Close()
+
 	if err := pprof.StartCPUProfile(fcpu); err != nil {
 		panic(err)
 	}
+
 	defer pprof.StopCPUProfile()
 
 	// memory profile
@@ -69,8 +70,10 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	if err != nil {
 		panic(err)
 	}
+
 	defer fmem.Close()
-	genericRuntime.GC() //memory usage stat
+	genericRuntime.GC() // memory usage stat
+
 	if err := pprof.WriteHeapProfile(fmem); err != nil {
 		panic(err)
 	}
@@ -162,6 +165,13 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.FrontendGetFrontendCategoriesHandler = frontend.GetFrontendCategoriesHandlerFunc(frontendAPI.GetCategoriesHandler)
 	api.FrontendGetFrontendContractsHandler = frontend.GetFrontendContractsHandlerFunc(frontendAPI.GetContractsHandler)
 	api.FrontendGetFrontendUsersHandler = frontend.GetFrontendUsersHandlerFunc(frontendAPI.GetUsersHandler)
+	api.FrontendGetFrontendPageSlugHandler = frontend.GetFrontendPageSlugHandlerFunc(frontendAPI.GetPagesHandler)
+	api.FrontendGetFrontendContactHandler = frontend.GetFrontendContactHandlerFunc(frontendAPI.GetContactsHandler)
+	api.FrontendPostFrontendContactFormHandler = frontend.PostFrontendContactFormHandlerFunc(frontendAPI.PostContactsHandler)
+	api.FrontendGetFrontendFaqHandler = frontend.GetFrontendFaqHandlerFunc(frontendAPI.GetFaqHandler)
+	api.FrontendGetFrontendHelpCenterHandler = frontend.GetFrontendHelpCenterHandlerFunc(frontendAPI.GetHelpCenterHandler)
+	api.FrontendGetFrontendBlogHandler = frontend.GetFrontendBlogHandlerFunc(frontendAPI.GetBlogsHandler)
+	api.FrontendGetFrontendBlogSlugHandler = frontend.GetFrontendBlogSlugHandlerFunc(frontendAPI.GetBlogsSlugHandler)
 
 	authAPI := v1authApi.NewAuthAPI(service)
 

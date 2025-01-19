@@ -177,3 +177,60 @@ func (a *AggregatedAuthorAttributes) Scan(val interface{}) error {
 func (a *AggregatedAuthorAttributes) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
+
+type AggregatedPageAttributes models.PublicPageAttributes
+
+func (a *AggregatedPageAttributes) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedPageAttributes) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+type AggregatedContactAttributes models.PublicContactAttributes
+
+func (a *AggregatedContactAttributes) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedContactAttributes) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+type AggregatedTagJSON []models.PublicTag
+
+func (a *AggregatedTagJSON) Scan(val interface{}) error {
+	switch v := val.(type) {
+	case []byte:
+		_ = json.Unmarshal(v, &a)
+		return nil
+	case string:
+		_ = json.Unmarshal([]byte(v), &a)
+		return nil
+	default:
+		return nil
+	}
+}
+
+func (a *AggregatedTagJSON) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}

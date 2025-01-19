@@ -16,66 +16,26 @@ import (
 //
 // swagger:model MarketplaceCollectibleDetails
 type MarketplaceCollectibleDetails struct {
-
-	// address
-	Address string `json:"address,omitempty"`
-
-	// auction
-	Auction bool `json:"auction,omitempty"`
-
-	// cancelled
-	Cancelled bool `json:"cancelled,omitempty"`
-
-	// collection
-	Collection string `json:"collection,omitempty"`
-
-	// end time
-	EndTime int64 `json:"end_time,omitempty"`
-
-	// fee
-	Fee string `json:"fee,omitempty"`
-
-	// fee wei
-	FeeWei string `json:"fee_wei,omitempty"`
-
-	// fulfilled
-	Fulfilled bool `json:"fulfilled,omitempty"`
-
-	// is started
-	IsStarted bool `json:"is_started,omitempty"`
-
-	// price
-	Price string `json:"price,omitempty"`
-
-	// price wei
-	PriceWei string `json:"price_wei,omitempty"`
-
-	// quantity
-	Quantity int64 `json:"quantity,omitempty"`
-
-	// reserve price
-	ReservePrice string `json:"reserve_price,omitempty"`
-
-	// reserve price wei
+	PriceWei        string `json:"price_wei,omitempty"`
+	Tags            string `json:"tags,omitempty"`
+	Total           string `json:"total,omitempty"`
+	Collection      string `json:"collection,omitempty"`
+	Price           string `json:"price,omitempty"`
+	Fee             string `json:"fee,omitempty"`
+	FeeWei          string `json:"fee_wei,omitempty"`
+	Address         string `json:"address,omitempty"`
+	TotalWei        string `json:"total_wei,omitempty"`
+	StartPriceWei   string `json:"start_price_wei,omitempty"`
+	StartPrice      string `json:"start_price,omitempty"`
 	ReservePriceWei string `json:"reserve_price_wei,omitempty"`
-
-	// start price
-	StartPrice string `json:"start_price,omitempty"`
-
-	// start price wei
-	StartPriceWei string `json:"start_price_wei,omitempty"`
-
-	// start time
-	StartTime int64 `json:"start_time,omitempty"`
-
-	// tags
-	Tags string `json:"tags,omitempty"`
-
-	// total
-	Total string `json:"total,omitempty"`
-
-	// total wei
-	TotalWei string `json:"total_wei,omitempty"`
+	ReservePrice    string `json:"reserve_price,omitempty"`
+	Quantity        int64  `json:"quantity,omitempty"`
+	StartTime       int64  `json:"start_time,omitempty"`
+	EndTime         int64  `json:"end_time,omitempty"`
+	Fulfilled       bool   `json:"fulfilled,omitempty"`
+	Auction         bool   `json:"auction,omitempty"`
+	Cancelled       bool   `json:"cancelled,omitempty"`
+	IsStarted       bool   `json:"is_started,omitempty"`
 }
 
 // Validate validates this marketplace collectible details

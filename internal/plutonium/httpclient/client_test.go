@@ -1,4 +1,4 @@
-package httpclient
+package httpclient_test
 
 import (
 	"io"
@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ole-larsen/plutonium/internal/plutonium/httpclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,22 +18,25 @@ func TestNewHttpClient(t *testing.T) {
 		checkRedirectFunc func(req *http.Request, via []*http.Request) error
 	}
 
+	transport, ok := http.DefaultTransport.(*http.Transport)
+	require.True(t, ok)
+
 	tests := []struct {
 		args args
-		want *HTTPClient
+		want *httpclient.HTTPClient
 		name string
 	}{
 		{
 			name: "test default http client",
 			args: args{
-				transport: http.DefaultTransport.(*http.Transport).Clone(),
+				transport: transport.Clone(),
 				checkRedirectFunc: func(req *http.Request, _ []*http.Request) error {
 					t.Log(req.URL)
 					return nil
 				},
 			},
-			want: &HTTPClient{
-				client: &http.Client{
+			want: &httpclient.HTTPClient{
+				Client: &http.Client{
 					Timeout: time.Minute,
 				},
 			},
@@ -41,26 +45,25 @@ func TestNewHttpClient(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewHTTPClient(); !reflect.DeepEqual(got, tt.want) {
+			if got := httpclient.NewHTTPClient(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewHttpClient() = %v, want %v", got, tt.want)
 			}
 
-			c := NewHTTPClient()
+			c := httpclient.NewHTTPClient()
 
-			assert.Nil(t, c.client.Transport)
-			assert.Nil(t, c.client.CheckRedirect)
+			assert.Nil(t, c.Client.Transport)
+			assert.Nil(t, c.Client.CheckRedirect)
 
 			timeout := 1 * time.Second
 
 			c.SetTimeout(1 * time.Second)
 
-			require.Equal(t, timeout, c.client.Timeout)
+			require.Equal(t, timeout, c.Client.Timeout)
 			c.SetTransport(tt.args.transport)
 
-			require.Equal(t, tt.args.transport, c.client.Transport)
+			require.Equal(t, tt.args.transport, c.Client.Transport)
 			require.Equal(t, tt.args.transport, c.GetTransport())
 
-			
 			resp, err := c.Get("http://127.0.0.1:8080/status")
 
 			if err != nil {

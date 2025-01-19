@@ -1,4 +1,4 @@
-package httpclient
+package httpclient_test
 
 import (
 	"errors"
@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ole-larsen/plutonium/internal/plutonium/httpclient"
 	"github.com/stretchr/testify/require"
 )
 
@@ -43,7 +44,7 @@ func TestNewHTTPError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NewHTTPError(tt.args.err, 0)
+			err := httpclient.NewHTTPError(tt.args.err, 0)
 			if tt.args.err == nil {
 				require.Nil(t, err)
 			} else {
@@ -93,7 +94,7 @@ func TestNewError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := NewError(tt.args.err)
+			err := httpclient.NewError(tt.args.err)
 			if tt.args.err == nil {
 				require.Nil(t, err)
 			} else {

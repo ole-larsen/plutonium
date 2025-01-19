@@ -27,12 +27,12 @@ func NewClient() *Client {
 	return &Client{}
 }
 
-func (c *Client) SetSettings(settings *settings.Settings) *Client {
-	c.settings = settings
+func (c *Client) SetSettings(cfg *settings.Settings) *Client {
+	c.settings = cfg
 	return c
 }
 
-func (c *Client) Config(clientID string, clientSecret string) oauth2.Config {
+func (c *Client) Config(clientID, clientSecret string) oauth2.Config {
 	return oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -45,27 +45,31 @@ func (c *Client) Config(clientID string, clientSecret string) oauth2.Config {
 	}
 }
 
-func (c *Client) AuthorizeUrl(config oauth2.Config) string {
+func (c *Client) AuthorizeURL(config *oauth2.Config) string {
 	return config.AuthCodeURL("xyz",
 		oauth2.SetAuthURLParam("code_challenge", genCodeChallengeS256("s256example")),
 		oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 		oauth2.SetAuthURLParam("grant_type", "client_credentials"))
 }
 
-func (c *Client) GetClientIDFromReferer(refererUrl string) (string, error) {
+func (c *Client) GetClientIDFromReferer(refererURL string) (string, error) {
 	clientID := ""
-	refererParameters := strings.Split(refererUrl, "?")
+
+	refererParameters := strings.Split(refererURL, "?")
 	if len(refererParameters) > 1 {
 		for _, parameter := range strings.Split(refererParameters[1], "&") {
 			if strings.Contains(parameter, "client_id") {
 				clientID = strings.Split(parameter, "=")[1]
+
 				decodedValue, err := url.QueryUnescape(clientID)
 				if err != nil {
 					return "", err
 				}
+
 				clientID = decodedValue
 			}
 		}
 	}
+
 	return clientID, nil
 }

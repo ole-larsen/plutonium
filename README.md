@@ -103,5 +103,13 @@ mockgen -source=internal/storage/db/repository/menus.go -destination=internal/st
 mockgen -source=internal/storage/db/repository/sliders.go -destination=internal/storage/mocks/sliders_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/files.go -destination=internal/storage/mocks/files_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/authors.go -destination=internal/storage/mocks/authors_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/contacts.go -destination=internal/storage/mocks/contacts_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/contactForms.go -destination=internal/storage/mocks/contactForms_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/faqs.go -destination=internal/storage/mocks/faqs_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/helpCenter.go -destination=internal/storage/mocks/helpCenter_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/blogs.go -destination=internal/storage/mocks/blogs_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/tags.go -destination=internal/storage/mocks/tags_mock.go -package=mocks
+
 mockgen -source=internal/storage/dbstorage.go -destination=internal/storage/mocks/dbstorage_mock.go -package=mocks
+
 ```

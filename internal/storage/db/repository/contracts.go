@@ -33,7 +33,7 @@ type ContractsRepositoryInterface interface {
 	GetAuctions(ctx context.Context) ([]*models.Contract, error)
 }
 
-// UsersRepository - repository to store users.
+// ContractsRepository - repository to store users.
 type ContractsRepository struct {
 	DB  sqlx.DB
 	TBL string

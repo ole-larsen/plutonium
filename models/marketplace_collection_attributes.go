@@ -20,63 +20,25 @@ import (
 //
 // swagger:model MarketplaceCollectionAttributes
 type MarketplaceCollectionAttributes struct {
-
-	// address
-	Address common.Address `json:"address,omitempty"`
-
-	// banner
-	Banner *PublicFile `json:"banner,omitempty"`
-
-	// category Id
-	CategoryID int64 `json:"categoryId,omitempty"`
-
-	// collectibles
+	Featured     *PublicFile               `json:"featured,omitempty"`
+	Banner       *PublicFile               `json:"banner,omitempty"`
+	Owner        *PublicUser               `json:"owner,omitempty"`
+	Logo         *PublicFile               `json:"logo,omitempty"`
+	ID           *big.Int                  `json:"id,omitempty"`
+	Creator      *PublicUser               `json:"creator,omitempty"`
+	Created      string                    `json:"created,omitempty"`
+	Description  string                    `json:"description,omitempty"`
+	Fee          string                    `json:"fee,omitempty"`
+	Name         string                    `json:"name,omitempty"`
+	Slug         string                    `json:"slug,omitempty"`
+	Symbol       string                    `json:"symbol,omitempty"`
+	URL          string                    `json:"url,omitempty"`
 	Collectibles []*MarketplaceCollectible `json:"collectibles"`
-
-	// created
-	Created string `json:"created,omitempty"`
-
-	// creator
-	Creator *PublicUser `json:"creator,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// featured
-	Featured *PublicFile `json:"featured,omitempty"`
-
-	// fee
-	Fee string `json:"fee,omitempty"`
-
-	// id
-	ID *big.Int `json:"id,omitempty"`
-
-	// is approved
-	IsApproved bool `json:"isApproved,omitempty"`
-
-	// is locked
-	IsLocked bool `json:"isLocked,omitempty"`
-
-	// logo
-	Logo *PublicFile `json:"logo,omitempty"`
-
-	// max items
-	MaxItems int64 `json:"maxItems,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
-
-	// owner
-	Owner *PublicUser `json:"owner,omitempty"`
-
-	// slug
-	Slug string `json:"slug,omitempty"`
-
-	// symbol
-	Symbol string `json:"symbol,omitempty"`
-
-	// url
-	URL string `json:"url,omitempty"`
+	MaxItems     int64                     `json:"maxItems,omitempty"`
+	CategoryID   int64                     `json:"categoryId,omitempty"`
+	Address      common.Address            `json:"address,omitempty"`
+	IsApproved   bool                      `json:"isApproved,omitempty"`
+	IsLocked     bool                      `json:"isLocked,omitempty"`
 }
 
 // Validate validates this marketplace collection attributes

@@ -18,6 +18,10 @@ import (
 )
 
 const UploadDir = "./uploads"
+const pwdLength = 8
+const numDigits = 4
+const numSymbols = 4
+const userNotFoundMsg = "[repository]: user not found"
 
 type API struct {
 	service *plutonium.Server
@@ -36,7 +40,7 @@ func NewAuthAPI(s *plutonium.Server) AuthAPI {
 	return &API{service: s}
 }
 
-func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, principal *models.Principal) middleware.Responder {
+func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -60,7 +64,7 @@ func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, p
 
 	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, address)
 
-	if err != nil && err.Error() != "[repository]: user not found" {
+	if err != nil && err.Error() != userNotFoundMsg {
 		return auth.NewGetFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -92,6 +96,7 @@ func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, p
 			Message: err.Error(),
 		})
 	}
+
 	return auth.NewGetFrontendAuthWalletConnectOK().WithPayload(payload)
 }
 
@@ -109,26 +114,31 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, params.Body.Address)
 
 	if err != nil {
-		if err.Error() == "[repository]: user not found" {
+		if err.Error() == userNotFoundMsg {
 			return auth.NewGetFrontendAuthWalletConnectNotFound().WithPayload(&models.ErrorResponse{
 				Code:    http.StatusNotFound,
 				Message: err.Error(),
 			})
 		}
+
 		return auth.NewPostFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
+
 	marketName := a.service.GetSettings().MarketName
+
 	nonce := ""
 	if user.Nonce.Valid {
 		nonce = user.Nonce.String
 	}
+
 	uuid := ""
 	if user.UUID.Valid {
 		uuid = user.UUID.String
 	}
+
 	address := ""
 	if len(user.Address) > 0 {
 		address = user.Address[0]
@@ -137,6 +147,7 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 	msg, err := hexutil.Decode(params.Body.Msg)
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
+
 		return auth.NewPostFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
@@ -146,13 +157,13 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 	if strings.Contains(string(msg), marketName) &&
 		strings.Contains(string(msg), address) &&
 		strings.Contains(string(msg), nonce) {
-
 		userMap := make(map[string]interface{})
 		userMap["id"] = user.ID
 		userMap["nonce"] = generateNonce()
 
 		if err = a.service.GetStorage().GetUsersRepository().UpdateNonce(ctx, userMap); err != nil {
 			a.service.GetLogger().Errorln(err)
+
 			return auth.NewPostFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
@@ -163,6 +174,7 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 
 		if err != nil {
 			a.service.GetLogger().Errorln(err)
+
 			return auth.NewPostFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
@@ -189,10 +201,11 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 }
 
 func (a *API) Register(ctx context.Context, address string) error {
-	pwd, err := password.Generate(8, 4, 4, false, false)
+	pwd, err := password.Generate(pwdLength, numDigits, numSymbols, false, false)
 	if err != nil {
 		return err
 	}
+
 	hashPwd, err := hashPassword(pwd, a.service.GetSettings().Secret)
 	if err != nil {
 		return err
@@ -216,24 +229,22 @@ func (a *API) Register(ctx context.Context, address string) error {
 func (a *API) HandleNonce(ctx context.Context, address string) (*models.Nonce, error) {
 	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, address)
 
-	if err != nil && err.Error() != "[repository]: user not found" {
+	if err != nil && err.Error() != userNotFoundMsg {
 		return nil, err
 	}
 
-	if user != nil {
-		payload := models.Nonce{
-			Address: address,
-		}
-		if user.Nonce.Valid {
-			payload.Nonce = user.Nonce.String
-		}
-		if user.UUID.Valid {
-			payload.UUID = user.UUID.String
-		}
-		return &payload, nil
+	payload := models.Nonce{
+		Address: address,
+	}
+	if user.Nonce.Valid {
+		payload.Nonce = user.Nonce.String
 	}
 
-	return nil, nil
+	if user.UUID.Valid {
+		payload.UUID = user.UUID.String
+	}
+
+	return &payload, nil
 }
 
 func (a *API) GetAccessToken(email string) (string, error) {
@@ -250,13 +261,15 @@ func (a *API) GetAccessToken(email string) (string, error) {
 
 	a.service.GetOauth2().Config[clientID] = config
 
-	authUrl := a.service.GetOauth2().Client.AuthorizeUrl(config)
-	fmt.Println("Auth URL: ", authUrl)
-	tkn, err := a.service.GetHTTPDialer().Authorize(authUrl)
+	authURL := a.service.GetOauth2().Client.AuthorizeURL(&config)
+	fmt.Println("Auth URL: ", authURL)
+
+	tkn, err := a.service.GetHTTPDialer().Authorize(authURL)
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
 		return "", err
 	}
+
 	return jwt.CreateToken(email, tkn.AccessToken)
 }
 
@@ -277,6 +290,7 @@ func (a *API) GetOauth2Callback(params auth.GetFrontendAuthCallbackParams) middl
 
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
+
 		return auth.NewGetFrontendAuthCallbackInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
 			Message: "code is required",
@@ -302,6 +316,7 @@ func (a *API) GetOauth2Callback(params auth.GetFrontendAuthCallbackParams) middl
 	token, err := config.Exchange(context.Background(), code, oauth2.SetAuthURLParam("code_verifier", "s256example"))
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
+
 		return auth.NewGetFrontendAuthCallbackUnauthorized().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusUnauthorized,
 			Message: "unauthorized",

@@ -16,7 +16,7 @@ type OAUTH2 struct {
 
 // Settings represents the configuration settings for the server.
 type Settings struct {
-	GRPC       GRPC
+	OAUTH2     OAUTH2
 	MarketName string `mapstructure:"MARKETNAME"`
 	Domain     string `mapstructure:"DOMAIN"`
 	DSN        string
@@ -25,7 +25,7 @@ type Settings struct {
 	XToken     string `mapstructure:"X_TOKEN"`
 	Secret     string `mapstructure:"SECRET"`
 	DB         DB
-	OAUTH2     OAUTH2
+	GRPC       GRPC
 }
 
 type GRPC struct {

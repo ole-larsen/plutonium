@@ -13,12 +13,10 @@ import (
 
 // GetFrontendAuthWalletConnectURL generates an URL for the get frontend auth wallet connect operation
 type GetFrontendAuthWalletConnectURL struct {
+	_         struct{}
 	Address   *string
 	Operation *string
-
 	_basePath string
-	// avoid unkeyed usage
-	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the

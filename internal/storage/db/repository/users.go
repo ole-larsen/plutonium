@@ -11,13 +11,9 @@ import (
 	_ "github.com/go-sql-driver/mysql" // add driver
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	_ "github.com/lib/pq" // add lib
 	"github.com/ole-larsen/plutonium/internal/hash"
-	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/models"
 )
-
-var logger = log.NewLogger("info", log.DefaultBuildLogger)
 
 // ErrDBNotInitialized - default database connection error.
 var ErrDBNotInitialized = fmt.Errorf("db not initialised")
@@ -35,19 +31,19 @@ type UsersRepositoryInterface interface {
 }
 
 type User struct {
-	Created              strfmt.Date    `db:"created"`
 	Updated              strfmt.Date    `db:"updated"`
 	Deleted              strfmt.Date    `db:"deleted"`
-	PasswordResetToken   sql.NullString `db:"password_reset_token"`
-	PasswordResetExpires sql.NullInt64  `db:"password_reset_expires"`
+	Created              strfmt.Date    `db:"created"`
+	Secret               string         `db:"secret"`
+	Username             string         `db:"username"`
 	RSASecret            string         `db:"rsa_secret"`
 	Email                string         `db:"email"`
 	Password             string         `db:"password"`
-	Secret               string         `db:"secret"`
+	PasswordResetToken   sql.NullString `db:"password_reset_token"`
 	UUID                 sql.NullString `db:"uuid"`
-	Username             string         `db:"username"`
 	Address              pq.StringArray `db:"address"`
 	Nonce                sql.NullString `db:"nonce"`
+	PasswordResetExpires sql.NullInt64  `db:"password_reset_expires"`
 	ID                   int64          `db:"id"`
 	Enabled              bool           `db:"enabled"`
 }
@@ -143,6 +139,7 @@ WHERE id=$1;`, r.TBL)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, NewError(fmt.Errorf("user not found"))
 		}
+
 		return nil, err
 	}
 
@@ -180,6 +177,7 @@ WHERE email=$1;`, r.TBL)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, NewError(fmt.Errorf("user not found"))
 		}
+
 		return nil, err
 	}
 
@@ -214,6 +212,7 @@ WHERE u.deleted IS NULL
 			Username: user.Username,
 			Email:    user.Email,
 		}
+
 		return publicUser, nil
 	default:
 		return nil, err
@@ -245,6 +244,7 @@ WHERE $1 = ANY(u.address) AND u.deleted IS NULL;`
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, NewError(fmt.Errorf("user not found"))
 		}
+
 		return nil, err
 	}
 
@@ -257,5 +257,6 @@ func (r *UsersRepository) UpdateNonce(ctx context.Context, userMap map[string]in
 	}
 
 	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET nonce=:nonce WHERE id=:id`, userMap)
+
 	return err
 }

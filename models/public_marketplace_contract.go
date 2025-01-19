@@ -19,21 +19,11 @@ import (
 //
 // swagger:model PublicMarketplaceContract
 type PublicMarketplaceContract struct {
-
-	// abi
-	Abi string `json:"abi,omitempty"`
-
-	// address
-	Address string `json:"address,omitempty"`
-
-	// fee
-	Fee big.Int `json:"fee,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
-
-	// owner
-	Owner common.Address `json:"owner,omitempty"`
+	Abi     string         `json:"abi,omitempty"`
+	Address string         `json:"address,omitempty"`
+	Name    string         `json:"name,omitempty"`
+	Fee     big.Int        `json:"fee,omitempty"`
+	Owner   common.Address `json:"owner,omitempty"`
 }
 
 // Validate validates this public marketplace contract

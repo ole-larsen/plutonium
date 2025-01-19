@@ -187,7 +187,7 @@ func TestMockUsersRepositoryInterface_GetUserByAddress(t *testing.T) {
 	expectedUser := &repository.User{
 		ID:      1,
 		Email:   "test@example.com",
-		Address: address,
+		Address: []string{address},
 	}
 	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(expectedUser, nil).Times(1)
 

@@ -42,7 +42,12 @@ func Verify(token, secret string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	return jwToken.Claims.(jwt.MapClaims), nil
+	claims, ok := jwToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("unexpected token structure")
+	}
+
+	return claims, nil
 }
 
 func GetBearerToken(header string) (string, error) {

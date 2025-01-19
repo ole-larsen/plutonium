@@ -208,6 +208,105 @@ func init() {
         }
       }
     },
+    "/frontend/blog": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "blog",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicBlogItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/blog/:slug": {
+      "get": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Serve Blog Item",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicBlogItem"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/categories": {
       "get": {
         "security": [
@@ -256,6 +355,116 @@ func init() {
         }
       }
     },
+    "/frontend/contact": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get contact form for page contact",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicContact"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/contact-form": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Send contact form.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/PublicContactForm"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful create",
+            "schema": {
+              "$ref": "#/definitions/FormSuccess"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/contracts": {
       "get": {
         "security": [
@@ -275,6 +484,57 @@ func init() {
             "description": "ok",
             "schema": {
               "$ref": "#/definitions/PublicContracts"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/faq": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "faq",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicFaqItem"
+              }
             }
           },
           "400": {
@@ -364,6 +624,57 @@ func init() {
         }
       }
     },
+    "/frontend/help-center": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "help center",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicHelpCenterItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/menu": {
       "get": {
         "security": [
@@ -391,6 +702,54 @@ func init() {
             "description": "Successfully fetched the menu.",
             "schema": {
               "$ref": "#/definitions/PublicMenu"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/page/:slug": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "page",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicPage"
             }
           },
           "400": {
@@ -646,6 +1005,85 @@ func init() {
         }
       }
     },
+    "Blog": {
+      "type": "object",
+      "properties": {
+        "author_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_1_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_2_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_3_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "public_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "tag_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "Callback": {
       "type": "object",
       "properties": {
@@ -678,6 +1116,58 @@ func init() {
         },
         "token_type": {
           "type": "string"
+        }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "btn_link": {
+          "type": "string"
+        },
+        "btn_text": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "page_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "sub_heading": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -741,8 +1231,170 @@ func init() {
         }
       }
     },
+    "Faq": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "question": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "ext": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "thumb": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "FileResponse": {
       "type": "string"
+    },
+    "FormSuccess": {
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "HelpCenter": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     },
     "LoginMetamaskOK": {
       "type": "object",
@@ -1081,6 +1733,69 @@ func init() {
         }
       }
     },
+    "Page": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "tag_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "PingResponse": {
       "type": "object",
       "properties": {
@@ -1149,6 +1864,12 @@ func init() {
     "PublicAuthorItem": {
       "type": "object",
       "properties": {
+        "btnLink": {
+          "type": "string"
+        },
+        "btnText": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -1179,6 +1900,71 @@ func init() {
           "items": {
             "$ref": "#/definitions/PublicWallet"
           }
+        }
+      }
+    },
+    "PublicBlogItem": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/PublicAuthor"
+        },
+        "content": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "description1": {
+          "type": "string"
+        },
+        "description2": {
+          "type": "string"
+        },
+        "description3": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image1": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image2": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image3": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "orderBy": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "popularTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicTag"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicTag"
+          }
+        },
+        "title": {
+          "type": "string"
         }
       }
     },
@@ -1231,6 +2017,69 @@ func init() {
         }
       }
     },
+    "PublicContact": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicContactAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicContactAttributes": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "subHeading": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContactForm": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "pageId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        }
+      }
+    },
     "PublicContract": {
       "type": "object",
       "properties": {
@@ -1267,6 +2116,21 @@ func init() {
               "$ref": "#/definitions/PublicMarketplaceContract"
             }
           }
+        }
+      }
+    },
+    "PublicFaqItem": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "question": {
+          "type": "string"
         }
       }
     },
@@ -1313,6 +2177,27 @@ func init() {
         "id": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicHelpCenterItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
         }
       }
     },
@@ -1390,6 +2275,42 @@ func init() {
         }
       }
     },
+    "PublicPage": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicPageAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicPageAttributes": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicSlider": {
       "type": "object",
       "properties": {
@@ -1453,6 +2374,20 @@ func init() {
           "type": "string"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicSubscribeForm": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "provider": {
           "type": "string"
         }
       }
@@ -1522,114 +2457,7 @@ func init() {
         }
       }
     },
-    "Social": {
-      "type": "object",
-      "properties": {
-        "icon": {
-          "type": "string"
-        },
-        "link": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "VerifySignature": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        },
-        "signature": {
-          "type": "string"
-        }
-      }
-    },
-    "Wallet": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "file": {
-      "type": "object",
-      "properties": {
-        "alt": {
-          "type": "string"
-        },
-        "caption": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string",
-          "format": "date"
-        },
-        "created_by_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "deleted": {
-          "type": "string",
-          "format": "date"
-        },
-        "ext": {
-          "type": "string"
-        },
-        "hash": {
-          "type": "string"
-        },
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "provider": {
-          "type": "string"
-        },
-        "size": {
-          "type": "number"
-        },
-        "thumb": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "updated": {
-          "type": "string",
-          "format": "date"
-        },
-        "updated_by_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "width": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "principal": {
-      "description": "A unique identifier for a principal (user or entity).",
-      "type": "string"
-    },
-    "slider": {
+    "Slider": {
       "type": "object",
       "properties": {
         "created": {
@@ -1670,7 +2498,7 @@ func init() {
         }
       }
     },
-    "slider-item": {
+    "Slider-item": {
       "type": "object",
       "properties": {
         "bg_image_id": {
@@ -1731,6 +2559,105 @@ func init() {
           "format": "int64"
         }
       }
+    },
+    "Social": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "blog_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "page_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "parent_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "VerifySignature": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "principal": {
+      "description": "A unique identifier for a principal (user or entity).",
+      "type": "string"
     }
   },
   "securityDefinitions": {
@@ -1955,6 +2882,105 @@ func init() {
         }
       }
     },
+    "/frontend/blog": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "blog",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicBlogItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/blog/:slug": {
+      "get": {
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Serve Blog Item",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicBlogItem"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/categories": {
       "get": {
         "security": [
@@ -2003,6 +3029,116 @@ func init() {
         }
       }
     },
+    "/frontend/contact": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "get contact form for page contact",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicContact"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/contact-form": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Send contact form.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/PublicContactForm"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful create",
+            "schema": {
+              "$ref": "#/definitions/FormSuccess"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/contracts": {
       "get": {
         "security": [
@@ -2022,6 +3158,57 @@ func init() {
             "description": "ok",
             "schema": {
               "$ref": "#/definitions/PublicContracts"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/faq": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "faq",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicFaqItem"
+              }
             }
           },
           "400": {
@@ -2111,6 +3298,57 @@ func init() {
         }
       }
     },
+    "/frontend/help-center": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "help center",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicHelpCenterItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/menu": {
       "get": {
         "security": [
@@ -2138,6 +3376,54 @@ func init() {
             "description": "Successfully fetched the menu.",
             "schema": {
               "$ref": "#/definitions/PublicMenu"
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/frontend/page/:slug": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "page",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/PublicPage"
             }
           },
           "400": {
@@ -2393,6 +3679,85 @@ func init() {
         }
       }
     },
+    "Blog": {
+      "type": "object",
+      "properties": {
+        "author_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_1_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_2_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_3_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "public_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "tag_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "Callback": {
       "type": "object",
       "properties": {
@@ -2425,6 +3790,58 @@ func init() {
         },
         "token_type": {
           "type": "string"
+        }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "btn_link": {
+          "type": "string"
+        },
+        "btn_text": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "page_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "sub_heading": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -2488,8 +3905,170 @@ func init() {
         }
       }
     },
+    "Faq": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "question": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "alt": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "ext": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "thumb": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "FileResponse": {
       "type": "string"
+    },
+    "FormSuccess": {
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "HelpCenter": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
     },
     "LoginMetamaskOK": {
       "type": "object",
@@ -2828,6 +4407,69 @@ func init() {
         }
       }
     },
+    "Page": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "content": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "tag_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "PingResponse": {
       "type": "object",
       "properties": {
@@ -2896,6 +4538,12 @@ func init() {
     "PublicAuthorItem": {
       "type": "object",
       "properties": {
+        "btnLink": {
+          "type": "string"
+        },
+        "btnText": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -2926,6 +4574,71 @@ func init() {
           "items": {
             "$ref": "#/definitions/PublicWallet"
           }
+        }
+      }
+    },
+    "PublicBlogItem": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/PublicAuthor"
+        },
+        "content": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "description1": {
+          "type": "string"
+        },
+        "description2": {
+          "type": "string"
+        },
+        "description3": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image1": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image2": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "image3": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "orderBy": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "popularTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicTag"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PublicTag"
+          }
+        },
+        "title": {
+          "type": "string"
         }
       }
     },
@@ -2974,6 +4687,69 @@ func init() {
           "type": "string"
         },
         "title": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContact": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicContactAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicContactAttributes": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "subHeading": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "PublicContactForm": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "pageId": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "subject": {
           "type": "string"
         }
       }
@@ -3034,6 +4810,21 @@ func init() {
         },
         "marketplace": {
           "$ref": "#/definitions/PublicMarketplaceContract"
+        }
+      }
+    },
+    "PublicFaqItem": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "question": {
+          "type": "string"
         }
       }
     },
@@ -3121,6 +4912,27 @@ func init() {
         }
       }
     },
+    "PublicHelpCenterItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicMarketplaceContract": {
       "type": "object",
       "properties": {
@@ -3192,6 +5004,42 @@ func init() {
         "orderBy": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicPage": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicPageAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicPageAttributes": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
         }
       }
     },
@@ -3273,6 +5121,20 @@ func init() {
         }
       }
     },
+    "PublicSubscribeForm": {
+      "type": "object",
+      "properties": {
+        "csrf": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        }
+      }
+    },
     "PublicTag": {
       "type": "object",
       "properties": {
@@ -3338,114 +5200,7 @@ func init() {
         }
       }
     },
-    "Social": {
-      "type": "object",
-      "properties": {
-        "icon": {
-          "type": "string"
-        },
-        "link": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "VerifySignature": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "msg": {
-          "type": "string"
-        },
-        "signature": {
-          "type": "string"
-        }
-      }
-    },
-    "Wallet": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "file": {
-      "type": "object",
-      "properties": {
-        "alt": {
-          "type": "string"
-        },
-        "caption": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string",
-          "format": "date"
-        },
-        "created_by_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "deleted": {
-          "type": "string",
-          "format": "date"
-        },
-        "ext": {
-          "type": "string"
-        },
-        "hash": {
-          "type": "string"
-        },
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "provider": {
-          "type": "string"
-        },
-        "size": {
-          "type": "number"
-        },
-        "thumb": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "updated": {
-          "type": "string",
-          "format": "date"
-        },
-        "updated_by_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "width": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "principal": {
-      "description": "A unique identifier for a principal (user or entity).",
-      "type": "string"
-    },
-    "slider": {
+    "Slider": {
       "type": "object",
       "properties": {
         "created": {
@@ -3486,7 +5241,7 @@ func init() {
         }
       }
     },
-    "slider-item": {
+    "Slider-item": {
       "type": "object",
       "properties": {
         "bg_image_id": {
@@ -3547,6 +5302,105 @@ func init() {
           "format": "int64"
         }
       }
+    },
+    "Social": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "blog_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "page_id": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "bigInt"
+          }
+        },
+        "parent_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "VerifySignature": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "principal": {
+      "description": "A unique identifier for a principal (user or entity).",
+      "type": "string"
     }
   },
   "securityDefinitions": {

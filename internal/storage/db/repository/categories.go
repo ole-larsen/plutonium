@@ -30,8 +30,8 @@ type CategoryCollectionCollectibleAttributes struct {
 }
 
 type CategoryCollectionAttributes struct {
-	Deleted      time.Time                                     `db:"deleted_at"`
-	Updated      time.Time                                     `db:"updated_at"`
+	Deleted      time.Time                                     `db:"deleted"`
+	Updated      time.Time                                     `db:"updated"`
 	Description  string                                        `db:"description"`
 	Fee          string                                        `db:"fee"`
 	Symbol       string                                        `db:"symbol"`

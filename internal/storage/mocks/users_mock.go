@@ -21,9 +21,9 @@ import (
 
 // MockUsersRepositoryInterface is a mock of UsersRepositoryInterface interface.
 type MockUsersRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockUsersRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockUsersRepositoryInterfaceMockRecorder is the mock recorder for MockUsersRepositoryInterface.

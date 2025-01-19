@@ -24,7 +24,7 @@ var logger = log.NewLogger("info", log.DefaultBuildLogger)
 
 // HTTPClient - custom agent wrapper for http.Client.
 type HTTPClient struct {
-	client   *http.Client
+	Client   *http.Client
 	settings *settings.Settings
 }
 
@@ -36,7 +36,7 @@ var (
 func NewHTTPClient() *HTTPClient {
 	once.Do(func() {
 		singleton = &HTTPClient{
-			client: &http.Client{
+			Client: &http.Client{
 				Timeout: time.Minute,
 			},
 		}
@@ -46,38 +46,42 @@ func NewHTTPClient() *HTTPClient {
 }
 
 func SetDefaultTransport() *http.Transport {
-	return http.DefaultTransport.(*http.Transport).Clone()
+	if transport, ok := http.DefaultTransport.(*http.Transport); ok {
+		return transport.Clone()
+	}
+
+	return nil
 }
 
 func (c *HTTPClient) SetTransport(t http.RoundTripper) *HTTPClient {
-	c.client.Transport = t
+	c.Client.Transport = t
 	return c
 }
 
 func (c *HTTPClient) SetTimeout(t time.Duration) *HTTPClient {
-	c.client.Timeout = t
+	c.Client.Timeout = t
 	return c
 }
 
-func (s *HTTPClient) SetSettings(cfg *settings.Settings) *HTTPClient {
-	s.settings = cfg
-	return s
+func (c *HTTPClient) SetSettings(cfg *settings.Settings) *HTTPClient {
+	c.settings = cfg
+	return c
 }
 
 func (c *HTTPClient) GetTransport() http.RoundTripper {
-	return c.client.Transport
+	return c.Client.Transport
 }
 
-func (s *HTTPClient) GetSettings() *settings.Settings {
-	return s.settings
+func (c *HTTPClient) GetSettings() *settings.Settings {
+	return c.settings
 }
 
 func (c *HTTPClient) Get(url string) (resp *http.Response, err error) {
-	return c.client.Get(url)
+	return c.Client.Get(url)
 }
 
 func (c *HTTPClient) Post(url, contentType string, body io.Reader) (resp *http.Response, err error) {
-	return c.client.Post(url, contentType, body)
+	return c.Client.Post(url, contentType, body)
 }
 
 func (c *HTTPClient) SetRequest(method, url string, body []byte) (*http.Request, error) {
@@ -123,7 +127,7 @@ func (c *HTTPClient) SetHeaders(request *http.Request, headers map[string]string
 }
 
 func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
-	return c.client.Do(req)
+	return c.Client.Do(req)
 }
 
 func (c *HTTPClient) MakeRequest(
@@ -198,25 +202,30 @@ func (c *HTTPClient) MakeRequest(
 
 func (c *HTTPClient) GetCredentials(clientID string) (*models.Credentials, error) {
 	url := c.settings.OAUTH2.Provider + "/api/v1/credentials?client_id=" + clientID
+
 	body, err := c.MakeRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	var response models.Credentials
-	if err = json.Unmarshal(body, &response); err != nil {
+	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
+
 	return &response, nil
 }
 
-func (c *HTTPClient) Authorize(authorizeUrl string) (*models.Callback, error) {
-	body, err := c.MakeRequest("GET", authorizeUrl, nil)
+func (c *HTTPClient) Authorize(authorizeURL string) (*models.Callback, error) {
+	body, err := c.MakeRequest("GET", authorizeURL, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	var response models.Callback
-	if err = json.Unmarshal(body, &response); err != nil {
+	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, err
 	}
+
 	return &response, nil
 }

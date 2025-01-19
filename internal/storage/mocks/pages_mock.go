@@ -10,9 +10,11 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	sqlx "github.com/jmoiron/sqlx"
+	models "github.com/ole-larsen/plutonium/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -38,6 +40,65 @@ func NewMockPagesRepositoryInterface(ctrl *gomock.Controller) *MockPagesReposito
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockPagesRepositoryInterface) EXPECT() *MockPagesRepositoryInterfaceMockRecorder {
 	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockPagesRepositoryInterface) Create(ctx context.Context, pageMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, pageMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockPagesRepositoryInterfaceMockRecorder) Create(ctx, pageMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).Create), ctx, pageMap)
+}
+
+// GetPageByID mocks base method.
+func (m *MockPagesRepositoryInterface) GetPageByID(ctx context.Context, id int64) (*models.Page, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPageByID", ctx, id)
+	ret0, _ := ret[0].(*models.Page)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPageByID indicates an expected call of GetPageByID.
+func (mr *MockPagesRepositoryInterfaceMockRecorder) GetPageByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPageByID", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).GetPageByID), ctx, id)
+}
+
+// GetPageBySlug mocks base method.
+func (m *MockPagesRepositoryInterface) GetPageBySlug(ctx context.Context, provider string) (*models.PublicPage, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPageBySlug", ctx, provider)
+	ret0, _ := ret[0].(*models.PublicPage)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPageBySlug indicates an expected call of GetPageBySlug.
+func (mr *MockPagesRepositoryInterfaceMockRecorder) GetPageBySlug(ctx, provider any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPageBySlug", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).GetPageBySlug), ctx, provider)
+}
+
+// GetPages mocks base method.
+func (m *MockPagesRepositoryInterface) GetPages(ctx context.Context) ([]*models.Page, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPages", ctx)
+	ret0, _ := ret[0].([]*models.Page)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPages indicates an expected call of GetPages.
+func (mr *MockPagesRepositoryInterfaceMockRecorder) GetPages(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPages", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).GetPages), ctx)
 }
 
 // InnerDB mocks base method.
@@ -66,4 +127,19 @@ func (m *MockPagesRepositoryInterface) Ping() error {
 func (mr *MockPagesRepositoryInterfaceMockRecorder) Ping() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).Ping))
+}
+
+// Update mocks base method.
+func (m *MockPagesRepositoryInterface) Update(ctx context.Context, pageMap map[string]any) ([]*models.Page, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, pageMap)
+	ret0, _ := ret[0].([]*models.Page)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockPagesRepositoryInterfaceMockRecorder) Update(ctx, pageMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPagesRepositoryInterface)(nil).Update), ctx, pageMap)
 }

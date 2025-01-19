@@ -1,10 +1,11 @@
-package compressor
+package compressor_test
 
 import (
 	"bytes"
 	"strings"
 	"testing"
 
+	"github.com/ole-larsen/plutonium/internal/compressor"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,12 +39,12 @@ func TestCompressDecompress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			b, err := Compress(tt.args.data)
+			b, err := compressor.Compress(tt.args.data)
 			require.NoError(t, err, "must compress")
 			require.Greater(t, len(tt.args.data), len(b))
 			t.Logf("%d bytes has been compressed to %d bytes\r\n", len(tt.args.data), len(b))
 
-			out, err := Decompress(bytes.NewBuffer(b))
+			out, err := compressor.Decompress(bytes.NewBuffer(b))
 			require.NoError(t, err, "must decompress")
 
 			if !bytes.Equal(tt.args.data, out) {

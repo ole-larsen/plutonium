@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/go-openapi/strfmt"
-	"github.com/hashicorp/go-multierror"
 	"github.com/jmoiron/sqlx"
 	"github.com/ole-larsen/plutonium/models"
 )
@@ -109,8 +108,7 @@ func (r *SlidersRepository) GetSliders(ctx context.Context) ([]*models.Slider, e
 	}
 
 	var (
-		multierr multierror.Error
-		sliders  []*models.Slider
+		sliders []*models.Slider
 	)
 
 	rows, err := r.DB.QueryxContext(ctx, `SELECT id, provider, title, description, enabled, created_by_id, updated_by_id from sliders;`)
@@ -139,7 +137,7 @@ func (r *SlidersRepository) GetSliders(ctx context.Context) ([]*models.Slider, e
 
 	defer rows.Close()
 
-	return sliders, multierr.ErrorOrNil()
+	return sliders, nil
 }
 
 func (r *SlidersRepository) GetSliderByTitle(ctx context.Context, title string) (*models.Slider, error) {
