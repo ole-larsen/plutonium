@@ -114,9 +114,15 @@ func (m *PublicContracts) UnmarshalBinary(b []byte) error {
 //
 // swagger:model PublicContractsContracts
 type PublicContractsContracts struct {
-	Collections map[string]PublicContract  `json:"collections,omitempty"`
+
+	// auctions
+	Auctions []*PublicContract `json:"auctions"`
+
+	// collections
+	Collections map[string]PublicContract `json:"collections,omitempty"`
+
+	// marketplace
 	Marketplace *PublicMarketplaceContract `json:"marketplace,omitempty"`
-	Auctions    []*PublicContract          `json:"auctions"`
 }
 
 // Validate validates this public contracts contracts

@@ -17,15 +17,33 @@ import (
 //
 // swagger:model PublicSliderItem
 type PublicSliderItem struct {
-	Bg          *PublicFile `json:"bg,omitempty"`
-	Image       *PublicFile `json:"image,omitempty"`
-	BtnLink1    string      `json:"btnLink1,omitempty"`
-	BtnLink2    string      `json:"btnLink2,omitempty"`
-	BtnText1    string      `json:"btnText1,omitempty"`
-	BtnText2    string      `json:"btnText2,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Heading     string      `json:"heading,omitempty"`
-	ID          int64       `json:"id,omitempty"`
+
+	// bg
+	Bg *PublicFile `json:"bg,omitempty"`
+
+	// btn link1
+	BtnLink1 string `json:"btnLink1,omitempty"`
+
+	// btn link2
+	BtnLink2 string `json:"btnLink2,omitempty"`
+
+	// btn text1
+	BtnText1 string `json:"btnText1,omitempty"`
+
+	// btn text2
+	BtnText2 string `json:"btnText2,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// heading
+	Heading string `json:"heading,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// image
+	Image *PublicFile `json:"image,omitempty"`
 }
 
 // Validate validates this public slider item

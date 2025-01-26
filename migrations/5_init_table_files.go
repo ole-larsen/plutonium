@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS files (
 ALTER TABLE files ADD CONSTRAINT files_created_by_id_foreign
 	FOREIGN KEY (created_by_id) REFERENCES users(id);
 ALTER TABLE files ADD CONSTRAINT files_updated_by_id_foreign
-	FOREIGN KEY (updated_by_id) REFERENCES users(id);`)
+	FOREIGN KEY (updated_by_id) REFERENCES users(id);
+ALTER TABLE users ADD CONSTRAINT users_wallpaper_id_foreign
+	FOREIGN KEY (wallpaper_id) REFERENCES files(id) ON UPDATE CASCADE ON DELETE CASCADE;`)
 
 		return err
 	}, func(db migrations.DB) error {

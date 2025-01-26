@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"golang.org/x/oauth2"
 
@@ -31,6 +32,7 @@ import (
 	"github.com/ole-larsen/plutonium/internal/plutonium/oauth2client"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
+	"github.com/ole-larsen/plutonium/models"
 	"github.com/ole-larsen/plutonium/restapi/operations"
 	"github.com/ole-larsen/plutonium/restapi/operations/auth"
 	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
@@ -172,6 +174,10 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.FrontendGetFrontendHelpCenterHandler = frontend.GetFrontendHelpCenterHandlerFunc(frontendAPI.GetHelpCenterHandler)
 	api.FrontendGetFrontendBlogHandler = frontend.GetFrontendBlogHandlerFunc(frontendAPI.GetBlogsHandler)
 	api.FrontendGetFrontendBlogSlugHandler = frontend.GetFrontendBlogSlugHandlerFunc(frontendAPI.GetBlogsSlugHandler)
+	api.FrontendGetFrontendWalletConnectHandler = frontend.GetFrontendWalletConnectHandlerFunc(frontendAPI.GetWalletConnectHandler)
+	api.FrontendGetFrontendCreateAndSellHandler = frontend.GetFrontendCreateAndSellHandlerFunc(func(params frontend.GetFrontendCreateAndSellParams, principal *models.Principal) middleware.Responder {
+		return middleware.NotImplemented("operation frontend.GetFrontendCreateAndSell has not yet been implemented")
+	})
 
 	authAPI := v1authApi.NewAuthAPI(service)
 

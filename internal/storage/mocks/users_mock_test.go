@@ -2,227 +2,184 @@ package mocks_test
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/ole-larsen/plutonium/internal/storage/db/repository"
+	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
 	"github.com/ole-larsen/plutonium/models"
-	"go.uber.org/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	gomock "go.uber.org/mock/gomock"
 )
 
-func TestMockUsersRepositoryInterface_InnerDB(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-	mockDB := &sqlx.DB{}
-	mockRepo.EXPECT().InnerDB().Return(mockDB).Times(1)
-
-	db := mockRepo.InnerDB()
-	if db != mockDB {
-		t.Errorf("Expected InnerDB to return %v, got %v", mockDB, db)
-	}
-}
-
-func TestMockUsersRepositoryInterface_Ping(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-
-	// Test successful ping
-	mockRepo.EXPECT().Ping().Return(nil).Times(1)
-
-	if err := mockRepo.Ping(); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test ping with error
-	mockError := fmt.Errorf("ping error")
-	mockRepo.EXPECT().Ping().Return(mockError).Times(1)
-
-	if err := mockRepo.Ping(); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockUsersRepositoryInterface_Create(t *testing.T) {
+func TestMockUsersRepositoryInterface(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
 	ctx := context.Background()
-	userMap := map[string]interface{}{
-		"email":    "test@example.com",
-		"password": "hashedpassword",
-		"secret":   "mysecret",
-	}
 
-	// Test successful creation
-	mockRepo.EXPECT().Create(ctx, userMap).Return(nil).Times(1)
-
-	if err := mockRepo.Create(ctx, userMap); err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	// Test creation with error
-	mockError := fmt.Errorf("creation error")
-	mockRepo.EXPECT().Create(ctx, userMap).Return(mockError).Times(1)
-
-	if err := mockRepo.Create(ctx, userMap); err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-}
-
-func TestMockUsersRepositoryInterface_GetUserByEmail(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-	ctx := context.Background()
-	email := "test@example.com"
-
-	// Test successful retrieval
-	expectedUser := &repository.User{Email: email}
-	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(expectedUser, nil).Times(1)
-
-	user, err := mockRepo.GetUserByEmail(ctx, email)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
-
-	if user != expectedUser {
-		t.Errorf("Expected user %v, got %v", expectedUser, user)
-	}
-
-	// Test GetUserByEmail with user not found error
-	mockError := fmt.Errorf("user not found")
-	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(nil, mockError).Times(1)
-
-	user, err = mockRepo.GetUserByEmail(ctx, email)
-	if err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
-	}
-
-	if user != nil {
-		t.Errorf("Expected user to be nil, got %v", user)
-	}
-
-	// Test GetUserByEmail with database error
-	dbError := fmt.Errorf("db error")
-	mockRepo.EXPECT().GetUserByEmail(ctx, email).Return(nil, dbError).Times(1)
-
-	user, err = mockRepo.GetUserByEmail(ctx, email)
-	if err == nil || err.Error() != dbError.Error() {
-		t.Errorf("Expected error %v, got %v", dbError, err)
-	}
-
-	if user != nil {
-		t.Errorf("Expected user to be nil, got %v", user)
-	}
-}
-
-func TestMockUsersRepositoryInterface_GetPublicUserByID(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-	ctx := context.Background()
-	userID := int64(123)
-
-	// Test successful retrieval of public user
-	expectedPublicUser := &models.PublicUser{
-		ID:       userID,
+	// Sample data
+	sampleUser := &models.PublicUser{
+		ID:       1,
 		Username: "testuser",
-	}
-	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(expectedPublicUser, nil).Times(1)
-
-	publicUser, err := mockRepo.GetPublicUserByID(ctx, userID)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
+		Email:    "test@example.com",
 	}
 
-	if publicUser != expectedPublicUser {
-		t.Errorf("Expected public user %v, got %v", expectedPublicUser, publicUser)
+	sampleRepoUser := &repository.User{
+		ID:       1,
+		Username: "testuser",
+		Email:    "test@example.com",
 	}
 
-	// Test GetPublicUserByID with user not found error
-	mockError := fmt.Errorf("public user not found")
-	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(nil, mockError).Times(1)
-
-	publicUser, err = mockRepo.GetPublicUserByID(ctx, userID)
-	if err == nil || err.Error() != mockError.Error() {
-		t.Errorf("Expected error %v, got %v", mockError, err)
+	userMap := map[string]any{
+		"username": "updatedUser",
+		"email":    "updated@example.com",
 	}
 
-	if publicUser != nil {
-		t.Errorf("Expected public user to be nil, got %v", publicUser)
-	}
+	// Test: Create
+	t.Run("Create", func(t *testing.T) {
+		mockRepo.EXPECT().Create(ctx, userMap).Return(nil)
 
-	// Test GetPublicUserByID with database error
-	dbError := fmt.Errorf("db error")
-	mockRepo.EXPECT().GetPublicUserByID(ctx, userID).Return(nil, dbError).Times(1)
+		err := mockRepo.Create(ctx, userMap)
+		assert.NoError(t, err)
+	})
 
-	publicUser, err = mockRepo.GetPublicUserByID(ctx, userID)
-	if err == nil || err.Error() != dbError.Error() {
-		t.Errorf("Expected error %v, got %v", dbError, err)
-	}
+	t.Run("Create with error", func(t *testing.T) {
+		mockRepo.EXPECT().Create(ctx, userMap).Return(errors.New("create error"))
 
-	if publicUser != nil {
-		t.Errorf("Expected public user to be nil, got %v", publicUser)
-	}
-}
+		err := mockRepo.Create(ctx, userMap)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "create error")
+	})
 
-func TestMockUsersRepositoryInterface_GetUserByAddress(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	// Test: GetPublicUserByID
+	t.Run("GetPublicUserByID", func(t *testing.T) {
+		mockRepo.EXPECT().GetPublicUserByID(ctx, int64(1)).Return(sampleUser, nil)
 
-	mockRepo := mocks.NewMockUsersRepositoryInterface(ctrl)
-	ctx := context.Background()
-	address := "0x1234567890abcdef"
+		user, err := mockRepo.GetPublicUserByID(ctx, 1)
+		assert.NoError(t, err)
+		assert.Equal(t, sampleUser, user)
+	})
 
-	// Test successful retrieval
-	expectedUser := &repository.User{
-		ID:      1,
-		Email:   "test@example.com",
-		Address: []string{address},
-	}
-	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(expectedUser, nil).Times(1)
+	t.Run("GetPublicUserByID with error", func(t *testing.T) {
+		mockRepo.EXPECT().GetPublicUserByID(ctx, int64(1)).Return(nil, errors.New("not found"))
 
-	user, err := mockRepo.GetUserByAddress(ctx, address)
-	if err != nil {
-		t.Errorf("Expected no error, got %v", err)
-	}
+		user, err := mockRepo.GetPublicUserByID(ctx, 1)
+		assert.Error(t, err)
+		assert.Nil(t, user)
+		assert.EqualError(t, err, "not found")
+	})
 
-	if user != expectedUser {
-		t.Errorf("Expected user %v, got %v", expectedUser, user)
-	}
+	// Test: GetUserByAddress
+	t.Run("GetUserByAddress", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByAddress(ctx, "address123").Return(sampleRepoUser, nil)
 
-	// Test GetUserByAddress with user not found error
-	notFoundError := fmt.Errorf("user not found")
-	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(nil, notFoundError).Times(1)
+		user, err := mockRepo.GetUserByAddress(ctx, "address123")
+		assert.NoError(t, err)
+		assert.Equal(t, sampleRepoUser, user)
+	})
 
-	user, err = mockRepo.GetUserByAddress(ctx, address)
-	if err == nil || err.Error() != notFoundError.Error() {
-		t.Errorf("Expected error %v, got %v", notFoundError, err)
-	}
+	t.Run("GetUserByAddress with error", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByAddress(ctx, "address123").Return(nil, errors.New("address not found"))
 
-	if user != nil {
-		t.Errorf("Expected user to be nil, got %v", user)
-	}
+		user, err := mockRepo.GetUserByAddress(ctx, "address123")
+		assert.Error(t, err)
+		assert.Nil(t, user)
+		assert.EqualError(t, err, "address not found")
+	})
 
-	// Test GetUserByAddress with database error
-	dbError := fmt.Errorf("database error")
-	mockRepo.EXPECT().GetUserByAddress(ctx, address).Return(nil, dbError).Times(1)
+	// Test: GetUserByEmail
+	t.Run("GetUserByEmail", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByEmail(ctx, "test@example.com").Return(sampleRepoUser, nil)
 
-	user, err = mockRepo.GetUserByAddress(ctx, address)
-	if err == nil || err.Error() != dbError.Error() {
-		t.Errorf("Expected error %v, got %v", dbError, err)
-	}
+		user, err := mockRepo.GetUserByEmail(ctx, "test@example.com")
+		assert.NoError(t, err)
+		assert.Equal(t, sampleRepoUser, user)
+	})
 
-	if user != nil {
-		t.Errorf("Expected user to be nil, got %v", user)
-	}
+	t.Run("GetUserByEmail with error", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByEmail(ctx, "test@example.com").Return(nil, errors.New("email not found"))
+
+		user, err := mockRepo.GetUserByEmail(ctx, "test@example.com")
+		assert.Error(t, err)
+		assert.Nil(t, user)
+		assert.EqualError(t, err, "email not found")
+	})
+
+	// Test: GetUserByID
+	t.Run("GetUserByID", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByID(ctx, int64(1)).Return(sampleRepoUser, nil)
+
+		user, err := mockRepo.GetUserByID(ctx, 1)
+		assert.NoError(t, err)
+		assert.Equal(t, sampleRepoUser, user)
+	})
+
+	t.Run("GetUserByID with error", func(t *testing.T) {
+		mockRepo.EXPECT().GetUserByID(ctx, int64(1)).Return(nil, errors.New("user not found"))
+
+		user, err := mockRepo.GetUserByID(ctx, 1)
+		assert.Error(t, err)
+		assert.Nil(t, user)
+		assert.EqualError(t, err, "user not found")
+	})
+
+	// Test: InnerDB
+	t.Run("InnerDB", func(t *testing.T) {
+		mockDB := &sqlx.DB{}
+		mockRepo.EXPECT().InnerDB().Return(mockDB)
+
+		db := mockRepo.InnerDB()
+		assert.Equal(t, mockDB, db)
+	})
+
+	// Test: Ping
+	t.Run("Ping", func(t *testing.T) {
+		mockRepo.EXPECT().Ping().Return(nil)
+
+		err := mockRepo.Ping()
+		assert.NoError(t, err)
+	})
+
+	t.Run("Ping with error", func(t *testing.T) {
+		mockRepo.EXPECT().Ping().Return(errors.New("ping error"))
+
+		err := mockRepo.Ping()
+		assert.Error(t, err)
+		assert.EqualError(t, err, "ping error")
+	})
+
+	// Test: UpdateGravatar
+	t.Run("UpdateGravatar", func(t *testing.T) {
+		mockRepo.EXPECT().UpdateGravatar(ctx, userMap).Return(nil)
+
+		err := mockRepo.UpdateGravatar(ctx, userMap)
+		assert.NoError(t, err)
+	})
+
+	// Test: UpdateNonce
+	t.Run("UpdateNonce", func(t *testing.T) {
+		mockRepo.EXPECT().UpdateNonce(ctx, userMap).Return(nil)
+
+		err := mockRepo.UpdateNonce(ctx, userMap)
+		assert.NoError(t, err)
+	})
+
+	// Test: UpdateSecret
+	t.Run("UpdateSecret", func(t *testing.T) {
+		mockRepo.EXPECT().UpdateSecret(ctx, userMap).Return(nil)
+
+		err := mockRepo.UpdateSecret(ctx, userMap)
+		assert.NoError(t, err)
+	})
+
+	// Test: UpdateWallpaper
+	t.Run("UpdateWallpaper", func(t *testing.T) {
+		mockRepo.EXPECT().UpdateWallpaper(ctx, userMap).Return(nil)
+
+		err := mockRepo.UpdateWallpaper(ctx, userMap)
+		assert.NoError(t, err)
+	})
 }

@@ -2,162 +2,128 @@ package mocks_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/jmoiron/sqlx"
-	repository "github.com/ole-larsen/plutonium/internal/storage/db/repository"
+	"github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
-	"go.uber.org/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	gomock "go.uber.org/mock/gomock"
 )
 
-func setupMockController(t *testing.T) (*gomock.Controller, *mocks.MockDBStorageInterface) {
-	t.Helper()
+func TestMockDBStorageInterface(t *testing.T) {
 	ctrl := gomock.NewController(t)
-
-	return ctrl, mocks.NewMockDBStorageInterface(ctrl)
-}
-
-func TestMockDBStorageInterface_ConnectRepository(t *testing.T) {
-	ctrl, mockDBStorage := setupMockController(t)
 	defer ctrl.Finish()
 
-	mockSQLxDB := &sqlx.DB{}
+	mockDBStorage := mocks.NewMockDBStorageInterface(ctrl)
 
-	t.Run("Successful Connection", func(t *testing.T) {
-		mockDBStorage.EXPECT().ConnectRepository("users", mockSQLxDB).Return(nil).Times(1)
-
-		err := mockDBStorage.ConnectRepository("users", mockSQLxDB)
-		if err != nil {
-			t.Errorf("Expected no error, got %v", err)
-		}
-	})
-
-	t.Run("Error on Connection", func(t *testing.T) {
-		mockError := fmt.Errorf("connection error")
-		mockDBStorage.EXPECT().ConnectRepository("users", mockSQLxDB).Return(mockError).Times(1)
-
-		err := mockDBStorage.ConnectRepository("users", mockSQLxDB)
-		if err == nil || err.Error() != mockError.Error() {
-			t.Errorf("Expected error %v, got %v", mockError, err)
-		}
-	})
-}
-
-func TestMockDBStorageInterface_Init(t *testing.T) {
-	ctrl, mockDBStorage := setupMockController(t)
-	defer ctrl.Finish()
-
+	// Test Init
 	ctx := context.Background()
 	mockSQLxDB := &sqlx.DB{}
+	mockDBStorage.EXPECT().Init(ctx, mockSQLxDB).Return(mockSQLxDB, nil).Times(1)
+	db, err := mockDBStorage.Init(ctx, mockSQLxDB)
+	assert.NoError(t, err)
+	assert.Equal(t, mockSQLxDB, db)
 
-	t.Run("Successful Initialization", func(t *testing.T) {
-		mockDBStorage.EXPECT().Init(ctx, mockSQLxDB).Return(mockSQLxDB, nil).Times(1)
+	// Test ConnectRepository
+	repoName := "test_repo"
+	mockDBStorage.EXPECT().ConnectRepository(repoName, mockSQLxDB).Return(nil).Times(1)
+	err = mockDBStorage.ConnectRepository(repoName, mockSQLxDB)
+	assert.NoError(t, err)
 
-		db, err := mockDBStorage.Init(ctx, mockSQLxDB)
-		if err != nil {
-			t.Errorf("Expected no error, got %v", err)
-		}
+	// Test GetAuthorsRepository
+	mockAuthorsRepo := &repository.AuthorsRepository{}
+	mockDBStorage.EXPECT().GetAuthorsRepository().Return(mockAuthorsRepo).Times(1)
+	authorsRepo := mockDBStorage.GetAuthorsRepository()
+	assert.Equal(t, mockAuthorsRepo, authorsRepo)
 
-		if db != mockSQLxDB {
-			t.Errorf("Expected %v, got %v", mockSQLxDB, db)
-		}
-	})
+	// Test GetBlogsRepository
+	mockBlogsRepo := &repository.BlogsRepository{}
+	mockDBStorage.EXPECT().GetBlogsRepository().Return(mockBlogsRepo).Times(1)
+	blogsRepo := mockDBStorage.GetBlogsRepository()
+	assert.Equal(t, mockBlogsRepo, blogsRepo)
 
-	t.Run("Error on Initialization", func(t *testing.T) {
-		mockError := fmt.Errorf("init error")
-		mockDBStorage.EXPECT().Init(ctx, mockSQLxDB).Return(nil, mockError).Times(1)
+	// Test GetCategoriesRepository
+	mockCategoriesRepo := &repository.CategoriesRepository{}
+	mockDBStorage.EXPECT().GetCategoriesRepository().Return(mockCategoriesRepo).Times(1)
+	categoriesRepo := mockDBStorage.GetCategoriesRepository()
+	assert.Equal(t, mockCategoriesRepo, categoriesRepo)
 
-		db, err := mockDBStorage.Init(ctx, mockSQLxDB)
-		if err == nil || err.Error() != mockError.Error() {
-			t.Errorf("Expected error %v, got %v", mockError, err)
-		}
+	// Test GetContactFormsRepository
+	mockContactFormsRepo := &repository.ContactFormRepository{}
+	mockDBStorage.EXPECT().GetContactFormsRepository().Return(mockContactFormsRepo).Times(1)
+	contactFormsRepo := mockDBStorage.GetContactFormsRepository()
+	assert.Equal(t, mockContactFormsRepo, contactFormsRepo)
 
-		if db != nil {
-			t.Errorf("Expected nil, got %v", db)
-		}
-	})
-}
+	// Test GetContactsRepository
+	mockContactsRepo := &repository.ContactsRepository{}
+	mockDBStorage.EXPECT().GetContactsRepository().Return(mockContactsRepo).Times(1)
+	contactsRepo := mockDBStorage.GetContactsRepository()
+	assert.Equal(t, mockContactsRepo, contactsRepo)
 
-func TestMockDBStorageInterface_GetRepositories(t *testing.T) {
-	ctrl, mockDBStorage := setupMockController(t)
-	defer ctrl.Finish()
+	// Test GetContractsRepository
+	mockContractsRepo := &repository.ContractsRepository{}
+	mockDBStorage.EXPECT().GetContractsRepository().Return(mockContractsRepo).Times(1)
+	contractsRepo := mockDBStorage.GetContractsRepository()
+	assert.Equal(t, mockContractsRepo, contractsRepo)
 
-	t.Run("GetCategoriesRepository", func(t *testing.T) {
-		expectedRepo := &repository.CategoriesRepository{}
-		mockDBStorage.EXPECT().GetCategoriesRepository().Return(expectedRepo).Times(1)
+	// Test GetCreateAndSellRepository
+	mockCreateAndSellRepo := &repository.CreateAndSellRepository{}
+	mockDBStorage.EXPECT().GetCreateAndSellRepository().Return(mockCreateAndSellRepo).Times(1)
+	createAndSellRepo := mockDBStorage.GetCreateAndSellRepository()
+	assert.Equal(t, mockCreateAndSellRepo, createAndSellRepo)
 
-		repo := mockDBStorage.GetCategoriesRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
+	// Test GetFaqsRepository
+	mockFaqsRepo := &repository.FaqsRepository{}
+	mockDBStorage.EXPECT().GetFaqsRepository().Return(mockFaqsRepo).Times(1)
+	faqsRepo := mockDBStorage.GetFaqsRepository()
+	assert.Equal(t, mockFaqsRepo, faqsRepo)
 
-	t.Run("GetContractsRepository", func(t *testing.T) {
-		expectedRepo := &repository.ContractsRepository{}
-		mockDBStorage.EXPECT().GetContractsRepository().Return(expectedRepo).Times(1)
+	// Test GetFilesRepository
+	mockFilesRepo := &repository.FilesRepository{}
+	mockDBStorage.EXPECT().GetFilesRepository().Return(mockFilesRepo).Times(1)
+	filesRepo := mockDBStorage.GetFilesRepository()
+	assert.Equal(t, mockFilesRepo, filesRepo)
 
-		repo := mockDBStorage.GetContractsRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
+	// Test GetHelpCenterRepository
+	mockHelpCenterRepo := &repository.HelpCenterRepository{}
+	mockDBStorage.EXPECT().GetHelpCenterRepository().Return(mockHelpCenterRepo).Times(1)
+	helpCenterRepo := mockDBStorage.GetHelpCenterRepository()
+	assert.Equal(t, mockHelpCenterRepo, helpCenterRepo)
 
-	t.Run("GetFilesRepository", func(t *testing.T) {
-		expectedRepo := &repository.FilesRepository{}
-		mockDBStorage.EXPECT().GetFilesRepository().Return(expectedRepo).Times(1)
+	// Test GetMenusRepository
+	mockMenusRepo := &repository.MenusRepository{}
+	mockDBStorage.EXPECT().GetMenusRepository().Return(mockMenusRepo).Times(1)
+	menusRepo := mockDBStorage.GetMenusRepository()
+	assert.Equal(t, mockMenusRepo, menusRepo)
 
-		repo := mockDBStorage.GetFilesRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
+	// Test GetPagesRepository
+	mockPagesRepo := &repository.PagesRepository{}
+	mockDBStorage.EXPECT().GetPagesRepository().Return(mockPagesRepo).Times(1)
+	pagesRepo := mockDBStorage.GetPagesRepository()
+	assert.Equal(t, mockPagesRepo, pagesRepo)
 
-	t.Run("GetMenusRepository", func(t *testing.T) {
-		expectedRepo := &repository.MenusRepository{}
-		mockDBStorage.EXPECT().GetMenusRepository().Return(expectedRepo).Times(1)
+	// Test GetSlidersRepository
+	mockSlidersRepo := &repository.SlidersRepository{}
+	mockDBStorage.EXPECT().GetSlidersRepository().Return(mockSlidersRepo).Times(1)
+	slidersRepo := mockDBStorage.GetSlidersRepository()
+	assert.Equal(t, mockSlidersRepo, slidersRepo)
 
-		repo := mockDBStorage.GetMenusRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
+	// Test GetTagsRepository
+	mockTagsRepo := &repository.TagsRepository{}
+	mockDBStorage.EXPECT().GetTagsRepository().Return(mockTagsRepo).Times(1)
+	tagsRepo := mockDBStorage.GetTagsRepository()
+	assert.Equal(t, mockTagsRepo, tagsRepo)
 
-	t.Run("GetSlidersRepository", func(t *testing.T) {
-		expectedRepo := &repository.SlidersRepository{}
-		mockDBStorage.EXPECT().GetSlidersRepository().Return(expectedRepo).Times(1)
+	// Test GetUsersRepository
+	mockUsersRepo := &repository.UsersRepository{}
+	mockDBStorage.EXPECT().GetUsersRepository().Return(mockUsersRepo).Times(1)
+	usersRepo := mockDBStorage.GetUsersRepository()
+	assert.Equal(t, mockUsersRepo, usersRepo)
 
-		repo := mockDBStorage.GetSlidersRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
-
-	t.Run("GetUsersRepository", func(t *testing.T) {
-		expectedRepo := &repository.UsersRepository{}
-		mockDBStorage.EXPECT().GetUsersRepository().Return(expectedRepo).Times(1)
-
-		repo := mockDBStorage.GetUsersRepository()
-		if repo != expectedRepo {
-			t.Errorf("Expected %v, got %v", expectedRepo, repo)
-		}
-	})
-}
-
-func TestMockDBStorageInterface_ErrorScenarios(t *testing.T) {
-	ctrl, mockDBStorage := setupMockController(t)
-	defer ctrl.Finish()
-
-	t.Run("Nil Repositories", func(t *testing.T) {
-		mockDBStorage.EXPECT().GetCategoriesRepository().Return(nil).Times(1)
-		mockDBStorage.EXPECT().GetContractsRepository().Return(nil).Times(1)
-
-		if repo := mockDBStorage.GetCategoriesRepository(); repo != nil {
-			t.Errorf("Expected nil, got %v", repo)
-		}
-
-		if repo := mockDBStorage.GetContractsRepository(); repo != nil {
-			t.Errorf("Expected nil, got %v", repo)
-		}
-	})
+	// Test GetWalletsRepository
+	mockWalletsRepo := &repository.WalletsRepository{}
+	mockDBStorage.EXPECT().GetWalletsRepository().Return(mockWalletsRepo).Times(1)
+	walletsRepo := mockDBStorage.GetWalletsRepository()
+	assert.Equal(t, mockWalletsRepo, walletsRepo)
 }

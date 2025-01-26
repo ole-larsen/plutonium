@@ -25,6 +25,8 @@ func init() {
 				token                  varchar(255),  -- // registration link
 				token_expires          bigint,        -- // registration link activation time
 				secret                 varchar(255),
+				gravatar               varchar(255),
+				wallpaper_id           INTEGER,
 			    enabled                bool NOT NULL DEFAULT FALSE,
 				created                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 				updated                TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),

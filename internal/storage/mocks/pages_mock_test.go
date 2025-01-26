@@ -1,48 +1,68 @@
 package mocks_test
 
 import (
-	"errors"
+	"context"
 	"testing"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/ole-larsen/plutonium/internal/storage/mocks"
+	"github.com/ole-larsen/plutonium/models"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 )
 
-func TestMockPagesRepositoryInterface_InnerDB(t *testing.T) {
+func TestMockPagesRepositoryInterface(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepo := mocks.NewMockPagesRepositoryInterface(ctrl)
-	db := &sqlx.DB{}
+	ctx := context.Background()
 
-	// Expectation
-	mockRepo.EXPECT().InnerDB().Return(db).Times(1)
+	// Example data
+	pageID := int64(1)
+	page := &models.Page{ID: pageID, Title: "Test Page"}
+	pages := []*models.Page{page}
+	pageMap := map[string]interface{}{"id": pageID, "title": "Updated Page"}
+	slug := "test-slug"
+	publicPage := &models.PublicPage{ID: pageID, Attributes: &models.PublicPageAttributes{
+		Title: slug,
+	}}
 
-	// Call the method
-	result := mockRepo.InnerDB()
+	// Test Create
+	mockRepo.EXPECT().Create(ctx, pageMap).Return(nil).Times(1)
+	err := mockRepo.Create(ctx, pageMap)
+	assert.NoError(t, err, "Create method should not return an error")
 
-	// Assert
-	assert.Equal(t, db, result, "InnerDB should return the expected database instance")
-}
+	// Test GetPageByID
+	mockRepo.EXPECT().GetPageByID(ctx, pageID).Return(page, nil).Times(1)
+	returnedPage, err := mockRepo.GetPageByID(ctx, pageID)
+	assert.NoError(t, err, "GetPageByID method should not return an error")
+	assert.Equal(t, page, returnedPage, "GetPageByID should return the expected page")
 
-func TestMockPagesRepositoryInterface_Ping(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	// Test GetPageBySlug
+	mockRepo.EXPECT().GetPageBySlug(ctx, slug).Return(publicPage, nil).Times(1)
+	returnedPublicPage, err := mockRepo.GetPageBySlug(ctx, slug)
+	assert.NoError(t, err, "GetPageBySlug method should not return an error")
+	assert.Equal(t, publicPage, returnedPublicPage, "GetPageBySlug should return the expected public page")
 
-	mockRepo := mocks.NewMockPagesRepositoryInterface(ctrl)
+	// Test GetPages
+	mockRepo.EXPECT().GetPages(ctx).Return(pages, nil).Times(1)
+	returnedPages, err := mockRepo.GetPages(ctx)
+	assert.NoError(t, err, "GetPages method should not return an error")
+	assert.Equal(t, pages, returnedPages, "GetPages should return the expected pages")
 
-	// Test success case
+	// Test InnerDB
+	mockRepo.EXPECT().InnerDB().Return(nil).Times(1)
+	db := mockRepo.InnerDB()
+	assert.Nil(t, db, "InnerDB should return nil for this mock test")
+
+	// Test Ping
 	mockRepo.EXPECT().Ping().Return(nil).Times(1)
-
-	err := mockRepo.Ping()
-	assert.NoError(t, err, "Ping should not return an error in success case")
-
-	// Test failure case
-	mockRepo.EXPECT().Ping().Return(errors.New("ping failed")).Times(1)
-
 	err = mockRepo.Ping()
-	assert.Error(t, err, "Ping should return an error in failure case")
-	assert.Equal(t, "ping failed", err.Error())
+	assert.NoError(t, err, "Ping method should not return an error")
+
+	// Test Update
+	mockRepo.EXPECT().Update(ctx, pageMap).Return(pages, nil).Times(1)
+	updatedPages, err := mockRepo.Update(ctx, pageMap)
+	assert.NoError(t, err, "Update method should not return an error")
+	assert.Equal(t, pages, updatedPages, "Update should return the updated pages")
 }

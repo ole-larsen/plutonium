@@ -16,9 +16,18 @@ import (
 //
 // swagger:model ErrorResponse
 type ErrorResponse struct {
+
+	// HTTP status code representing the type of error encountered.
+	// Example: 500
+	Code int64 `json:"code,omitempty"`
+
+	// Additional context or information about the error, if available.
+	// Example: Unexpected error while processing the request.
 	Details string `json:"details,omitempty"`
+
+	// Brief explanation of the error encountered.
+	// Example: Internal Server Error
 	Message string `json:"message,omitempty"`
-	Code    int64  `json:"code,omitempty"`
 }
 
 // Validate validates this error response

@@ -18,10 +18,18 @@ import (
 //
 // swagger:model PublicMenuAttributes
 type PublicMenuAttributes struct {
-	Link    string        `json:"link,omitempty"`
-	Name    string        `json:"name,omitempty"`
-	Items   []*PublicMenu `json:"items"`
-	OrderBy int64         `json:"orderBy,omitempty"`
+
+	// items
+	Items []*PublicMenu `json:"items"`
+
+	// link
+	Link string `json:"link,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// order by
+	OrderBy int64 `json:"orderBy,omitempty"`
 }
 
 // Validate validates this public menu attributes

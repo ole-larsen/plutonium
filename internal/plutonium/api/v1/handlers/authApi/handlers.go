@@ -22,6 +22,7 @@ const pwdLength = 8
 const numDigits = 4
 const numSymbols = 4
 const userNotFoundMsg = "[repository]: user not found"
+const defaultGravatarSize = 200
 
 type API struct {
 	service *plutonium.Server
@@ -211,14 +212,15 @@ func (a *API) Register(ctx context.Context, address string) error {
 		return err
 	}
 
+	email := address + "@" + "plutonium"
 	userMap := make(map[string]interface{})
 	userMap["username"] = address
-	userMap["email"] = address + "@" + "plutonium"
+	userMap["email"] = email
 	userMap["password"] = hashPwd
 	userMap["secret"] = "" // JNUGNHA27JMIHA5I
 	userMap["address"] = "{" + address + "}"
 	userMap["nonce"] = generateNonce()
-
+	userMap["gravatar"] = gravatar(email, defaultGravatarSize)
 	// generate secret per user
 	length := 16
 	userMap["rsa_secret"] = hash.RandStringBytes(length)

@@ -19,8 +19,16 @@ import (
 //
 // swagger:model PingResponse
 type PingResponse struct {
+
+	// Response message confirming successful server connectivity.
+	// Example: pong
+	// Enum: ["pong"]
+	Message string `json:"message,omitempty"`
+
+	// The timestamp of the server response, useful for tracking latency.
+	// Example: 2024-11-19T12:34:56Z
+	// Format: date-time
 	Timestamp strfmt.DateTime `json:"timestamp,omitempty"`
-	Message   string          `json:"message,omitempty"`
 }
 
 // Validate validates this ping response

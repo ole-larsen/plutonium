@@ -16,13 +16,27 @@ import (
 //
 // swagger:model LoginMetamaskOK
 type LoginMetamaskOK struct {
-	Address  string `json:"address,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Nonce    string `json:"nonce,omitempty"`
-	Token    string `json:"token,omitempty"`
+
+	// address
+	Address string `json:"address,omitempty"`
+
+	// email
+	Email string `json:"email,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// nonce
+	Nonce string `json:"nonce,omitempty"`
+
+	// token
+	Token string `json:"token,omitempty"`
+
+	// username
 	Username string `json:"username,omitempty"`
-	UUID     string `json:"uuid,omitempty"`
-	ID       int64  `json:"id,omitempty"`
+
+	// uuid
+	UUID string `json:"uuid,omitempty"`
 }
 
 // Validate validates this login metamask o k

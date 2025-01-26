@@ -513,6 +513,57 @@ func init() {
         }
       }
     },
+    "/frontend/create-and-sell": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Create And Sell",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicCreateAndSellItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/faq": {
       "get": {
         "security": [
@@ -893,6 +944,57 @@ func init() {
         }
       }
     },
+    "/frontend/wallet-connect": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "wallet-connect",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicWalletConnectItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "description": "This endpoint provides Prometheus-compatible metrics for monitoring the application. \nIt is typically used by Prometheus or similar monitoring tools to scrape metrics data.\n",
@@ -1189,6 +1291,55 @@ func init() {
         },
         "tx": {
           "type": "string"
+        }
+      }
+    },
+    "CreateAndSell": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "link": {
+          "type": "string"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -2119,6 +2270,36 @@ func init() {
         }
       }
     },
+    "PublicCreateAndSellItem": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicCreateAndSellItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicCreateAndSellItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicFaqItem": {
       "type": "object",
       "properties": {
@@ -2457,6 +2638,36 @@ func init() {
         }
       }
     },
+    "PublicWalletConnectItem": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicWalletConnectItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicWalletConnectItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "Slider": {
       "type": "object",
       "properties": {
@@ -2652,6 +2863,52 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "WalletConnect": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -3187,6 +3444,57 @@ func init() {
         }
       }
     },
+    "/frontend/create-and-sell": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "Create And Sell",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicCreateAndSellItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/frontend/faq": {
       "get": {
         "security": [
@@ -3567,6 +3875,57 @@ func init() {
         }
       }
     },
+    "/frontend/wallet-connect": {
+      "get": {
+        "security": [
+          {
+            "x-token": []
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Frontend"
+        ],
+        "summary": "wallet-connect",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/PublicWalletConnectItem"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing or invalid parameters.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized. The request is missing valid authentication.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not found. The requested resource could not be found.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "description": "This endpoint provides Prometheus-compatible metrics for monitoring the application. \nIt is typically used by Prometheus or similar monitoring tools to scrape metrics data.\n",
@@ -3863,6 +4222,55 @@ func init() {
         },
         "tx": {
           "type": "string"
+        }
+      }
+    },
+    "CreateAndSell": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "link": {
+          "type": "string"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
@@ -4813,6 +5221,36 @@ func init() {
         }
       }
     },
+    "PublicCreateAndSellItem": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicCreateAndSellItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicCreateAndSellItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "PublicFaqItem": {
       "type": "object",
       "properties": {
@@ -5200,6 +5638,36 @@ func init() {
         }
       }
     },
+    "PublicWalletConnectItem": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicWalletConnectItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicWalletConnectItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "image": {
+          "$ref": "#/definitions/PublicFile"
+        },
+        "link": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "Slider": {
       "type": "object",
       "properties": {
@@ -5395,6 +5863,52 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "WalletConnect": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "created_by_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "image_id": {
+          "type": "integer",
+          "format": "bigInt"
+        },
+        "order_by": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated_by_id": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },

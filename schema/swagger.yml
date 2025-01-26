@@ -493,6 +493,70 @@ paths:
           description: "Internal server error."
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /frontend/create-and-sell:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "Create And Sell"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicCreateAndSellItem'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /frontend/wallet-connect:
+    get:
+      security:
+        - x-token: [ ]
+      tags:
+        - Frontend
+      summary: "wallet-connect"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicWalletConnectItem'
+        400:
+          description: "Bad request due to missing or invalid parameters."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Unauthorized. The request is missing valid authentication."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Not found. The requested resource could not be found."
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Internal server error."
+          schema:
+            $ref: "#/definitions/ErrorResponse"  
   /frontend/auth/wallet-connect:
     get:
       security:
@@ -1356,6 +1420,46 @@ definitions:
         type: string
       address:
         type: string
+  PublicCreateAndSellItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicCreateAndSellItemAttributes'
+  PublicCreateAndSellItemAttributes:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      link:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
+  PublicWalletConnectItem:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicWalletConnectItemAttributes'
+  PublicWalletConnectItemAttributes:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      link:
+        type: string
+      image:
+        $ref: '#/definitions/PublicFile'
   Author:
     type: object
     properties:
@@ -1839,6 +1943,74 @@ definitions:
         format: bigInt
       enabled:
         type: boolean
+      order_by:
+        type: integer
+        format: int64
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  WalletConnect:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      description:
+        type: string
+      image_id:
+        type: integer
+        format: bigInt
+      enabled:
+        type: boolean
+      order_by:
+        type: integer
+        format: int64
+      created_by_id:
+        type: integer
+        format: int64
+      updated_by_id:
+        type: integer
+        format: int64
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      deleted:
+        type: string
+        format: date
+  CreateAndSell:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: bigInt
+      title:
+        type: string
+      link:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      image_id:
+        type: integer
+        format: bigInt
       order_by:
         type: integer
         format: int64

@@ -16,18 +16,42 @@ import (
 //
 // swagger:model PublicUser
 type PublicUser struct {
-	Address     string `json:"address,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Email       string `json:"email,omitempty"`
-	Funds       string `json:"funds,omitempty"`
-	Gravatar    string `json:"gravatar,omitempty"`
-	Nonce       string `json:"nonce,omitempty"`
-	Token       string `json:"token,omitempty"`
-	Username    string `json:"username,omitempty"`
-	UUID        string `json:"uuid,omitempty"`
-	Wallpaper   string `json:"wallpaper,omitempty"`
-	ID          int64  `json:"id,omitempty"`
-	WallpaperID int64  `json:"wallpaperId,omitempty"`
+
+	// address
+	Address string `json:"address,omitempty"`
+
+	// created
+	Created string `json:"created,omitempty"`
+
+	// email
+	Email string `json:"email,omitempty"`
+
+	// funds
+	Funds string `json:"funds,omitempty"`
+
+	// gravatar
+	Gravatar string `json:"gravatar,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// nonce
+	Nonce string `json:"nonce,omitempty"`
+
+	// token
+	Token string `json:"token,omitempty"`
+
+	// username
+	Username string `json:"username,omitempty"`
+
+	// uuid
+	UUID string `json:"uuid,omitempty"`
+
+	// wallpaper
+	Wallpaper string `json:"wallpaper,omitempty"`
+
+	// wallpaper Id
+	WallpaperID int64 `json:"wallpaperId,omitempty"`
 }
 
 // Validate validates this public user

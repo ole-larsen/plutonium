@@ -32,25 +32,29 @@ type DBStorageInterface interface {
 	GetHelpCenterRepository() *repository.HelpCenterRepository
 	GetTagsRepository() *repository.TagsRepository
 	GetBlogsRepository() *repository.BlogsRepository
+	GetWalletsRepository() *repository.WalletsRepository
+	GetCreateAndSellRepository() *repository.CreateAndSellRepository
 }
 
 // DBStorage - database storage functionality. Use PostgreSQL version 14 or higher as a DBMS.
 type DBStorage struct {
 	repositories struct {
-		users        repository.UsersRepositoryInterface
-		contracts    repository.ContractsRepositoryInterface
-		pages        repository.PagesRepositoryInterface
-		categories   repository.CategoriesRepositoryInterface
-		menus        repository.MenusRepositoryInterface
-		sliders      repository.SlidersRepositoryInterface
-		files        repository.FilesRepositoryInterface
-		authors      repository.AuthorsRepositoryInterface
-		contacts     repository.ContactsRepositoryInterface
-		contactForms repository.ContactFormRepositoryInterface
-		faqs         repository.FaqsRepositoryInterface
-		helpCenter   repository.HelpCenterRepositoryInterface
-		tags         repository.TagsRepositoryInterface
-		blogs        repository.BlogsRepositoryInterface
+		users         repository.UsersRepositoryInterface
+		contracts     repository.ContractsRepositoryInterface
+		pages         repository.PagesRepositoryInterface
+		categories    repository.CategoriesRepositoryInterface
+		menus         repository.MenusRepositoryInterface
+		sliders       repository.SlidersRepositoryInterface
+		files         repository.FilesRepositoryInterface
+		authors       repository.AuthorsRepositoryInterface
+		contacts      repository.ContactsRepositoryInterface
+		contactForms  repository.ContactFormRepositoryInterface
+		faqs          repository.FaqsRepositoryInterface
+		helpCenter    repository.HelpCenterRepositoryInterface
+		tags          repository.TagsRepositoryInterface
+		blogs         repository.BlogsRepositoryInterface
+		wallets       repository.WalletsRepositoryInterface
+		createAndSell repository.CreateAndSellRepositoryInterface
 	}
 	DSN string
 }
@@ -92,7 +96,7 @@ func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 		}
 	case "contracts":
 		s.repositories.contracts = repository.NewContractsRepository(sqlxDB, name)
-		if s.repositories.users.InnerDB() == nil {
+		if s.repositories.contracts.InnerDB() == nil {
 			return NewError(fmt.Errorf("failed to connect %s repository", name))
 		}
 	case "pages":
@@ -122,7 +126,7 @@ func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 		}
 	case "authors":
 		s.repositories.authors = repository.NewAuthorsRepository(sqlxDB, name)
-		if s.repositories.files.InnerDB() == nil {
+		if s.repositories.authors.InnerDB() == nil {
 			return NewError(fmt.Errorf("failed to connect %s repository", name))
 		}
 	case "contacts":
@@ -153,6 +157,16 @@ func (s *DBStorage) ConnectRepository(name string, sqlxDB *sqlx.DB) error {
 	case "tags":
 		s.repositories.tags = repository.NewTagsRepository(sqlxDB, name, s.GetBlogsRepository(), s.GetPagesRepository())
 		if s.repositories.tags.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "wallets":
+		s.repositories.wallets = repository.NewWalletsRepository(sqlxDB, name)
+		if s.repositories.wallets.InnerDB() == nil {
+			return NewError(fmt.Errorf("failed to connect %s repository", name))
+		}
+	case "create-and-sell":
+		s.repositories.createAndSell = repository.NewCreateAndSellRepository(sqlxDB, name)
+		if s.repositories.createAndSell.InnerDB() == nil {
 			return NewError(fmt.Errorf("failed to connect %s repository", name))
 		}
 	default:
@@ -273,6 +287,23 @@ func (s *DBStorage) GetBlogsRepository() *repository.BlogsRepository {
 
 	return nil
 }
+
+func (s *DBStorage) GetWalletsRepository() *repository.WalletsRepository {
+	if repo, ok := s.repositories.wallets.(*repository.WalletsRepository); ok {
+		return repo
+	}
+
+	return nil
+}
+
+func (s *DBStorage) GetCreateAndSellRepository() *repository.CreateAndSellRepository {
+	if repo, ok := s.repositories.createAndSell.(*repository.CreateAndSellRepository); ok {
+		return repo
+	}
+
+	return nil
+}
+
 func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 	store := NewPGSQLStorage(dsn)
 	if store == nil {
@@ -299,6 +330,8 @@ func SetupStorage(ctx context.Context, dsn string) (DBStorageInterface, error) {
 		"helpCenter",
 		"blogs",
 		"tags",
+		"wallets",
+		"create-and-sell",
 	} {
 		if err := store.ConnectRepository(name, sqlxdb); err != nil {
 			return nil, err

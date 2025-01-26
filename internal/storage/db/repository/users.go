@@ -11,7 +11,6 @@ import (
 	_ "github.com/go-sql-driver/mysql" // add driver
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-	"github.com/ole-larsen/plutonium/internal/hash"
 	"github.com/ole-larsen/plutonium/models"
 )
 
@@ -28,22 +27,28 @@ type UsersRepositoryInterface interface {
 	GetUserByID(ctx context.Context, id int64) (*User, error)
 	GetPublicUserByID(ctx context.Context, id int64) (*models.PublicUser, error)
 	UpdateNonce(ctx context.Context, userMap map[string]interface{}) error
+	UpdateGravatar(ctx context.Context, userMap map[string]interface{}) error
+	UpdateWallpaper(ctx context.Context, userMap map[string]interface{}) error
+	UpdateSecret(ctx context.Context, userMap map[string]interface{}) error
 }
 
 type User struct {
-	Updated              strfmt.Date    `db:"updated"`
 	Deleted              strfmt.Date    `db:"deleted"`
 	Created              strfmt.Date    `db:"created"`
+	Updated              strfmt.Date    `db:"updated"`
+	Gravatar             string         `db:"gravatar"`
 	Secret               string         `db:"secret"`
 	Username             string         `db:"username"`
 	RSASecret            string         `db:"rsa_secret"`
 	Email                string         `db:"email"`
 	Password             string         `db:"password"`
 	PasswordResetToken   sql.NullString `db:"password_reset_token"`
-	UUID                 sql.NullString `db:"uuid"`
 	Address              pq.StringArray `db:"address"`
 	Nonce                sql.NullString `db:"nonce"`
+	UUID                 sql.NullString `db:"uuid"`
+	Wallpaper            sql.NullString `db:"wallpaper"`
 	PasswordResetExpires sql.NullInt64  `db:"password_reset_expires"`
+	WallpaperID          sql.NullInt64  `db:"wallpaper_id"`
 	ID                   int64          `db:"id"`
 	Enabled              bool           `db:"enabled"`
 }
@@ -52,20 +57,6 @@ type User struct {
 type UsersRepository struct {
 	DB  sqlx.DB
 	TBL string
-}
-
-func SetPassword(password interface{}) (string, error) {
-	var pwd string
-
-	if plainPwd, ok := password.(string); ok {
-		if plainPwd == "" {
-			return pwd, errors.New("empty password not allowed")
-		}
-
-		return hash.Password([]byte(plainPwd))
-	}
-
-	return pwd, errors.New("password must be a string")
 }
 
 func NewUsersRepository(db *sqlx.DB, tbl string) *UsersRepository {
@@ -101,8 +92,8 @@ func (r *UsersRepository) Create(ctx context.Context, userMap map[string]interfa
 	}
 
 	_, dbErr := r.DB.NamedExecContext(ctx, fmt.Sprintf(`
-INSERT INTO %s (email, username, password, secret, rsa_secret, address, nonce)
-VALUES (:email, :username, :password, :secret, :rsa_secret, :address, :nonce)
+INSERT INTO %s (email, username, password, secret, rsa_secret, address, nonce, gravatar)
+VALUES (:email, :username, :password, :secret, :rsa_secret, :address, :nonce, :gravatar)
 ON CONFLICT DO NOTHING`, r.TBL), userMap)
 
 	return dbErr
@@ -125,10 +116,13 @@ SELECT
 	enabled,
 	secret,
 	rsa_secret,
+	gravatar,
+	f.url as wallpaper,
 	created,
 	updated,
 	deleted
 FROM %s 
+LEFT JOIN files f ON wallpaper_id = f.id
 WHERE id=$1;`, r.TBL)
 
 	row := r.DB.QueryRowxContext(ctx, sqlStatement, id)
@@ -163,10 +157,13 @@ SELECT
 	enabled,
 	secret,
 	rsa_secret,
+	gravatar,
+    f.url as wallpaper,
 	created,
 	updated,
 	deleted
 FROM %s 
+LEFT JOIN files f ON wallpaper_id = f.id
 WHERE email=$1;`, r.TBL)
 
 	row := r.DB.QueryRowxContext(ctx, sqlStatement, email)
@@ -195,28 +192,34 @@ SELECT
     u.uuid, 
     u.username, 
     u.email
+	u.gravatar,
+	f.url as wallpaper
 FROM users u
+LEFT JOIN files f ON u.wallpaper_id = f.id
 WHERE u.deleted IS NULL
   AND u.id = $1
   AND u.deleted IS NULL;`, id)
 
 	var user User
 
-	err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email)
-	switch err {
-	case sql.ErrNoRows:
-		return nil, fmt.Errorf("user not found")
-	case nil:
-		publicUser := &models.PublicUser{
-			ID:       user.ID,
-			Username: user.Username,
-			Email:    user.Email,
+	if err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Gravatar, &user.Wallpaper); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, NewError(fmt.Errorf("user not found"))
 		}
-
-		return publicUser, nil
-	default:
 		return nil, err
 	}
+
+	wallpaper := ""
+	if user.Wallpaper.Valid {
+		wallpaper = user.Wallpaper.String
+	}
+	return &models.PublicUser{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		Gravatar:  user.Gravatar,
+		Wallpaper: wallpaper,
+	}, nil
 }
 
 func (r *UsersRepository) GetUserByAddress(ctx context.Context, address string) (*User, error) {
@@ -234,13 +237,16 @@ SELECT
 	u.email, 
 	u.password,
 	u.address,
-	u.nonce
+	u.nonce,
+	u.gravatar,
+    f.url as wallpaper
 FROM users u
+LEFT JOIN files f ON u.wallpaper_id = f.id
 WHERE $1 = ANY(u.address) AND u.deleted IS NULL;`
 
 	row := r.DB.QueryRowContext(ctx, sqlStatement, address)
 
-	if err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Password, &user.Address, &user.Nonce); err != nil {
+	if err := row.Scan(&user.ID, &user.UUID, &user.Username, &user.Email, &user.Password, &user.Address, &user.Nonce, &user.Gravatar, &user.Wallpaper); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, NewError(fmt.Errorf("user not found"))
 		}
@@ -257,6 +263,35 @@ func (r *UsersRepository) UpdateNonce(ctx context.Context, userMap map[string]in
 	}
 
 	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET nonce=:nonce WHERE id=:id`, userMap)
+
+	return err
+}
+
+func (r *UsersRepository) UpdateGravatar(ctx context.Context, userMap map[string]interface{}) error {
+	if r == nil {
+		return ErrDBNotInitialized
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET gravatar=:gravatar WHERE id =:id`, userMap)
+
+	return err
+}
+
+func (r *UsersRepository) UpdateWallpaper(ctx context.Context, userMap map[string]interface{}) error {
+	if r == nil {
+		return ErrDBNotInitialized
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET wallpaper_id=:wallpaper_id WHERE id =:id`, userMap)
+
+	return err
+}
+func (r *UsersRepository) UpdateSecret(ctx context.Context, userMap map[string]interface{}) error {
+	if r == nil {
+		return ErrDBNotInitialized
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET secret=:secret WHERE id =:id`, userMap)
 
 	return err
 }

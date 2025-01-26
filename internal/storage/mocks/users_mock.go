@@ -145,6 +145,20 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) Ping() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).Ping))
 }
 
+// UpdateGravatar mocks base method.
+func (m *MockUsersRepositoryInterface) UpdateGravatar(ctx context.Context, userMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateGravatar", ctx, userMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateGravatar indicates an expected call of UpdateGravatar.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) UpdateGravatar(ctx, userMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateGravatar", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).UpdateGravatar), ctx, userMap)
+}
+
 // UpdateNonce mocks base method.
 func (m *MockUsersRepositoryInterface) UpdateNonce(ctx context.Context, userMap map[string]any) error {
 	m.ctrl.T.Helper()
@@ -157,4 +171,32 @@ func (m *MockUsersRepositoryInterface) UpdateNonce(ctx context.Context, userMap 
 func (mr *MockUsersRepositoryInterfaceMockRecorder) UpdateNonce(ctx, userMap any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateNonce", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).UpdateNonce), ctx, userMap)
+}
+
+// UpdateSecret mocks base method.
+func (m *MockUsersRepositoryInterface) UpdateSecret(ctx context.Context, userMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSecret", ctx, userMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateSecret indicates an expected call of UpdateSecret.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) UpdateSecret(ctx, userMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSecret", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).UpdateSecret), ctx, userMap)
+}
+
+// UpdateWallpaper mocks base method.
+func (m *MockUsersRepositoryInterface) UpdateWallpaper(ctx context.Context, userMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateWallpaper", ctx, userMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateWallpaper indicates an expected call of UpdateWallpaper.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) UpdateWallpaper(ctx, userMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateWallpaper", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).UpdateWallpaper), ctx, userMap)
 }

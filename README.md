@@ -109,6 +109,8 @@ mockgen -source=internal/storage/db/repository/faqs.go -destination=internal/sto
 mockgen -source=internal/storage/db/repository/helpCenter.go -destination=internal/storage/mocks/helpCenter_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/blogs.go -destination=internal/storage/mocks/blogs_mock.go -package=mocks
 mockgen -source=internal/storage/db/repository/tags.go -destination=internal/storage/mocks/tags_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/wallets.go -destination=internal/storage/mocks/wallets_mock.go -package=mocks
+mockgen -source=internal/storage/db/repository/createAndSell.go -destination=internal/storage/mocks/createAndSell_mock.go -package=mocks
 
 mockgen -source=internal/storage/dbstorage.go -destination=internal/storage/mocks/dbstorage_mock.go -package=mocks
 

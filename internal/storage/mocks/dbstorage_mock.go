@@ -20,9 +20,9 @@ import (
 
 // MockDBStorageInterface is a mock of DBStorageInterface interface.
 type MockDBStorageInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockDBStorageInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockDBStorageInterfaceMockRecorder is the mock recorder for MockDBStorageInterface.
@@ -140,6 +140,20 @@ func (mr *MockDBStorageInterfaceMockRecorder) GetContractsRepository() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContractsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetContractsRepository))
 }
 
+// GetCreateAndSellRepository mocks base method.
+func (m *MockDBStorageInterface) GetCreateAndSellRepository() *repository.CreateAndSellRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCreateAndSellRepository")
+	ret0, _ := ret[0].(*repository.CreateAndSellRepository)
+	return ret0
+}
+
+// GetCreateAndSellRepository indicates an expected call of GetCreateAndSellRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetCreateAndSellRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreateAndSellRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetCreateAndSellRepository))
+}
+
 // GetFaqsRepository mocks base method.
 func (m *MockDBStorageInterface) GetFaqsRepository() *repository.FaqsRepository {
 	m.ctrl.T.Helper()
@@ -250,6 +264,20 @@ func (m *MockDBStorageInterface) GetUsersRepository() *repository.UsersRepositor
 func (mr *MockDBStorageInterfaceMockRecorder) GetUsersRepository() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetUsersRepository))
+}
+
+// GetWalletsRepository mocks base method.
+func (m *MockDBStorageInterface) GetWalletsRepository() *repository.WalletsRepository {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetWalletsRepository")
+	ret0, _ := ret[0].(*repository.WalletsRepository)
+	return ret0
+}
+
+// GetWalletsRepository indicates an expected call of GetWalletsRepository.
+func (mr *MockDBStorageInterfaceMockRecorder) GetWalletsRepository() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetWalletsRepository", reflect.TypeOf((*MockDBStorageInterface)(nil).GetWalletsRepository))
 }
 
 // Init mocks base method.

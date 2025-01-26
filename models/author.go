@@ -19,21 +19,54 @@ import (
 //
 // swagger:model Author
 type Author struct {
-	Created     strfmt.Date `json:"created,omitempty"`
-	Updated     strfmt.Date `json:"updated,omitempty"`
-	Deleted     strfmt.Date `json:"deleted,omitempty"`
-	Slug        string      `json:"slug,omitempty"`
-	Name        string      `json:"name,omitempty"`
-	Description string      `json:"description,omitempty"`
-	Title       string      `json:"title,omitempty"`
-	Socials     []*Social   `json:"socials"`
-	Wallets     []*Wallet   `json:"wallets"`
-	ID          int64       `json:"id,omitempty"`
-	ImageID     int64       `json:"image_id,omitempty"`
-	OrderBy     int64       `json:"order_by,omitempty"`
-	CreatedByID int64       `json:"created_by_id,omitempty"`
-	UpdatedByID int64       `json:"updated_by_id,omitempty"`
-	Enabled     bool        `json:"enabled,omitempty"`
+
+	// created
+	// Format: date
+	Created strfmt.Date `json:"created,omitempty"`
+
+	// created by id
+	CreatedByID int64 `json:"created_by_id,omitempty"`
+
+	// deleted
+	// Format: date
+	Deleted strfmt.Date `json:"deleted,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// enabled
+	Enabled bool `json:"enabled,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// image id
+	ImageID int64 `json:"image_id,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// order by
+	OrderBy int64 `json:"order_by,omitempty"`
+
+	// slug
+	Slug string `json:"slug,omitempty"`
+
+	// socials
+	Socials []*Social `json:"socials"`
+
+	// title
+	Title string `json:"title,omitempty"`
+
+	// updated
+	// Format: date
+	Updated strfmt.Date `json:"updated,omitempty"`
+
+	// updated by id
+	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+
+	// wallets
+	Wallets []*Wallet `json:"wallets"`
 }
 
 // Validate validates this author

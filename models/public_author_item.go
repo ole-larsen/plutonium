@@ -18,16 +18,36 @@ import (
 //
 // swagger:model PublicAuthorItem
 type PublicAuthorItem struct {
-	Image       *PublicFile     `json:"image,omitempty"`
-	BtnLink     string          `json:"btnLink,omitempty"`
-	BtnText     string          `json:"btnText,omitempty"`
-	Description string          `json:"description,omitempty"`
-	Link        string          `json:"link,omitempty"`
-	Name        string          `json:"name,omitempty"`
-	Title       string          `json:"title,omitempty"`
-	Socials     []*PublicSocial `json:"socials"`
-	Wallets     []*PublicWallet `json:"wallets"`
-	ID          int64           `json:"id,omitempty"`
+
+	// btn link
+	BtnLink string `json:"btnLink,omitempty"`
+
+	// btn text
+	BtnText string `json:"btnText,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// image
+	Image *PublicFile `json:"image,omitempty"`
+
+	// link
+	Link string `json:"link,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// socials
+	Socials []*PublicSocial `json:"socials"`
+
+	// title
+	Title string `json:"title,omitempty"`
+
+	// wallets
+	Wallets []*PublicWallet `json:"wallets"`
 }
 
 // Validate validates this public author item

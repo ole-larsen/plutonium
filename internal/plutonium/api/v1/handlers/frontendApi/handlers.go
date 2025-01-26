@@ -38,6 +38,8 @@ type FrontendAPI interface {
 	GetHelpCenterHandler(params frontend.GetFrontendHelpCenterParams, principal *models.Principal) middleware.Responder
 	GetBlogsHandler(params frontend.GetFrontendBlogParams, principal *models.Principal) middleware.Responder
 	GetBlogsSlugHandler(params frontend.GetFrontendBlogSlugParams, principal *models.Principal) middleware.Responder
+	GetWalletConnectHandler(params frontend.GetFrontendWalletConnectParams, principal *models.Principal) middleware.Responder
+	GetCreateAndSellHandler(params frontend.GetFrontendCreateAndSellParams, principal *models.Principal) middleware.Responder
 	XTokenAuth(token string) (*models.Principal, error)
 }
 
@@ -56,7 +58,7 @@ func (a *API) GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Pr
 		})
 	}
 
-	menu, err := a.service.
+	items, err := a.service.
 		GetStorage().
 		GetMenusRepository().
 		GetMenuByProvider(ctx, *params.Provider)
@@ -77,7 +79,7 @@ func (a *API) GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Pr
 		})
 	}
 
-	return frontend.NewGetFrontendMenuOK().WithPayload(menu)
+	return frontend.NewGetFrontendMenuOK().WithPayload(items)
 }
 
 func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *models.Principal) middleware.Responder {
@@ -91,7 +93,7 @@ func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *model
 		})
 	}
 
-	slider, err := a.service.
+	items, err := a.service.
 		GetStorage().
 		GetSlidersRepository().
 		GetSliderByProvider(ctx, *params.Provider)
@@ -110,7 +112,7 @@ func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *model
 		})
 	}
 
-	return frontend.NewGetFrontendSliderOK().WithPayload(slider)
+	return frontend.NewGetFrontendSliderOK().WithPayload(items)
 }
 
 func (a *API) GetFileHandler(params frontend.GetFrontendFilesFileParams) middleware.Responder {
@@ -147,7 +149,10 @@ func (a *API) GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *mo
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	categories, err := a.service.GetStorage().GetCategoriesRepository().GetPublicCollectibleCategories(ctx, a.service.GetStorage().GetUsersRepository())
+	items, err := a.service.
+		GetStorage().
+		GetCategoriesRepository().
+		GetPublicCollectibleCategories(ctx, a.service.GetStorage().GetUsersRepository())
 	if err != nil {
 		return frontend.NewGetFrontendCategoriesInternalServerError().WithPayload(&models.ErrorResponse{
 			Code:    http.StatusInternalServerError,
@@ -155,9 +160,9 @@ func (a *API) GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *mo
 		})
 	}
 
-	fmt.Println(categories)
+	fmt.Println(items)
 
-	return frontend.NewGetFrontendCategoriesOK().WithPayload(categories)
+	return frontend.NewGetFrontendCategoriesOK().WithPayload(items)
 }
 func (a *API) GetContractsHandler(_ frontend.GetFrontendContractsParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -221,7 +226,10 @@ func (a *API) GetUsersHandler(params frontend.GetFrontendUsersParams, _ *models.
 		})
 	}
 
-	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, *params.Address)
+	user, err := a.service.
+		GetStorage().
+		GetUsersRepository().
+		GetUserByAddress(ctx, *params.Address)
 
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
@@ -252,7 +260,10 @@ func (a *API) GetPagesHandler(params frontend.GetFrontendPageSlugParams, _ *mode
 	slug := path[len(path)-1]
 	fmt.Println(slug)
 
-	page, err := a.service.GetStorage().GetPagesRepository().GetPageBySlug(ctx, slug)
+	page, err := a.service.
+		GetStorage().
+		GetPagesRepository().
+		GetPageBySlug(ctx, slug)
 	if err != nil {
 		a.service.GetLogger().Error(err)
 
@@ -305,7 +316,10 @@ func (a *API) GetContactsHandler(params frontend.GetFrontendContactParams, _ *mo
 		})
 	}
 
-	contacts, err := a.service.GetStorage().GetContactsRepository().GetContactByPageID(ctx, pageID)
+	items, err := a.service.
+		GetStorage().
+		GetContactsRepository().
+		GetContactByPageID(ctx, pageID)
 
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
@@ -316,9 +330,7 @@ func (a *API) GetContactsHandler(params frontend.GetFrontendContactParams, _ *mo
 		})
 	}
 
-	fmt.Println("CONTACTS", contacts)
-
-	return frontend.NewGetFrontendContactOK().WithPayload(contacts)
+	return frontend.NewGetFrontendContactOK().WithPayload(items)
 }
 
 func (a *API) PostContactsHandler(params frontend.PostFrontendContactFormParams) middleware.Responder {
@@ -341,7 +353,9 @@ func (a *API) PostContactsHandler(params frontend.PostFrontendContactFormParams)
 	attributes["message"] = body.Message
 	attributes["provider"] = body.Provider
 
-	err := a.service.GetStorage().GetContactFormsRepository().Create(ctx, attributes)
+	err := a.service.GetStorage().
+		GetContactFormsRepository().
+		Create(ctx, attributes)
 
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
@@ -359,7 +373,9 @@ func (a *API) GetFaqHandler(_ frontend.GetFrontendFaqParams, _ *models.Principal
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	faqs, err := a.service.GetStorage().GetFaqsRepository().GetPublicFaqs(ctx)
+	items, err := a.service.GetStorage().
+		GetFaqsRepository().
+		GetPublicFaqs(ctx)
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
 
@@ -369,14 +385,16 @@ func (a *API) GetFaqHandler(_ frontend.GetFrontendFaqParams, _ *models.Principal
 		})
 	}
 
-	return frontend.NewGetFrontendFaqOK().WithPayload(faqs)
+	return frontend.NewGetFrontendFaqOK().WithPayload(items)
 }
 
 func (a *API) GetHelpCenterHandler(_ frontend.GetFrontendHelpCenterParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	helpCenterItems, err := a.service.GetStorage().GetHelpCenterRepository().GetPublicHelpCenter(ctx)
+	items, err := a.service.GetStorage().
+		GetHelpCenterRepository().
+		GetPublicHelpCenter(ctx)
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
 
@@ -386,14 +404,16 @@ func (a *API) GetHelpCenterHandler(_ frontend.GetFrontendHelpCenterParams, _ *mo
 		})
 	}
 
-	return frontend.NewGetFrontendHelpCenterOK().WithPayload(helpCenterItems)
+	return frontend.NewGetFrontendHelpCenterOK().WithPayload(items)
 }
 
 func (a *API) GetBlogsHandler(_ frontend.GetFrontendBlogParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	blogItems, err := a.service.GetStorage().GetBlogsRepository().GetPublicBlogs(ctx)
+	items, err := a.service.GetStorage().
+		GetBlogsRepository().
+		GetPublicBlogs(ctx)
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
 
@@ -403,7 +423,7 @@ func (a *API) GetBlogsHandler(_ frontend.GetFrontendBlogParams, _ *models.Princi
 		})
 	}
 
-	return frontend.NewGetFrontendBlogOK().WithPayload(blogItems)
+	return frontend.NewGetFrontendBlogOK().WithPayload(items)
 }
 
 func (a *API) GetBlogsSlugHandler(params frontend.GetFrontendBlogSlugParams, _ *models.Principal) middleware.Responder {
@@ -413,7 +433,9 @@ func (a *API) GetBlogsSlugHandler(params frontend.GetFrontendBlogSlugParams, _ *
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	blog, err := a.service.GetStorage().GetBlogsRepository().GetPublicBlogItem(ctx, slug)
+	item, err := a.service.GetStorage().
+		GetBlogsRepository().
+		GetPublicBlogItem(ctx, slug)
 	if err != nil {
 		a.service.GetLogger().Error(err.Error())
 
@@ -423,5 +445,42 @@ func (a *API) GetBlogsSlugHandler(params frontend.GetFrontendBlogSlugParams, _ *
 		})
 	}
 
-	return frontend.NewGetFrontendBlogSlugOK().WithPayload(blog)
+	return frontend.NewGetFrontendBlogSlugOK().WithPayload(item)
+}
+
+func (a *API) GetWalletConnectHandler(params frontend.GetFrontendWalletConnectParams, principal *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetWalletsRepository().
+		GetPublicWalletConnect(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendWalletConnectOK().WithPayload(items)
+}
+func (a *API) GetCreateAndSellHandler(params frontend.GetFrontendCreateAndSellParams, principal *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetCreateAndSellRepository().
+		GetPublicCreateAndSell(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendCreateAndSellInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendCreateAndSellOK().WithPayload(items)
 }
