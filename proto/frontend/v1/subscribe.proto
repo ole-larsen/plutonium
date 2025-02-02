@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "google/protobuf/empty.proto";
+
+message PublicSubscribeForm {
+  string csrf = 1;
+  string email = 6;
+}
+
+message PostSubscribeRequest {
+  PublicSubscribeForm body = 1;
+}
+
+message PostSubscribeResponse {
+  oneof response {
+    string data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

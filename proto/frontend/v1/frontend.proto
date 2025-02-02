@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "frontend/v1/menu.proto";
+import "frontend/v1/slider.proto";
+import "frontend/v1/help_center.proto";
+import "frontend/v1/faq.proto";
+import "frontend/v1/contact.proto";
+import "frontend/v1/page.proto";
+import "frontend/v1/subscribe.proto";
+
+service FrontendService {
+  rpc Menu(MenuRequest) returns (MenuResponse);
+  rpc Page(PageRequest) returns (PageResponse);
+  rpc Contact(ContactRequest) returns (ContactResponse);
+  rpc Faq(FaqRequest) returns (FaqResponse);
+  rpc HelpCenter(HelpCenterRequest) returns (HelpCenterResponse);
+  rpc Slider(SliderRequest) returns (SliderResponse);
+  rpc PostSubscribe(PostSubscribeRequest) returns (PostSubscribeResponse);
+  rpc PostContact(PostContactRequest) returns (PostContactResponse);
+}

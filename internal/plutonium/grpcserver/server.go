@@ -13,8 +13,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ole-larsen/plutonium/gen/frontend/v1/frontendv1connect"
+	"github.com/ole-larsen/plutonium/gen/market/v1/marketv1connect"
+	"github.com/ole-larsen/plutonium/internal/blockchain"
 	"github.com/ole-larsen/plutonium/internal/log"
+	"github.com/ole-larsen/plutonium/internal/plutonium/httpclient"
+	"github.com/ole-larsen/plutonium/internal/plutonium/oauth2client"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
+	"github.com/ole-larsen/plutonium/internal/storage"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -65,9 +71,14 @@ type GRPC interface {
 
 // GRPCServer implements the Interface and is responsible for managing the gRPC services.
 type GRPCServer struct {
-	logger *log.Logger
-	host   string
-	port   int
+	logger     *log.Logger
+	storage    storage.DBStorageInterface
+	web3Dialer *blockchain.Web3Dialer
+	settings   *settings.Settings
+	httpDialer *httpclient.HTTPClient
+	oauth2     *oauth2client.Oauth2
+	host       string
+	port       int
 }
 
 // NewGRPCServer creates a new instance of GRPCServer with default logger settings.
@@ -86,6 +97,31 @@ func (s *GRPCServer) SetHost(h string) *GRPCServer {
 // SetPort sets the port for the server.
 func (s *GRPCServer) SetPort(p int) *GRPCServer {
 	s.port = p
+	return s
+}
+
+func (s *GRPCServer) SetStorage(store storage.DBStorageInterface) *GRPCServer {
+	s.storage = store
+	return s
+}
+
+func (s *GRPCServer) SetWeb3Dialer(web3Dialer *blockchain.Web3Dialer) *GRPCServer {
+	s.web3Dialer = web3Dialer
+	return s
+}
+
+func (s *GRPCServer) SetSettings(cfg *settings.Settings) *GRPCServer {
+	s.settings = cfg
+	return s
+}
+
+func (s *GRPCServer) SetHTTPDialer(httpDialer *httpclient.HTTPClient) *GRPCServer {
+	s.httpDialer = httpDialer
+	return s
+}
+
+func (s *GRPCServer) SetOauth2(oauth2cfg *oauth2client.Oauth2) *GRPCServer {
+	s.oauth2 = oauth2cfg
 	return s
 }
 
@@ -151,6 +187,28 @@ func (s *GRPCServer) Listen(_ *settings.Settings) (*http.Server, error) {
 	address := fmt.Sprintf("%s:%d", s.host, s.port)
 
 	mux := http.NewServeMux()
+
+	frontendServiceServer := FrontendServiceServer{
+		logger:  s.logger,
+		storage: s.storage,
+	}
+
+	path, handler := frontendv1connect.NewFrontendServiceHandler(&frontendServiceServer)
+
+	mux.Handle(path, handler)
+
+	marketServiceServer := MarketServiceServer{
+		logger:     s.logger,
+		storage:    s.storage,
+		web3Dialer: s.web3Dialer,
+		httpDialer: s.httpDialer,
+		oauth2:     s.oauth2,
+		settings:   s.settings,
+	}
+
+	path, handler = marketv1connect.NewMarketServiceHandler(&marketServiceServer)
+
+	mux.Handle(path, handler)
 
 	return &http.Server{
 		Addr:              address,

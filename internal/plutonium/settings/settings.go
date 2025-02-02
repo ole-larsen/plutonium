@@ -53,7 +53,20 @@ var (
 // LoadConfig initializes and returns the settings singleton.
 func LoadConfig(cfgPath string) *Settings {
 	once.Do(func() {
-		config = InitConfig(cfgPath, WithMarketname(), WithDomain(), WithDSN(), WithEthPK(), WithEthWeb(), WithXToken(), WithSecret(), WithOauth2Provider(), WithOauth2Callback())
+		config = InitConfig(cfgPath,
+			WithMarketname(),
+			WithDomain(),
+			WithDSN(),
+			WithEthPK(),
+			WithEthWeb(),
+			WithXToken(),
+			WithSecret(),
+			WithOauth2Provider(),
+			WithOauth2Callback(),
+			WithGRPC(),
+			WithGRPCCert(),
+			WithGRPCKey(),
+		)
 	})
 
 	return config
@@ -190,5 +203,19 @@ func WithGRPC() func(*Settings) {
 		}
 
 		ss.GRPC.Port = port
+	}
+}
+
+func WithGRPCCert() func(*Settings) {
+	return func(ss *Settings) {
+		crt := viper.GetString("GRPC_CERT")
+		ss.GRPC.Cert = crt
+	}
+}
+
+func WithGRPCKey() func(*Settings) {
+	return func(ss *Settings) {
+		key := viper.GetString("GRPC_KEY")
+		ss.GRPC.Key = key
 	}
 }

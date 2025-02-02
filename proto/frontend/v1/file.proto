@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+message PublicFile {
+  int64 id = 1;
+  PublicFileAttributes attributes = 2;
+}
+
+message PublicFileAttributes {
+  string name = 1;
+  string provider = 2;
+  string url = 3;
+  string alt = 4;
+  string caption = 5;
+  string ext = 6;
+  string hash = 7;
+  string mime = 8;
+  double size = 9;
+  int64 width = 10;
+  int64 height = 11;
+}

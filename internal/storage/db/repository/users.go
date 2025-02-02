@@ -33,24 +33,24 @@ type UsersRepositoryInterface interface {
 }
 
 type User struct {
-	Deleted              strfmt.Date    `db:"deleted"`
-	Created              strfmt.Date    `db:"created"`
-	Updated              strfmt.Date    `db:"updated"`
-	Gravatar             string         `db:"gravatar"`
-	Secret               string         `db:"secret"`
-	Username             string         `db:"username"`
-	RSASecret            string         `db:"rsa_secret"`
-	Email                string         `db:"email"`
-	Password             string         `db:"password"`
-	PasswordResetToken   sql.NullString `db:"password_reset_token"`
-	Address              pq.StringArray `db:"address"`
-	Nonce                sql.NullString `db:"nonce"`
-	UUID                 sql.NullString `db:"uuid"`
-	Wallpaper            sql.NullString `db:"wallpaper"`
-	PasswordResetExpires sql.NullInt64  `db:"password_reset_expires"`
-	WallpaperID          sql.NullInt64  `db:"wallpaper_id"`
-	ID                   int64          `db:"id"`
-	Enabled              bool           `db:"enabled"`
+	Deleted              strfmt.Date          `db:"deleted"`
+	Created              strfmt.Date          `db:"created"`
+	Updated              strfmt.Date          `db:"updated"`
+	Password             string               `db:"password"`
+	Wallpaper            *AggregatedImageJSON `db:"wallpaper"`
+	Username             string               `db:"username"`
+	RSASecret            string               `db:"rsa_secret"`
+	Email                string               `db:"email"`
+	Gravatar             string               `db:"gravatar"`
+	Secret               string               `db:"secret"`
+	Address              pq.StringArray       `db:"address"`
+	Nonce                sql.NullString       `db:"nonce"`
+	UUID                 sql.NullString       `db:"uuid"`
+	PasswordResetToken   sql.NullString       `db:"password_reset_token"`
+	PasswordResetExpires sql.NullInt64        `db:"password_reset_expires"`
+	WallpaperID          sql.NullInt64        `db:"wallpaper_id"`
+	ID                   int64                `db:"id"`
+	Enabled              bool                 `db:"enabled"`
 }
 
 // UsersRepository - repository to store users.
@@ -117,7 +117,20 @@ SELECT
 	secret,
 	rsa_secret,
 	gravatar,
-	f.url as wallpaper,
+	(SELECT JSON_BUILD_OBJECT(
+		'id', f.id,
+		'attributes', (SELECT JSON_BUILD_OBJECT(
+			'name',            f.name,
+			'alt',             f.alt,
+			'caption',         f.caption,
+			'ext',             f.ext,
+			'provider',        f.provider,
+			'width',           f.width,
+			'height',          f.height,
+			'size',            f.size,
+			'url',             f.url
+		) FROM files f WHERE f.id = u.wallpaper_id)
+		) FROM files f WHERE f.id = u.wallpaper_id) as wallpaper,
 	created,
 	updated,
 	deleted
@@ -158,7 +171,20 @@ SELECT
 	secret,
 	rsa_secret,
 	gravatar,
-    f.url as wallpaper,
+    (SELECT JSON_BUILD_OBJECT(
+		'id', f.id,
+		'attributes', (SELECT JSON_BUILD_OBJECT(
+			'name',            f.name,
+			'alt',             f.alt,
+			'caption',         f.caption,
+			'ext',             f.ext,
+			'provider',        f.provider,
+			'width',           f.width,
+			'height',          f.height,
+			'size',            f.size,
+			'url',             f.url
+		) FROM files f WHERE f.id = u.wallpaper_id)
+		) FROM files f WHERE f.id = u.wallpaper_id) as wallpaper,
 	created,
 	updated,
 	deleted
@@ -193,7 +219,20 @@ SELECT
     u.username, 
     u.email
 	u.gravatar,
-	f.url as wallpaper
+	(SELECT JSON_BUILD_OBJECT(
+		'id', f.id,
+		'attributes', (SELECT JSON_BUILD_OBJECT(
+			'name',            f.name,
+			'alt',             f.alt,
+			'caption',         f.caption,
+			'ext',             f.ext,
+			'provider',        f.provider,
+			'width',           f.width,
+			'height',          f.height,
+			'size',            f.size,
+			'url',             f.url
+		) FROM files f WHERE f.id = u.wallpaper_id)
+		) FROM files f WHERE f.id = u.wallpaper_id) as wallpaper
 FROM users u
 LEFT JOIN files f ON u.wallpaper_id = f.id
 WHERE u.deleted IS NULL
@@ -206,20 +245,26 @@ WHERE u.deleted IS NULL
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, NewError(fmt.Errorf("user not found"))
 		}
+
 		return nil, err
 	}
 
-	wallpaper := ""
-	if user.Wallpaper.Valid {
-		wallpaper = user.Wallpaper.String
+	publicUser := &models.PublicUser{
+		ID: user.ID,
+		Attributes: &models.PublicUserAttributes{
+			Username: user.Username,
+			Email:    user.Email,
+			Gravatar: user.Gravatar,
+		},
 	}
-	return &models.PublicUser{
-		ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		Gravatar:  user.Gravatar,
-		Wallpaper: wallpaper,
-	}, nil
+	if user.Wallpaper != nil {
+		publicUser.Attributes.Wallpaper = &models.PublicFile{
+			Attributes: user.Wallpaper.Attributes,
+			ID:         user.Wallpaper.ID,
+		}
+	}
+
+	return publicUser, nil
 }
 
 func (r *UsersRepository) GetUserByAddress(ctx context.Context, address string) (*User, error) {
@@ -239,7 +284,20 @@ SELECT
 	u.address,
 	u.nonce,
 	u.gravatar,
-    f.url as wallpaper
+    (SELECT JSON_BUILD_OBJECT(
+		'id', f.id,
+		'attributes', (SELECT JSON_BUILD_OBJECT(
+			'name',            f.name,
+			'alt',             f.alt,
+			'caption',         f.caption,
+			'ext',             f.ext,
+			'provider',        f.provider,
+			'width',           f.width,
+			'height',          f.height,
+			'size',            f.size,
+			'url',             f.url
+		) FROM files f WHERE f.id = u.wallpaper_id)
+		) FROM files f WHERE f.id = u.wallpaper_id) as wallpaper
 FROM users u
 LEFT JOIN files f ON u.wallpaper_id = f.id
 WHERE $1 = ANY(u.address) AND u.deleted IS NULL;`

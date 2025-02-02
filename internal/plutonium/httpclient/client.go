@@ -131,13 +131,11 @@ func (c *HTTPClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func (c *HTTPClient) MakeRequest(
+	ctx context.Context,
 	method string,
 	url string,
 	body []byte,
 ) ([]byte, error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	var err error
 
 	request, err := c.SetRequestWithContext(ctx, method, url, body)
@@ -200,10 +198,10 @@ func (c *HTTPClient) MakeRequest(
 	}
 }
 
-func (c *HTTPClient) GetCredentials(clientID string) (*models.Credentials, error) {
+func (c *HTTPClient) GetCredentials(ctx context.Context, clientID string) (*models.Credentials, error) {
 	url := c.settings.OAUTH2.Provider + "/api/v1/credentials?client_id=" + clientID
 
-	body, err := c.MakeRequest("GET", url, nil)
+	body, err := c.MakeRequest(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -216,8 +214,8 @@ func (c *HTTPClient) GetCredentials(clientID string) (*models.Credentials, error
 	return &response, nil
 }
 
-func (c *HTTPClient) Authorize(authorizeURL string) (*models.Callback, error) {
-	body, err := c.MakeRequest("GET", authorizeURL, nil)
+func (c *HTTPClient) Authorize(ctx context.Context, authorizeURL string) (*models.Callback, error) {
+	body, err := c.MakeRequest(ctx, "GET", authorizeURL, nil)
 	if err != nil {
 		return nil, err
 	}

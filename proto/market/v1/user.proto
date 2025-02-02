@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "market/v1/file.proto";
+
+message PublicUserAttributes {
+  string username = 2;     
+  string address = 3;      
+  string email = 4;        
+  string uuid = 5;       
+  string gravatar = 6;    
+  string nonce = 7;         
+  string token = 8;           
+  string funds = 9;          
+  PublicFile wallpaper = 10;     
+  string created = 11;       
+}
+
+message PublicUser {
+  int64 id = 1;             
+  PublicUserAttributes attributes = 2;
+}

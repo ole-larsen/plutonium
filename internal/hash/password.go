@@ -4,6 +4,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const cost = 14
+
 func Password(pwd []byte) (string, error) {
 	// Use GenerateFromPassword to hash & salt pwd.
 	// MinCost is just an integer constant provided by the bcrypt
@@ -17,6 +19,13 @@ func Password(pwd []byte) (string, error) {
 	// GenerateFromPassword returns a byte slice so we need to
 	// convert the bytes to a string and return it
 	return string(hash), nil
+}
+
+func PasswordWithSecret(password, secret string) (string, error) {
+	hashed := password + secret
+	bytes, err := bcrypt.GenerateFromPassword([]byte(hashed), cost)
+
+	return string(bytes), err
 }
 
 func ComparePassword(hashedPwd string, plainPwd []byte) (bool, error) {

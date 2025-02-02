@@ -16,27 +16,13 @@ import (
 //
 // swagger:model PublicContactForm
 type PublicContactForm struct {
-
-	// csrf
-	Csrf string `json:"csrf,omitempty"`
-
-	// email
-	Email string `json:"email,omitempty"`
-
-	// message
-	Message string `json:"message,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
-
-	// page Id
-	PageID int64 `json:"pageId,omitempty"`
-
-	// provider
+	Csrf     string `json:"csrf,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Message  string `json:"message,omitempty"`
+	Name     string `json:"name,omitempty"`
 	Provider string `json:"provider,omitempty"`
-
-	// subject
-	Subject string `json:"subject,omitempty"`
+	Subject  string `json:"subject,omitempty"`
+	PageID   int64  `json:"pageId,omitempty"`
 }
 
 // Validate validates this public contact form

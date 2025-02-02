@@ -178,6 +178,7 @@ ON CONFLICT DO NOTHING RETURNING id`, tagMap)
 	if err := r.SetPagesRelations(ctx, tagMap); err != nil {
 		return err
 	}
+
 	if err := r.SetBlogsRelations(ctx, tagMap); err != nil {
 		return err
 	}
@@ -210,6 +211,7 @@ updated_by_id=:updated_by_id WHERE id =:id`, tagMap)
 	if err := r.SetPagesRelations(ctx, tagMap); err != nil {
 		return nil, err
 	}
+
 	if err := r.SetBlogsRelations(ctx, tagMap); err != nil {
 		return nil, err
 	}

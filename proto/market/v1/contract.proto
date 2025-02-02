@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+message PublicContracts {
+  PublicMarketplaceContract marketplace = 1;
+  map<string, PublicContract> auctions = 2;
+  map<string, PublicContract> collections = 3;
+}
+  
+message PublicContract {
+  string abi = 1;
+  string address = 2;
+  string name = 3;
+}
+  
+message PublicMarketplaceContract {
+  string abi = 1;
+  string address = 2;
+  string name = 3;
+  google.protobuf.StringValue fee = 4; 
+  string owner = 5; 
+}
+
+message Success {
+  PublicContracts contracts = 1;
+}
+
+message ContractsResponse {
+  oneof response {
+    Success data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}
+
+message ContractsRequest {}

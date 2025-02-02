@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "google/protobuf/empty.proto";
+import "market/v1/collection.proto";
+import "market/v1/file.proto";
+
+message PublicCategory {
+  int64 id = 1;
+  PublicCategoryAttributes attributes = 2;
+}
+
+message PublicCategoryAttributes {
+  string title = 1;
+  string slug = 2;
+  string description = 3;
+  string content = 4;
+  PublicFile image = 5;
+  repeated MarketplaceCollection collections = 6;
+}
+
+message CategoriesRequest {
+  string provider = 1;
+}
+
+message SuccessCategories{
+  repeated PublicCategory categories = 1;
+}
+message CategoriesResponse {
+  oneof response {
+    SuccessCategories data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

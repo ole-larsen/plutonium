@@ -18,27 +18,18 @@ import (
 // swagger:model PublicHelpCenterItem
 type PublicHelpCenterItem struct {
 
-	// description
-	Description string `json:"description,omitempty"`
+	// attributes
+	Attributes *PublicHelpCenterItemAttributes `json:"attributes,omitempty"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
-
-	// image
-	Image *PublicFile `json:"image,omitempty"`
-
-	// link
-	Link string `json:"link,omitempty"`
-
-	// title
-	Title string `json:"title,omitempty"`
 }
 
 // Validate validates this public help center item
 func (m *PublicHelpCenterItem) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateImage(formats); err != nil {
+	if err := m.validateAttributes(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -48,17 +39,17 @@ func (m *PublicHelpCenterItem) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PublicHelpCenterItem) validateImage(formats strfmt.Registry) error {
-	if swag.IsZero(m.Image) { // not required
+func (m *PublicHelpCenterItem) validateAttributes(formats strfmt.Registry) error {
+	if swag.IsZero(m.Attributes) { // not required
 		return nil
 	}
 
-	if m.Image != nil {
-		if err := m.Image.Validate(formats); err != nil {
+	if m.Attributes != nil {
+		if err := m.Attributes.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image")
+				return ve.ValidateName("attributes")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image")
+				return ce.ValidateName("attributes")
 			}
 			return err
 		}
@@ -71,7 +62,7 @@ func (m *PublicHelpCenterItem) validateImage(formats strfmt.Registry) error {
 func (m *PublicHelpCenterItem) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateImage(ctx, formats); err != nil {
+	if err := m.contextValidateAttributes(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -81,19 +72,19 @@ func (m *PublicHelpCenterItem) ContextValidate(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *PublicHelpCenterItem) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
+func (m *PublicHelpCenterItem) contextValidateAttributes(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Image != nil {
+	if m.Attributes != nil {
 
-		if swag.IsZero(m.Image) { // not required
+		if swag.IsZero(m.Attributes) { // not required
 			return nil
 		}
 
-		if err := m.Image.ContextValidate(ctx, formats); err != nil {
+		if err := m.Attributes.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image")
+				return ve.ValidateName("attributes")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image")
+				return ce.ValidateName("attributes")
 			}
 			return err
 		}

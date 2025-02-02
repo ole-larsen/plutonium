@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "google/protobuf/empty.proto";
+
+message PublicFaqItem {
+  int64 id = 1;
+  PublicFaqItemAttributes attributes = 2;
+}
+
+message PublicFaqItemAttributes {
+  string answer = 1;
+  string question = 2;
+}
+
+message FaqRequest {
+  string provider = 1;
+}
+
+message SuccessFaq {
+  repeated PublicFaqItem faq = 1;
+}
+message FaqResponse {
+  oneof response {
+    SuccessFaq data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

@@ -18,45 +18,18 @@ import (
 //
 // swagger:model HelpCenter
 type HelpCenter struct {
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// image id
-	ImageID int64 `json:"image_id,omitempty"`
-
-	// order by
-	OrderBy int64 `json:"order_by,omitempty"`
-
-	// slug
-	Slug string `json:"slug,omitempty"`
-
-	// title
-	Title string `json:"title,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Slug        string      `json:"slug,omitempty"`
+	Title       string      `json:"title,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	ImageID     int64       `json:"image_id,omitempty"`
+	OrderBy     int64       `json:"order_by,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this help center

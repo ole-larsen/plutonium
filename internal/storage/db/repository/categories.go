@@ -179,33 +179,33 @@ SELECT
 		) FROM files f WHERE f.id = c1.logo_id)
 		) FROM files f WHERE f.id = c1.logo_id),
 		'featured',    (SELECT JSON_BUILD_OBJECT(
-		'id', f.id,
-		'attributes', (SELECT JSON_BUILD_OBJECT(
-			'name',            f.name,
-			'alt',             f.alt,
-			'caption',         f.caption,
-			'ext',             f.ext,
-			'provider',        f.provider,
-			'width',           f.width,
-			'height',          f.height,
-			'size',            f.size,
-			'url',             f.url
-		) FROM files f WHERE f.id = c1.featured_id)
-		) FROM files f WHERE f.id = c1.featured_id),
+			'id', f.id,
+			'attributes', (SELECT JSON_BUILD_OBJECT(
+				'name',            f.name,
+				'alt',             f.alt,
+				'caption',         f.caption,
+				'ext',             f.ext,
+				'provider',        f.provider,
+				'width',           f.width,
+				'height',          f.height,
+				'size',            f.size,
+				'url',             f.url
+			) FROM files f WHERE f.id = c1.featured_id)
+			) FROM files f WHERE f.id = c1.featured_id),
 		'banner',      (SELECT JSON_BUILD_OBJECT(
-		'id', f.id,
-		'attributes', (SELECT JSON_BUILD_OBJECT(
-			'name',            f.name,
-			'alt',             f.alt,
-			'caption',         f.caption,
-			'ext',             f.ext,
-			'provider',        f.provider,
-			'width',           f.width,
-			'height',          f.height,
-			'size',            f.size,
-			'url',             f.url
-		) FROM files f WHERE f.id = c1.banner_id)
-		) FROM files f WHERE f.id = c1.banner_id),
+			'id', f.id,
+			'attributes', (SELECT JSON_BUILD_OBJECT(
+				'name',            f.name,
+				'alt',             f.alt,
+				'caption',         f.caption,
+				'ext',             f.ext,
+				'provider',        f.provider,
+				'width',           f.width,
+				'height',          f.height,
+				'size',            f.size,
+				'url',             f.url
+			) FROM files f WHERE f.id = c1.banner_id)
+			) FROM files f WHERE f.id = c1.banner_id),
 		'collectibles', (SELECT (SELECT JSON_AGG(JSON_BUILD_OBJECT(
 		'id', coll.id,
 		'attributes', (SELECT JSON_BUILD_OBJECT(
@@ -222,7 +222,7 @@ SELECT
 		))) FROM collectibles coll WHERE coll.collection_id = c1.id)
 	) FROM collections c1 WHERE c1.id = col.id)))) FROM collections col WHERE col.category_id = c.id) as collections
 FROM categories c
-WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c.deleted isNULL GROUP BY c.id ORDER BY c.order_by ASC;`)
+WHERE c.provider = 'collectible' AND c.enabled = true AND c.deleted isNULL GROUP BY c.id ORDER BY c.order_by ASC;`)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +280,7 @@ WHERE c.provider = 'collectible' AND c.parent_id != 0 AND c.enabled = true AND c
 						Metadata: &models.MarketplaceCollectibleMetadata{
 							Name:        collectible.Attributes.Metadata.Name,
 							Description: collectible.Attributes.Metadata.Description,
-							Image:       collectible.Attributes.Metadata.Image,
+							ImageURL:    collectible.Attributes.Metadata.Image,
 							ExternalURL: collectible.Attributes.Metadata.ExternalURL,
 						},
 						Details: &models.MarketplaceCollectibleDetails{

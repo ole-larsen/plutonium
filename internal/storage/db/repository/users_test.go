@@ -179,7 +179,6 @@ func TestUsersRepository_GetUserByID_Errors(t *testing.T) {
 	assert.Equal(t, "test@example.com", user.Email, "GetUserByID() should return correct email")
 	assert.Equal(t, "hashedpassword", user.Password, "GetUserByID() should return correct password")
 	assert.Equal(t, "gravatar", user.Gravatar, "GetUserByID() should return correct gravatar")
-
 }
 
 func TestUsersRepository_GetUserByID_Error(t *testing.T) {
@@ -356,8 +355,8 @@ func TestUsersRepository_GetPublicUserByID_Error(t *testing.T) {
 	assert.NoError(t, err, "GetPublicUserByID() should not return an error")
 	assert.NotNil(t, user, "GetPublicUserByID() should return a user")
 	assert.Equal(t, int64(1), user.ID, "GetPublicUserByID() should return correct user ID")
-	assert.Equal(t, "user1", user.Username, "GetPublicUserByID() should return correct username")
-	assert.Equal(t, "user@example.com", user.Email, "GetPublicUserByID() should return correct email")
+	assert.Equal(t, "user1", user.Attributes.Username, "GetPublicUserByID() should return correct username")
+	assert.Equal(t, "user@example.com", user.Attributes.Email, "GetPublicUserByID() should return correct email")
 
 	// Ensure the mock expectations were met
 	err = mock.ExpectationsWereMet()
@@ -528,11 +527,11 @@ func TestUsersRepository_GetUserByAddress(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
 		assert.Equal(t, int64(1), user.ID)
-		assert.Equal(t, sql.NullString(sql.NullString{String: "uuid-123", Valid: true}), user.UUID)
+		assert.Equal(t, sql.NullString{String: "uuid-123", Valid: true}, user.UUID)
 		assert.Equal(t, "user1", user.Username)
 		assert.Equal(t, "user@example.com", user.Email)
-		assert.Equal(t, pq.StringArray(pq.StringArray{"address1"}), user.Address)
-		assert.Equal(t, sql.NullString(sql.NullString{String: "nonce1", Valid: true}), user.Nonce)
+		assert.Equal(t, pq.StringArray{"address1"}, user.Address)
+		assert.Equal(t, sql.NullString{String: "nonce1", Valid: true}, user.Nonce)
 
 		err = mock.ExpectationsWereMet()
 		if err != nil {

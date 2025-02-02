@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+import "market/v1/user.proto";
+
+message Oauth2Token {
+  string access_token = 1;
+  string code = 2;
+  google.protobuf.Timestamp expiry = 3;
+  string original_url = 4;
+  string refresh_token = 5;
+  string state = 6;
+  string token_type = 7;
+}
+
+message VerifiedAccess {
+  PublicUser user = 1;
+  Oauth2Token token = 2;
+}
+message VerifyResponse {
+  oneof response {
+    VerifiedAccess data = 1;
+    google.protobuf.Empty error = 3;
+  }
+}
+
+message VerifyRequest {
+  string address = 1;
+  string msg = 2;
+  string signature = 3;
+}

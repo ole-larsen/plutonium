@@ -81,7 +81,6 @@ func (a *API) GetMenuHandler(params frontend.GetFrontendMenuParams, _ *models.Pr
 
 	return frontend.NewGetFrontendMenuOK().WithPayload(items)
 }
-
 func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -114,37 +113,6 @@ func (a *API) GetSliderHandler(params frontend.GetFrontendSliderParams, _ *model
 
 	return frontend.NewGetFrontendSliderOK().WithPayload(items)
 }
-
-func (a *API) GetFileHandler(params frontend.GetFrontendFilesFileParams) middleware.Responder {
-	return middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
-		path := strings.Split(params.HTTPRequest.URL.RequestURI(), "/")
-
-		encodedFilename := path[len(path)-1]
-
-		filename, err := url.QueryUnescape(encodedFilename)
-		if err != nil {
-			a.service.GetLogger().Errorln(err)
-		}
-
-		buf, err := os.ReadFile(fmt.Sprintf("%s/%s", UploadDir, filename))
-
-		if err != nil {
-			a.service.GetLogger().Errorln(err)
-		}
-
-		ext := strings.Replace(filepath.Ext(filename), ".", "", 1)
-		if ext == "svg" {
-			w.Header().Set("Content-Type", fmt.Sprintf("image/%s+xml", ext))
-		} else {
-			w.Header().Set("Content-Type", fmt.Sprintf("image/%s", ext))
-		}
-
-		if _, err := w.Write(buf); err != nil {
-			a.service.GetLogger().Errorln(err)
-		}
-	})
-}
-
 func (a *API) GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -164,6 +132,154 @@ func (a *API) GetCategoriesHandler(_ frontend.GetFrontendCategoriesParams, _ *mo
 
 	return frontend.NewGetFrontendCategoriesOK().WithPayload(items)
 }
+func (a *API) GetWalletConnectHandler(_ frontend.GetFrontendWalletConnectParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetWalletsRepository().
+		GetPublicWalletConnect(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendWalletConnectOK().WithPayload(items)
+}
+func (a *API) GetCreateAndSellHandler(_ frontend.GetFrontendCreateAndSellParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetCreateAndSellRepository().
+		GetPublicCreateAndSell(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendCreateAndSellInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendCreateAndSellOK().WithPayload(items)
+}
+func (a *API) GetHelpCenterHandler(_ frontend.GetFrontendHelpCenterParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetHelpCenterRepository().
+		GetPublicHelpCenter(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendHelpCenterInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendHelpCenterOK().WithPayload(items)
+}
+func (a *API) GetFaqHandler(_ frontend.GetFrontendFaqParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	items, err := a.service.GetStorage().
+		GetFaqsRepository().
+		GetPublicFaqs(ctx)
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendFaqInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendFaqOK().WithPayload(items)
+}
+func (a *API) GetContactsHandler(params frontend.GetFrontendContactParams, _ *models.Principal) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var pageIDParams = ""
+	if params.ID != nil {
+		pageIDParams = *params.ID
+	}
+
+	if pageIDParams == "" {
+		return frontend.NewGetFrontendContactBadRequest().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: "invalid pageId",
+		})
+	}
+
+	pageID, err := strconv.ParseInt(pageIDParams, 10, 64)
+	if err != nil {
+		return frontend.NewGetFrontendContactInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	items, err := a.service.
+		GetStorage().
+		GetContactsRepository().
+		GetContactByPageID(ctx, pageID)
+
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewGetFrontendContactInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewGetFrontendContactOK().WithPayload(items)
+}
+func (a *API) PostContactsHandler(params frontend.PostFrontendContactFormParams) middleware.Responder {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if params.Body == nil {
+		return frontend.NewGetFrontendContactBadRequest().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: "invalid body",
+		})
+	}
+
+	body := *params.Body
+	attributes := make(map[string]interface{})
+	attributes["page_id"] = body.PageID
+	attributes["name"] = body.Name
+	attributes["email"] = body.Email
+	attributes["subject"] = body.Subject
+	attributes["message"] = body.Message
+	attributes["provider"] = body.Provider
+
+	err := a.service.GetStorage().
+		GetContactFormsRepository().
+		Create(ctx, attributes)
+
+	if err != nil {
+		a.service.GetLogger().Error(err.Error())
+
+		return frontend.NewPostFrontendContactFormInternalServerError().WithPayload(&models.ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return frontend.NewPostFrontendContactFormOK().WithPayload(&models.FormSuccess{Message: "message sent"})
+}
+
 func (a *API) GetContractsHandler(_ frontend.GetFrontendContractsParams, _ *models.Principal) middleware.Responder {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -241,12 +357,14 @@ func (a *API) GetUsersHandler(params frontend.GetFrontendUsersParams, _ *models.
 	}
 
 	payload := &models.PublicUser{
-		//Address:  user.Address,
-		Email: user.Email,
-		ID:    user.ID,
-		//Nonce:    user.Nonce,
-		//Username: user.Nonce,
-		//UUID: user.UUID,
+		ID: user.ID,
+		Attributes: &models.PublicUserAttributes{
+			//Address:  user.Address,
+			Email: user.Email,
+			//Nonce:    user.Nonce,
+			//Username: user.Nonce,
+			//UUID: user.UUID,
+		},
 	}
 
 	return frontend.NewGetFrontendUsersOK().WithPayload([]*models.PublicUser{payload})
@@ -282,6 +400,35 @@ func (a *API) GetPagesHandler(params frontend.GetFrontendPageSlugParams, _ *mode
 
 	return frontend.NewGetFrontendPageSlugOK().WithPayload(page)
 }
+func (a *API) GetFileHandler(params frontend.GetFrontendFilesFileParams) middleware.Responder {
+	return middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
+		path := strings.Split(params.HTTPRequest.URL.RequestURI(), "/")
+
+		encodedFilename := path[len(path)-1]
+
+		filename, err := url.QueryUnescape(encodedFilename)
+		if err != nil {
+			a.service.GetLogger().Errorln(err)
+		}
+
+		buf, err := os.ReadFile(fmt.Sprintf("%s/%s", UploadDir, filename))
+
+		if err != nil {
+			a.service.GetLogger().Errorln(err)
+		}
+
+		ext := strings.Replace(filepath.Ext(filename), ".", "", 1)
+		if ext == "svg" {
+			w.Header().Set("Content-Type", fmt.Sprintf("image/%s+xml", ext))
+		} else {
+			w.Header().Set("Content-Type", fmt.Sprintf("image/%s", ext))
+		}
+
+		if _, err := w.Write(buf); err != nil {
+			a.service.GetLogger().Errorln(err)
+		}
+	})
+}
 
 func (a *API) XTokenAuth(token string) (*models.Principal, error) {
 	if token == a.service.GetSettings().XToken {
@@ -290,121 +437,6 @@ func (a *API) XTokenAuth(token string) (*models.Principal, error) {
 	}
 
 	return nil, errors.New("incorrect api key authApi")
-}
-
-func (a *API) GetContactsHandler(params frontend.GetFrontendContactParams, _ *models.Principal) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	var pageIDParams = ""
-	if params.ID != nil {
-		pageIDParams = *params.ID
-	}
-
-	if pageIDParams == "" {
-		return frontend.NewGetFrontendContactBadRequest().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusBadRequest,
-			Message: "invalid pageId",
-		})
-	}
-
-	pageID, err := strconv.ParseInt(pageIDParams, 10, 64)
-	if err != nil {
-		return frontend.NewGetFrontendContactInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	items, err := a.service.
-		GetStorage().
-		GetContactsRepository().
-		GetContactByPageID(ctx, pageID)
-
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewGetFrontendContactInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewGetFrontendContactOK().WithPayload(items)
-}
-
-func (a *API) PostContactsHandler(params frontend.PostFrontendContactFormParams) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	if params.Body == nil {
-		return frontend.NewGetFrontendContactBadRequest().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusBadRequest,
-			Message: "invalid body",
-		})
-	}
-
-	body := *params.Body
-	attributes := make(map[string]interface{})
-	attributes["page_id"] = body.PageID
-	attributes["name"] = body.Name
-	attributes["email"] = body.Email
-	attributes["subject"] = body.Subject
-	attributes["message"] = body.Message
-	attributes["provider"] = body.Provider
-
-	err := a.service.GetStorage().
-		GetContactFormsRepository().
-		Create(ctx, attributes)
-
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewPostFrontendContactFormInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewPostFrontendContactFormOK().WithPayload(&models.FormSuccess{Message: "message sent"})
-}
-
-func (a *API) GetFaqHandler(_ frontend.GetFrontendFaqParams, _ *models.Principal) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	items, err := a.service.GetStorage().
-		GetFaqsRepository().
-		GetPublicFaqs(ctx)
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewGetFrontendFaqInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewGetFrontendFaqOK().WithPayload(items)
-}
-
-func (a *API) GetHelpCenterHandler(_ frontend.GetFrontendHelpCenterParams, _ *models.Principal) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	items, err := a.service.GetStorage().
-		GetHelpCenterRepository().
-		GetPublicHelpCenter(ctx)
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewGetFrontendHelpCenterInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewGetFrontendHelpCenterOK().WithPayload(items)
 }
 
 func (a *API) GetBlogsHandler(_ frontend.GetFrontendBlogParams, _ *models.Principal) middleware.Responder {
@@ -446,41 +478,4 @@ func (a *API) GetBlogsSlugHandler(params frontend.GetFrontendBlogSlugParams, _ *
 	}
 
 	return frontend.NewGetFrontendBlogSlugOK().WithPayload(item)
-}
-
-func (a *API) GetWalletConnectHandler(params frontend.GetFrontendWalletConnectParams, principal *models.Principal) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	items, err := a.service.GetStorage().
-		GetWalletsRepository().
-		GetPublicWalletConnect(ctx)
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewGetFrontendWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewGetFrontendWalletConnectOK().WithPayload(items)
-}
-func (a *API) GetCreateAndSellHandler(params frontend.GetFrontendCreateAndSellParams, principal *models.Principal) middleware.Responder {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	items, err := a.service.GetStorage().
-		GetCreateAndSellRepository().
-		GetPublicCreateAndSell(ctx)
-	if err != nil {
-		a.service.GetLogger().Error(err.Error())
-
-		return frontend.NewGetFrontendCreateAndSellInternalServerError().WithPayload(&models.ErrorResponse{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		})
-	}
-
-	return frontend.NewGetFrontendCreateAndSellOK().WithPayload(items)
 }

@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "google/protobuf/empty.proto";
+import "frontend/v1/file.proto";
+
+message PublicContact {
+  int64 id = 1;
+  PublicContactAttributes attributes = 2;
+}
+
+message PublicContactAttributes {
+  string heading = 1;
+  string sub_heading = 2;
+  string link = 3;
+  string text = 4;
+  string csrf = 5;
+  PublicFile image = 6;
+  
+}
+
+message PublicContactForm {
+  string csrf = 1;
+  int64 page_id = 2;
+  string provider = 3;
+  string subject = 4;
+  string name = 5;
+  string email = 6;
+  string message = 7;
+}
+
+message ContactRequest {
+  int64 page_id = 1;
+}
+
+message ContactResponse {
+  oneof response {
+    PublicContact data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}
+
+message PostContactRequest {
+  PublicContactForm body = 1;
+}
+
+message PostContactResponse {
+  oneof response {
+    string data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

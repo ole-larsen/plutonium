@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package blog.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/blog/v1;blogv1";
+
+service BlogService {
+    
+}

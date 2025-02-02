@@ -263,7 +263,7 @@ WHERE
 	case sql.ErrNoRows:
 		return nil, NewError(errors.New("slider not found"))
 	case nil:
-		slider.Attributes = &models.PublicSliderAttributes{SlidesItem: sliderItems}
+		slider.Attributes = &models.PublicSliderAttributes{SliderItems: sliderItems}
 		return &slider, nil
 	default:
 		return nil, err

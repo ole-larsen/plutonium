@@ -18,48 +18,19 @@ import (
 //
 // swagger:model Contact
 type Contact struct {
-
-	// btn link
-	BtnLink string `json:"btn_link,omitempty"`
-
-	// btn text
-	BtnText string `json:"btn_text,omitempty"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// heading
-	Heading string `json:"heading,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// image id
-	ImageID int64 `json:"image_id,omitempty"`
-
-	// page id
-	PageID int64 `json:"page_id,omitempty"`
-
-	// sub heading
-	SubHeading string `json:"sub_heading,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	SubHeading  string      `json:"sub_heading,omitempty"`
+	BtnText     string      `json:"btn_text,omitempty"`
+	BtnLink     string      `json:"btn_link,omitempty"`
+	Heading     string      `json:"heading,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	ImageID     int64       `json:"image_id,omitempty"`
+	PageID      int64       `json:"page_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this contact

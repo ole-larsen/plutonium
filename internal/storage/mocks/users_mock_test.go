@@ -22,9 +22,11 @@ func TestMockUsersRepositoryInterface(t *testing.T) {
 
 	// Sample data
 	sampleUser := &models.PublicUser{
-		ID:       1,
-		Username: "testuser",
-		Email:    "test@example.com",
+		ID: 1,
+		Attributes: &models.PublicUserAttributes{
+			Username: "testuser",
+			Email:    "test@example.com",
+		},
 	}
 
 	sampleRepoUser := &repository.User{

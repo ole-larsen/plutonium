@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "market/v1/user.proto";
+
+message MarketplaceCollectible {
+  int64 id = 1;
+  MarketplaceCollectibleAttributes attributes = 2;
+}
+
+message MarketplaceCollectibleAttributes {
+  int64 collection_id = 1;
+  repeated int64 token_ids = 2;
+  string uri = 3;
+  PublicUser creator = 4;
+  PublicUser owner = 5;
+  MarketplaceCollectibleDetails details = 6;
+  MarketplaceCollectibleMetadata metadata = 7;
+}
+
+message MarketplaceCollectibleDetails {
+  string address = 1;
+  bool auction = 2;
+  bool cancelled = 3;
+  string collection = 4;
+  int64 end_time = 5;
+  string fee = 6;
+  string fee_wei = 7;
+  bool fulfilled = 8;
+  bool is_started = 9;
+  string price = 10;
+  string price_wei = 11;
+  int64 quantity = 12;
+  string reserve_price = 13;
+  string reserve_price_wei = 14;
+  string start_price = 15;
+  string start_price_wei = 16;
+  int64 start_time = 17;
+  string tags = 18;
+  string total = 19;
+  string total_wei = 20;
+}
+
+message MarketplaceCollectibleMetadata {
+  string name = 1;
+  string external_url = 2;
+  string animation_url = 3;
+  string background_color = 4;
+  string description = 5;
+  string youtube_url = 6;
+  string image_url = 7;
+  repeated MetadataAttributes attributes = 8;
+}
+
+message MetadataAttributes {
+  string trait_type = 1;
+  string value = 2;
+}
+  

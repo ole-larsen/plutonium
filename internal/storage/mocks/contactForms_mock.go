@@ -55,6 +55,20 @@ func (mr *MockContactFormRepositoryInterfaceMockRecorder) Create(ctx, contactFor
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockContactFormRepositoryInterface)(nil).Create), ctx, contactFormMap)
 }
 
+// CreateSubscribe mocks base method.
+func (m *MockContactFormRepositoryInterface) CreateSubscribe(ctx context.Context, contactFormMap map[string]any) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSubscribe", ctx, contactFormMap)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateSubscribe indicates an expected call of CreateSubscribe.
+func (mr *MockContactFormRepositoryInterfaceMockRecorder) CreateSubscribe(ctx, contactFormMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubscribe", reflect.TypeOf((*MockContactFormRepositoryInterface)(nil).CreateSubscribe), ctx, contactFormMap)
+}
+
 // InnerDB mocks base method.
 func (m *MockContactFormRepositoryInterface) InnerDB() *sqlx.DB {
 	m.ctrl.T.Helper()

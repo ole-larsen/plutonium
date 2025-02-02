@@ -18,45 +18,18 @@ import (
 //
 // swagger:model Tag
 type Tag struct {
-
-	// blog id
-	BlogID []int64 `json:"blog_id"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// page id
-	PageID []int64 `json:"page_id"`
-
-	// parent id
-	ParentID int64 `json:"parent_id,omitempty"`
-
-	// slug
-	Slug string `json:"slug,omitempty"`
-
-	// title
-	Title string `json:"title,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Slug        string      `json:"slug,omitempty"`
+	Title       string      `json:"title,omitempty"`
+	BlogID      []int64     `json:"blog_id"`
+	PageID      []int64     `json:"page_id"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	ParentID    int64       `json:"parent_id,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this tag

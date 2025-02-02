@@ -13,7 +13,6 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
-	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"golang.org/x/oauth2"
 
@@ -32,7 +31,6 @@ import (
 	"github.com/ole-larsen/plutonium/internal/plutonium/oauth2client"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
-	"github.com/ole-larsen/plutonium/models"
 	"github.com/ole-larsen/plutonium/restapi/operations"
 	"github.com/ole-larsen/plutonium/restapi/operations/auth"
 	"github.com/ole-larsen/plutonium/restapi/operations/frontend"
@@ -117,16 +115,27 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 		panic(err)
 	}
 
-	// initialize grpc server
-	grpc := grpcserver.SetupGRPC(
-		cfg.GRPC.Host,
-		cfg.GRPC.Port,
-	)
-
 	httpDialer := httpclient.NewHTTPClient().
 		SetTimeout(defaultTimeout * time.Second).
 		SetSettings(cfg).
 		SetTransport(httpclient.SetDefaultTransport())
+
+	oauth2Client := &oauth2client.Oauth2{
+		Client: oauth2client.NewClient().SetSettings(cfg),
+		Config: make(map[string]oauth2.Config),
+	}
+
+	// initialize grpc server
+	grpc := grpcserver.SetupGRPC(
+		cfg.GRPC.Host,
+		cfg.GRPC.Port,
+	).
+		SetStorage(store).
+		SetWeb3Dialer(web3Dialer).
+		SetHTTPDialer(httpDialer).
+		SetOauth2(oauth2Client).
+		SetSettings(cfg)
+
 	service.
 		SetSettings(cfg).
 		SetLogger(logger).
@@ -134,15 +143,12 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 		SetGRPC(grpc).
 		SetWeb3Dialer(web3Dialer).
 		SetHTTPDialer(httpDialer).
-		SetOauth2(&oauth2client.Oauth2{
-			Client: oauth2client.NewClient().SetSettings(cfg),
-			Config: make(map[string]oauth2.Config),
-		})
+		SetOauth2(oauth2Client)
 
 	go func() {
 		logger.Infoln("starting grpc server")
 
-		err := grpc.ListenAndServeTLS(cfg)
+		err := grpc.ListenAndServe(cfg)
 		if err != nil {
 			logger.Errorln(err)
 		}
@@ -175,9 +181,7 @@ func configureAPI(api *operations.ServiceAPI) http.Handler {
 	api.FrontendGetFrontendBlogHandler = frontend.GetFrontendBlogHandlerFunc(frontendAPI.GetBlogsHandler)
 	api.FrontendGetFrontendBlogSlugHandler = frontend.GetFrontendBlogSlugHandlerFunc(frontendAPI.GetBlogsSlugHandler)
 	api.FrontendGetFrontendWalletConnectHandler = frontend.GetFrontendWalletConnectHandlerFunc(frontendAPI.GetWalletConnectHandler)
-	api.FrontendGetFrontendCreateAndSellHandler = frontend.GetFrontendCreateAndSellHandlerFunc(func(params frontend.GetFrontendCreateAndSellParams, principal *models.Principal) middleware.Responder {
-		return middleware.NotImplemented("operation frontend.GetFrontendCreateAndSell has not yet been implemented")
-	})
+	api.FrontendGetFrontendCreateAndSellHandler = frontend.GetFrontendCreateAndSellHandlerFunc(frontendAPI.GetCreateAndSellHandler)
 
 	authAPI := v1authApi.NewAuthAPI(service)
 

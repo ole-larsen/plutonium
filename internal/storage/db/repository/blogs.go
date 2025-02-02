@@ -426,32 +426,34 @@ WHERE
 		}
 
 		blogs = append(blogs, &models.PublicBlogItem{
-			ID:          blog.ID,
-			Title:       blog.Title,
-			Link:        blog.Link,
-			Description: blog.Description,
-			Content:     blog.Content,
-			Author: &models.PublicAuthor{
-				Attributes: author.Attributes,
-				ID:         author.ID,
+			ID: blog.ID,
+			Attributes: &models.PublicBlogItemAttributes{
+				Title:       blog.Title,
+				Link:        blog.Link,
+				Description: blog.Description,
+				Content:     blog.Content,
+				Author: &models.PublicAuthor{
+					Attributes: author.Attributes,
+					ID:         author.ID,
+				},
+				Image: &models.PublicFile{
+					Attributes: image.Attributes,
+					ID:         image.ID,
+				},
+				Image1: &models.PublicFile{
+					Attributes: image1.Attributes,
+					ID:         image1.ID,
+				},
+				Image2: &models.PublicFile{
+					Attributes: image2.Attributes,
+					ID:         image2.ID,
+				},
+				Image3: &models.PublicFile{
+					Attributes: image3.Attributes,
+					ID:         image3.ID,
+				},
+				Date: blog.PublicDate,
 			},
-			Image: &models.PublicFile{
-				Attributes: image.Attributes,
-				ID:         image.ID,
-			},
-			Image1: &models.PublicFile{
-				Attributes: image1.Attributes,
-				ID:         image1.ID,
-			},
-			Image2: &models.PublicFile{
-				Attributes: image2.Attributes,
-				ID:         image2.ID,
-			},
-			Image3: &models.PublicFile{
-				Attributes: image3.Attributes,
-				ID:         image3.ID,
-			},
-			Date: blog.PublicDate,
 		})
 	}
 
@@ -588,45 +590,45 @@ GROUP BY b.id;`
 	var tags AggregatedTagJSON
 
 	var popularTags AggregatedTagJSON
-	err := row.Scan(&blog.ID, &blog.Title, &blog.Date, &blog.Link, &blog.Description,
-		&blog.OrderBy, &author, &popularTags, &tags, &image, &image1, &image2, &image3)
+	err := row.Scan(&blog.ID, &blog.Attributes.Title, &blog.Attributes.Date, &blog.Attributes.Link, &blog.Attributes.Description,
+		&blog.Attributes.OrderBy, &author, &popularTags, &tags, &image, &image1, &image2, &image3)
 
 	switch err {
 	case sql.ErrNoRows:
 		return nil, fmt.Errorf("blog not found")
 	case nil:
 		for _, tag := range popularTags {
-			blog.PopularTags = append(blog.PopularTags, &models.PublicTag{
+			blog.Attributes.PopularTags = append(blog.Attributes.PopularTags, &models.PublicTag{
 				Link:  "/tags/" + tag.Link,
 				Title: tag.Title,
 			})
 		}
 		// prevent nil panic
-		blog.Tags = make([]*models.PublicTag, 0)
+		blog.Attributes.Tags = make([]*models.PublicTag, 0)
 		for _, tag := range tags {
-			blog.Tags = append(blog.Tags, &models.PublicTag{
+			blog.Attributes.Tags = append(blog.Attributes.Tags, &models.PublicTag{
 				Link:  "/tags/" + tag.Link,
 				Title: tag.Title,
 			})
 		}
 
-		blog.Image = &models.PublicFile{
+		blog.Attributes.Image = &models.PublicFile{
 			Attributes: image.Attributes,
 			ID:         image.ID,
 		}
-		blog.Image1 = &models.PublicFile{
+		blog.Attributes.Image1 = &models.PublicFile{
 			Attributes: image1.Attributes,
 			ID:         image1.ID,
 		}
-		blog.Image2 = &models.PublicFile{
+		blog.Attributes.Image2 = &models.PublicFile{
 			Attributes: image2.Attributes,
 			ID:         image2.ID,
 		}
-		blog.Image3 = &models.PublicFile{
+		blog.Attributes.Image3 = &models.PublicFile{
 			Attributes: image3.Attributes,
 			ID:         image3.ID,
 		}
-		blog.Author = &models.PublicAuthor{
+		blog.Attributes.Author = &models.PublicAuthor{
 			Attributes: author.Attributes,
 			ID:         author.ID,
 		}

@@ -15,13 +15,11 @@ import (
 
 // GetFrontendFilesFileURL generates an URL for the get frontend files file operation
 type GetFrontendFilesFileURL struct {
-	Dpr    *float64
-	Format *string
-	W      *float64
-
+	_         struct{}
+	Dpr       *float64
+	Format    *string
+	W         *float64
 	_basePath string
-	// avoid unkeyed usage
-	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the

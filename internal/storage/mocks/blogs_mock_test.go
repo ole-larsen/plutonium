@@ -38,14 +38,14 @@ func TestMockBlogsRepositoryInterface(t *testing.T) {
 	assert.Equal(t, mockBlogs, blogs)
 
 	// Test GetPublicBlogItem method
-	mockPublicBlogItem := &models.PublicBlogItem{ID: 1, Title: "Test Blog"}
+	mockPublicBlogItem := &models.PublicBlogItem{ID: 1, Attributes: &models.PublicBlogItemAttributes{Title: "Test Blog"}}
 	mockRepo.EXPECT().GetPublicBlogItem(context.Background(), "test-blog").Return(mockPublicBlogItem, nil).Times(1)
 	publicBlogItem, err := mockRepo.GetPublicBlogItem(context.Background(), "test-blog")
 	assert.NoError(t, err)
 	assert.Equal(t, mockPublicBlogItem, publicBlogItem)
 
 	// Test GetPublicBlogs method
-	mockPublicBlogs := []*models.PublicBlogItem{{ID: 1, Title: "Test Blog"}}
+	mockPublicBlogs := []*models.PublicBlogItem{{ID: 1, Attributes: &models.PublicBlogItemAttributes{Title: "Test Blog"}}}
 	mockRepo.EXPECT().GetPublicBlogs(context.Background()).Return(mockPublicBlogs, nil).Times(1)
 	publicBlogs, err := mockRepo.GetPublicBlogs(context.Background())
 	assert.NoError(t, err)

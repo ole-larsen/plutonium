@@ -18,67 +18,25 @@ import (
 //
 // swagger:model Blog
 type Blog struct {
-
-	// author id
-	AuthorID int64 `json:"author_id,omitempty"`
-
-	// content
-	Content string `json:"content,omitempty"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// image 1 id
-	Image1ID int64 `json:"image_1_id,omitempty"`
-
-	// image 2 id
-	Image2ID int64 `json:"image_2_id,omitempty"`
-
-	// image 3 id
-	Image3ID int64 `json:"image_3_id,omitempty"`
-
-	// image id
-	ImageID int64 `json:"image_id,omitempty"`
-
-	// order by
-	OrderBy int64 `json:"order_by,omitempty"`
-
-	// public date
-	// Format: date
-	PublicDate strfmt.Date `json:"public_date,omitempty"`
-
-	// slug
-	Slug string `json:"slug,omitempty"`
-
-	// tag id
-	TagID []int64 `json:"tag_id"`
-
-	// title
-	Title string `json:"title,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	PublicDate  strfmt.Date `json:"public_date,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Content     string      `json:"content,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Title       string      `json:"title,omitempty"`
+	Slug        string      `json:"slug,omitempty"`
+	TagID       []int64     `json:"tag_id"`
+	Image1ID    int64       `json:"image_1_id,omitempty"`
+	Image3ID    int64       `json:"image_3_id,omitempty"`
+	ImageID     int64       `json:"image_id,omitempty"`
+	OrderBy     int64       `json:"order_by,omitempty"`
+	Image2ID    int64       `json:"image_2_id,omitempty"`
+	AuthorID    int64       `json:"author_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this blog

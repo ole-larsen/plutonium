@@ -612,6 +612,13 @@ func TestDBStorage_ConnectRepository(t *testing.T) {
 		DSN: "user=postgres password=secret dbname=testdb sslmode=disable",
 	}
 
+	// Test case 2: Successful connection with a valid sqlxDB
+	mockDB, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer mockDB.Close()
+
+	sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+
 	for _, name := range []string{
 		"users",
 		"contracts",
@@ -631,7 +638,6 @@ func TestDBStorage_ConnectRepository(t *testing.T) {
 		"create-and-sell",
 	} {
 		// Test case 1: Nil DBStorage
-
 		nilStorage := mocks.NewMockDBStorageInterface(ctrl)
 		nilStorage.EXPECT().ConnectRepository(name, gomock.Any()).Return(errors.New("[storage]: DBStorage is nil"))
 		err := nilStorage.ConnectRepository(name, nil)
@@ -641,13 +647,6 @@ func TestDBStorage_ConnectRepository(t *testing.T) {
 		// Setup mock database and expectations
 		store := mocks.NewMockDBStorageInterface(ctrl)
 		store.EXPECT().ConnectRepository(name, gomock.Any()).Return(nil)
-
-		// Test case 2: Successful connection with a valid sqlxDB
-		mockDB, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer mockDB.Close()
-
-		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
 
 		err = store.ConnectRepository(name, sqlxDB)
 		assert.NoError(t, err, "ConnectRepository(`"+name+"`) should not return an error for successful connection")
@@ -662,7 +661,6 @@ func TestDBStorage_ConnectRepository(t *testing.T) {
 		err = mock.ExpectationsWereMet()
 		assert.NoError(t, err, "All expectations should be met")
 	}
-
 }
 
 func TestSetupStorage_InitFailure(t *testing.T) {

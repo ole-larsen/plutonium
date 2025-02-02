@@ -20,9 +20,9 @@ import (
 
 // MockCreateAndSellRepositoryInterface is a mock of CreateAndSellRepositoryInterface interface.
 type MockCreateAndSellRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockCreateAndSellRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockCreateAndSellRepositoryInterfaceMockRecorder is the mock recorder for MockCreateAndSellRepositoryInterface.

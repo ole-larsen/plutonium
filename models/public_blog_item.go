@@ -7,12 +7,10 @@ package models
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // PublicBlogItem public blog item
@@ -20,92 +18,18 @@ import (
 // swagger:model PublicBlogItem
 type PublicBlogItem struct {
 
-	// author
-	Author *PublicAuthor `json:"author,omitempty"`
-
-	// content
-	Content string `json:"content,omitempty"`
-
-	// date
-	// Format: date
-	Date strfmt.Date `json:"date,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// description1
-	Description1 string `json:"description1,omitempty"`
-
-	// description2
-	Description2 string `json:"description2,omitempty"`
-
-	// description3
-	Description3 string `json:"description3,omitempty"`
+	// attributes
+	Attributes *PublicBlogItemAttributes `json:"attributes,omitempty"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
-
-	// image
-	Image *PublicFile `json:"image,omitempty"`
-
-	// image1
-	Image1 *PublicFile `json:"image1,omitempty"`
-
-	// image2
-	Image2 *PublicFile `json:"image2,omitempty"`
-
-	// image3
-	Image3 *PublicFile `json:"image3,omitempty"`
-
-	// link
-	Link string `json:"link,omitempty"`
-
-	// order by
-	OrderBy int64 `json:"orderBy,omitempty"`
-
-	// popular tags
-	PopularTags []*PublicTag `json:"popularTags"`
-
-	// tags
-	Tags []*PublicTag `json:"tags"`
-
-	// title
-	Title string `json:"title,omitempty"`
 }
 
 // Validate validates this public blog item
 func (m *PublicBlogItem) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateAuthor(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateDate(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateImage(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateImage1(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateImage2(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateImage3(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePopularTags(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateTags(formats); err != nil {
+	if err := m.validateAttributes(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -115,160 +39,20 @@ func (m *PublicBlogItem) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PublicBlogItem) validateAuthor(formats strfmt.Registry) error {
-	if swag.IsZero(m.Author) { // not required
+func (m *PublicBlogItem) validateAttributes(formats strfmt.Registry) error {
+	if swag.IsZero(m.Attributes) { // not required
 		return nil
 	}
 
-	if m.Author != nil {
-		if err := m.Author.Validate(formats); err != nil {
+	if m.Attributes != nil {
+		if err := m.Attributes.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("author")
+				return ve.ValidateName("attributes")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("author")
+				return ce.ValidateName("attributes")
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateDate(formats strfmt.Registry) error {
-	if swag.IsZero(m.Date) { // not required
-		return nil
-	}
-
-	if err := validate.FormatOf("date", "body", "date", m.Date.String(), formats); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateImage(formats strfmt.Registry) error {
-	if swag.IsZero(m.Image) { // not required
-		return nil
-	}
-
-	if m.Image != nil {
-		if err := m.Image.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateImage1(formats strfmt.Registry) error {
-	if swag.IsZero(m.Image1) { // not required
-		return nil
-	}
-
-	if m.Image1 != nil {
-		if err := m.Image1.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image1")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image1")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateImage2(formats strfmt.Registry) error {
-	if swag.IsZero(m.Image2) { // not required
-		return nil
-	}
-
-	if m.Image2 != nil {
-		if err := m.Image2.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image2")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image2")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateImage3(formats strfmt.Registry) error {
-	if swag.IsZero(m.Image3) { // not required
-		return nil
-	}
-
-	if m.Image3 != nil {
-		if err := m.Image3.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image3")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image3")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validatePopularTags(formats strfmt.Registry) error {
-	if swag.IsZero(m.PopularTags) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.PopularTags); i++ {
-		if swag.IsZero(m.PopularTags[i]) { // not required
-			continue
-		}
-
-		if m.PopularTags[i] != nil {
-			if err := m.PopularTags[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("popularTags" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("popularTags" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) validateTags(formats strfmt.Registry) error {
-	if swag.IsZero(m.Tags) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Tags); i++ {
-		if swag.IsZero(m.Tags[i]) { // not required
-			continue
-		}
-
-		if m.Tags[i] != nil {
-			if err := m.Tags[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil
@@ -278,31 +62,7 @@ func (m *PublicBlogItem) validateTags(formats strfmt.Registry) error {
 func (m *PublicBlogItem) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateAuthor(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateImage(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateImage1(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateImage2(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateImage3(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidatePopularTags(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateTags(ctx, formats); err != nil {
+	if err := m.contextValidateAttributes(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -312,156 +72,22 @@ func (m *PublicBlogItem) ContextValidate(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *PublicBlogItem) contextValidateAuthor(ctx context.Context, formats strfmt.Registry) error {
+func (m *PublicBlogItem) contextValidateAttributes(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Author != nil {
+	if m.Attributes != nil {
 
-		if swag.IsZero(m.Author) { // not required
+		if swag.IsZero(m.Attributes) { // not required
 			return nil
 		}
 
-		if err := m.Author.ContextValidate(ctx, formats); err != nil {
+		if err := m.Attributes.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("author")
+				return ve.ValidateName("attributes")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("author")
+				return ce.ValidateName("attributes")
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidateImage(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Image != nil {
-
-		if swag.IsZero(m.Image) { // not required
-			return nil
-		}
-
-		if err := m.Image.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidateImage1(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Image1 != nil {
-
-		if swag.IsZero(m.Image1) { // not required
-			return nil
-		}
-
-		if err := m.Image1.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image1")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image1")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidateImage2(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Image2 != nil {
-
-		if swag.IsZero(m.Image2) { // not required
-			return nil
-		}
-
-		if err := m.Image2.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image2")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image2")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidateImage3(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Image3 != nil {
-
-		if swag.IsZero(m.Image3) { // not required
-			return nil
-		}
-
-		if err := m.Image3.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("image3")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("image3")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidatePopularTags(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.PopularTags); i++ {
-
-		if m.PopularTags[i] != nil {
-
-			if swag.IsZero(m.PopularTags[i]) { // not required
-				return nil
-			}
-
-			if err := m.PopularTags[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("popularTags" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("popularTags" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *PublicBlogItem) contextValidateTags(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Tags); i++ {
-
-		if m.Tags[i] != nil {
-
-			if swag.IsZero(m.Tags[i]) { // not required
-				return nil
-			}
-
-			if err := m.Tags[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("tags" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("tags" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil

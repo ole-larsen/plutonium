@@ -765,7 +765,7 @@ definitions:
         type: string
       description:
         type: string
-      image:
+      image_url:
         type: string
       external_url:
         type: string
@@ -786,7 +786,7 @@ definitions:
         type: string
       description:
         type: string
-      image:
+      image_url:
         type: string
       external_url:
         type: string
@@ -930,29 +930,32 @@ definitions:
       id:
         type: integer
         format: bigInt
-      uuid:
-        type: string
-      username:
-        type: string
-      email:
-        type: string
-      gravatar:
-        type: string
-      token:
-        type: string
-      address:
-        type: string
-      nonce:
-        type: string
-      wallpaperId:
-        type: integer
-        format: bigInt
-      wallpaper:
-        type: string
-      funds:
-        type: string
-      created:
-        type: string
+      attributes:
+        type: object
+        properties:
+          uuid:
+            type: string
+          username:
+            type: string
+          email:
+            type: string
+          gravatar:
+            type: string
+          token:
+            type: string
+          address:
+            type: string
+          nonce:
+            type: string
+          wallpaperId:
+            type: integer
+            format: bigInt
+          wallpaper:
+            $ref: '#/definitions/PublicFile'
+          funds:
+            type: string
+          created:
+            type: string
   PublicFile:
     properties:
       id:
@@ -1016,7 +1019,7 @@ definitions:
       attributes:
         type: object
         properties:
-          slidesItem:
+          sliderItems:
             type: array
             items:
               $ref: '#/definitions/PublicSliderItem'
@@ -1281,16 +1284,30 @@ definitions:
       id:
         type: integer
         format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicFaqItemAttributes'
+  PublicFaqItemAttributes:
+    type: object
+    properties:
       question:
         type: string
       answer:
         type: string
+  PublicHelpCenter:
+    type: object
   PublicHelpCenterItem:
     type: object
     properties:
       id:
         type: integer
         format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicHelpCenterItemAttributes'
+  PublicHelpCenterItemAttributes:
+    type: object
+    properties:
       title:
         type: string
       link:
@@ -1305,6 +1322,12 @@ definitions:
       id:
         type: integer
         format: bigInt
+      attributes:
+        type: object
+        $ref: '#/definitions/PublicBlogItemAttributes'
+  PublicBlogItemAttributes:
+    type: object
+    properties:
       orderBy:
         type: integer
         format: bigInt

@@ -18,30 +18,14 @@ import (
 //
 // swagger:model MarketplaceCollectibleMetadata
 type MarketplaceCollectibleMetadata struct {
-
-	// animation url
-	AnimationURL string `json:"animation_url,omitempty"`
-
-	// attributes
-	Attributes []*MetadataAttributes `json:"attributes"`
-
-	// background color
-	BackgroundColor string `json:"background_color,omitempty"`
-
-	// description
-	Description string `json:"description,omitempty"`
-
-	// external url
-	ExternalURL string `json:"external_url,omitempty"`
-
-	// image
-	Image string `json:"image,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
-
-	// youtube url
-	YoutubeURL string `json:"youtube_url,omitempty"`
+	AnimationURL    string                `json:"animation_url,omitempty"`
+	BackgroundColor string                `json:"background_color,omitempty"`
+	Description     string                `json:"description,omitempty"`
+	ExternalURL     string                `json:"external_url,omitempty"`
+	ImageURL        string                `json:"image_url,omitempty"`
+	Name            string                `json:"name,omitempty"`
+	YoutubeURL      string                `json:"youtube_url,omitempty"`
+	Attributes      []*MetadataAttributes `json:"attributes"`
 }
 
 // Validate validates this marketplace collectible metadata

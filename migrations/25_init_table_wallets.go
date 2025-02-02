@@ -9,6 +9,7 @@ import (
 func init() {
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		fmt.Println("creating table wallets")
+
 		_, err := db.Exec(`
 CREATE TABLE IF NOT EXISTS wallets (
 	id                     SERIAL PRIMARY KEY,
@@ -30,10 +31,13 @@ ALTER TABLE wallets ADD CONSTRAINT wallets_created_by_id_foreign
 ALTER TABLE wallets ADD CONSTRAINT wallets_updated_by_id_foreign
 	FOREIGN KEY (updated_by_id) REFERENCES users(id);
 		`)
+
 		return err
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping wallets")
+
 		_, err := db.Exec(`DROP TABLE IF EXISTS wallets`)
+
 		return err
 	})
 }

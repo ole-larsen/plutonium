@@ -26,6 +26,7 @@ type ContactFormRepositoryInterface interface {
 	InnerDB() *sqlx.DB
 	Ping() error
 	Create(ctx context.Context, contactFormMap map[string]interface{}) error
+	CreateSubscribe(ctx context.Context, contactFormMap map[string]interface{}) error
 }
 
 // ContactFormRepository - repository to store users.
@@ -69,6 +70,19 @@ func (r *ContactFormRepository) Create(ctx context.Context, contactFormMap map[s
 	_, err := r.DB.NamedExecContext(ctx, `
 		INSERT INTO contacts_forms (provider, page_id, name, email, subject, message)
 		VALUES (:provider, :page_id, :name, :email, :subject, :message)
+		ON CONFLICT DO NOTHING`, contactFormMap)
+
+	return err
+}
+
+func (r *ContactFormRepository) CreateSubscribe(ctx context.Context, contactFormMap map[string]interface{}) error {
+	if r == nil {
+		return ErrDBNotInitialized
+	}
+
+	_, err := r.DB.NamedExecContext(ctx, `
+		INSERT INTO subscribe_forms (provider, email)
+		VALUES (:provider, :email)
 		ON CONFLICT DO NOTHING`, contactFormMap)
 
 	return err

@@ -97,6 +97,7 @@ func TestNewTagsRepository(t *testing.T) {
 	defer db.Close()
 
 	tbl := "tags"
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

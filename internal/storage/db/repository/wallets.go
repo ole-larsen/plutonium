@@ -13,17 +13,17 @@ import (
 )
 
 type Wallet struct {
-	ID          int64       `db:"id"`
-	Title       string      `db:"title"`
-	Description string      `db:"description"`
-	ImageID     int64       `db:"image_id"`
-	Enabled     bool        `db:"enabled"`
-	OrderBy     int64       `db:"order_by"`
-	CreatedBy   int64       `db:"created_by"`
-	UpdatedBy   int64       `db:"updated_by"`
 	Created     strfmt.Date `db:"created"`
 	Updated     strfmt.Date `db:"updated"`
 	Deleted     strfmt.Date `db:"deleted"`
+	Title       string      `db:"title"`
+	Description string      `db:"description"`
+	ID          int64       `db:"id"`
+	ImageID     int64       `db:"image_id"`
+	OrderBy     int64       `db:"order_by"`
+	CreatedBy   int64       `db:"created_by"`
+	UpdatedBy   int64       `db:"updated_by"`
+	Enabled     bool        `db:"enabled"`
 }
 
 type WalletsRepositoryInterface interface {
@@ -73,10 +73,12 @@ func (r *WalletsRepository) Create(ctx context.Context, walletMap map[string]int
 	if r == nil {
 		return ErrDBNotInitialized
 	}
+
 	_, err := r.DB.NamedExecContext(ctx, `
 INSERT INTO wallets (title, description, image_id, enabled, order_by, created_by_id, updated_by_id)
 VALUES (:title, :description, :image_id, :enabled, :order_by, :created_by_id, :updated_by_id)
 ON CONFLICT DO NOTHING`, walletMap)
+
 	return err
 }
 
@@ -96,6 +98,7 @@ UPDATE wallets SET
 	if err != nil {
 		return nil, err
 	}
+
 	return r.GetWallets(ctx)
 }
 
@@ -103,6 +106,7 @@ func (r *WalletsRepository) GetWallets(ctx context.Context) ([]*models.WalletCon
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		wallets  []*models.WalletConnect
@@ -113,8 +117,10 @@ func (r *WalletsRepository) GetWallets(ctx context.Context) ([]*models.WalletCon
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var wallet Wallet
+
 		err = rows.Scan(&wallet.ID, &wallet.Title, &wallet.Description,
 			&wallet.ImageID, &wallet.Enabled, &wallet.OrderBy, &wallet.CreatedBy, &wallet.UpdatedBy)
 		if err != nil {
@@ -132,6 +138,7 @@ func (r *WalletsRepository) GetWallets(ctx context.Context) ([]*models.WalletCon
 			UpdatedByID: wallet.UpdatedBy,
 		})
 	}
+
 	defer rows.Close()
 
 	return wallets, multierr.ErrorOrNil()
@@ -141,17 +148,21 @@ func (r *WalletsRepository) GetWalletByID(ctx context.Context, id int64) (*model
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var wallet Wallet
 
 	sqlStatement := `SELECT id, title, description, image_id, enabled, order_by, created_by_id, updated_by_id from wallets where id=$1;`
+
 	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
 	if err := row.Scan(&wallet.ID, &wallet.Title, &wallet.Description,
 		&wallet.ImageID, &wallet.Enabled, &wallet.OrderBy, &wallet.CreatedBy, &wallet.UpdatedBy); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("wallet not found")
 		}
+
 		return nil, NewError(err)
 	}
+
 	return &models.WalletConnect{
 		ID:          wallet.ID,
 		Title:       wallet.Title,
@@ -168,6 +179,7 @@ func (r *WalletsRepository) GetPublicWalletConnect(ctx context.Context) ([]*mode
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		wallets  []*models.PublicWalletConnectItem
@@ -197,13 +209,17 @@ func (r *WalletsRepository) GetPublicWalletConnect(ctx context.Context) ([]*mode
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var wallet Wallet
+
 		var image AggregatedImageJSON
+
 		err = rows.Scan(&wallet.Title, &wallet.Description, &image)
 		if err != nil {
 			return nil, err
 		}
+
 		wallets = append(wallets, &models.PublicWalletConnectItem{
 			ID: wallet.ID,
 			Attributes: &models.PublicWalletConnectItemAttributes{
@@ -216,6 +232,7 @@ func (r *WalletsRepository) GetPublicWalletConnect(ctx context.Context) ([]*mode
 			},
 		})
 	}
+
 	defer rows.Close()
 
 	return wallets, multierr.ErrorOrNil()

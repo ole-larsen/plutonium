@@ -117,15 +117,15 @@ func (m *PublicSlider) UnmarshalBinary(b []byte) error {
 // swagger:model PublicSliderAttributes
 type PublicSliderAttributes struct {
 
-	// slides item
-	SlidesItem []*PublicSliderItem `json:"slidesItem"`
+	// slider items
+	SliderItems []*PublicSliderItem `json:"sliderItems"`
 }
 
 // Validate validates this public slider attributes
 func (m *PublicSliderAttributes) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateSlidesItem(formats); err != nil {
+	if err := m.validateSliderItems(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -135,22 +135,22 @@ func (m *PublicSliderAttributes) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *PublicSliderAttributes) validateSlidesItem(formats strfmt.Registry) error {
-	if swag.IsZero(m.SlidesItem) { // not required
+func (m *PublicSliderAttributes) validateSliderItems(formats strfmt.Registry) error {
+	if swag.IsZero(m.SliderItems) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.SlidesItem); i++ {
-		if swag.IsZero(m.SlidesItem[i]) { // not required
+	for i := 0; i < len(m.SliderItems); i++ {
+		if swag.IsZero(m.SliderItems[i]) { // not required
 			continue
 		}
 
-		if m.SlidesItem[i] != nil {
-			if err := m.SlidesItem[i].Validate(formats); err != nil {
+		if m.SliderItems[i] != nil {
+			if err := m.SliderItems[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("attributes" + "." + "slidesItem" + "." + strconv.Itoa(i))
+					return ve.ValidateName("attributes" + "." + "sliderItems" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("attributes" + "." + "slidesItem" + "." + strconv.Itoa(i))
+					return ce.ValidateName("attributes" + "." + "sliderItems" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -165,7 +165,7 @@ func (m *PublicSliderAttributes) validateSlidesItem(formats strfmt.Registry) err
 func (m *PublicSliderAttributes) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateSlidesItem(ctx, formats); err != nil {
+	if err := m.contextValidateSliderItems(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -175,21 +175,21 @@ func (m *PublicSliderAttributes) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *PublicSliderAttributes) contextValidateSlidesItem(ctx context.Context, formats strfmt.Registry) error {
+func (m *PublicSliderAttributes) contextValidateSliderItems(ctx context.Context, formats strfmt.Registry) error {
 
-	for i := 0; i < len(m.SlidesItem); i++ {
+	for i := 0; i < len(m.SliderItems); i++ {
 
-		if m.SlidesItem[i] != nil {
+		if m.SliderItems[i] != nil {
 
-			if swag.IsZero(m.SlidesItem[i]) { // not required
+			if swag.IsZero(m.SliderItems[i]) { // not required
 				return nil
 			}
 
-			if err := m.SlidesItem[i].ContextValidate(ctx, formats); err != nil {
+			if err := m.SliderItems[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("attributes" + "." + "slidesItem" + "." + strconv.Itoa(i))
+					return ve.ValidateName("attributes" + "." + "sliderItems" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("attributes" + "." + "slidesItem" + "." + strconv.Itoa(i))
+					return ce.ValidateName("attributes" + "." + "sliderItems" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

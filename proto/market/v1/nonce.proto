@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "google/protobuf/empty.proto";
+  
+message Nonce {
+  string address = 1;
+  string nonce = 2;
+  string uuid = 3; 
+}
+
+message NonceResponse {
+  oneof response {
+    Nonce data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}
+
+message NonceRequest {
+    string address = 1;
+}

@@ -3,28 +3,28 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/go-multierror"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"github.com/ole-larsen/plutonium/models"
 )
 
 type CreateAndSell struct {
-	ID          int64       `db:"id"`
-	Title       string      `db:"title"`
-	Description string      `db:"description"`
-	Link        string      `db:"link"`
-	ImageID     int64       `db:"image_id"`
-	Enabled     bool        `db:"enabled"`
-	OrderBy     int64       `db:"order_by"`
-	CreatedBy   int64       `db:"created_by"`
-	UpdatedBy   int64       `db:"updated_by"`
 	Created     strfmt.Date `db:"created"`
 	Updated     strfmt.Date `db:"updated"`
 	Deleted     strfmt.Date `db:"deleted"`
+	Title       string      `db:"title"`
+	Description string      `db:"description"`
+	Link        string      `db:"link"`
+	ID          int64       `db:"id"`
+	ImageID     int64       `db:"image_id"`
+	OrderBy     int64       `db:"order_by"`
+	CreatedBy   int64       `db:"created_by"`
+	UpdatedBy   int64       `db:"updated_by"`
+	Enabled     bool        `db:"enabled"`
 }
 
 type CreateAndSellRepositoryInterface interface {
@@ -79,6 +79,7 @@ func (r *CreateAndSellRepository) Create(ctx context.Context, createAndSellMap m
 INSERT INTO create_and_sell (title, description, image_id, link, enabled, order_by, created_by_id, updated_by_id)
 VALUES (:title, :description, :image_id, :link, :enabled, :order_by, :created_by_id, :updated_by_id)
 ON CONFLICT DO NOTHING`, createAndSellMap)
+
 	return err
 }
 
@@ -86,6 +87,7 @@ func (r *CreateAndSellRepository) Update(ctx context.Context, createAndSellMap m
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	_, err := r.DB.NamedExecContext(ctx,
 		`UPDATE create_and_sell SET
 	title=:title,
@@ -98,6 +100,7 @@ func (r *CreateAndSellRepository) Update(ctx context.Context, createAndSellMap m
 	if err != nil {
 		return nil, err
 	}
+
 	return r.GetCreateAndSell(ctx)
 }
 
@@ -105,9 +108,9 @@ func (r *CreateAndSellRepository) GetCreateAndSell(ctx context.Context) ([]*mode
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
-		multierr multierror.Error
-		items    []*models.CreateAndSell
+		items []*models.CreateAndSell
 	)
 
 	rows, err := r.DB.QueryxContext(ctx,
@@ -126,6 +129,7 @@ func (r *CreateAndSellRepository) GetCreateAndSell(ctx context.Context) ([]*mode
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var item CreateAndSell
 		err = rows.Scan(
@@ -143,6 +147,7 @@ func (r *CreateAndSellRepository) GetCreateAndSell(ctx context.Context) ([]*mode
 		if err != nil {
 			return nil, err
 		}
+
 		items = append(items, &models.CreateAndSell{
 			ID:          item.ID,
 			Title:       item.Title,
@@ -155,16 +160,19 @@ func (r *CreateAndSellRepository) GetCreateAndSell(ctx context.Context) ([]*mode
 			UpdatedByID: item.UpdatedBy,
 		})
 	}
+
 	defer rows.Close()
 
-	return items, multierr.ErrorOrNil()
+	return items, nil
 }
 
 func (r *CreateAndSellRepository) GetCreateAndSellByID(ctx context.Context, id int64) (*models.CreateAndSell, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var item CreateAndSell
+
 	sqlStatement :=
 		`SELECT 
 	c.id, 
@@ -177,33 +185,34 @@ func (r *CreateAndSellRepository) GetCreateAndSellByID(ctx context.Context, id i
 	c.created_by_id, 
 	c.updated_by_id
 FROM create_and_sell c where c.id=$1;`
-	row := r.DB.QueryRow(sqlStatement, id)
-	err := row.Scan(&item.ID, &item.Title, &item.Description, &item.Link, &item.ImageID,
-		&item.Enabled, &item.OrderBy, &item.CreatedBy, &item.UpdatedBy)
-	switch err {
-	case sql.ErrNoRows:
-		return nil, fmt.Errorf("create_and_sell not found")
-	case nil:
+	row := r.DB.QueryRowContext(ctx, sqlStatement, id)
 
-		return &models.CreateAndSell{
-			ID:          item.ID,
-			Title:       item.Title,
-			Description: item.Description,
-			ImageID:     item.ImageID,
-			OrderBy:     item.OrderBy,
-			Enabled:     item.Enabled,
-			CreatedByID: item.CreatedBy,
-			UpdatedByID: item.UpdatedBy,
-		}, err
-	default:
-		return nil, err
+	if err := row.Scan(&item.ID, &item.Title, &item.Description, &item.Link, &item.ImageID,
+		&item.Enabled, &item.OrderBy, &item.CreatedBy, &item.UpdatedBy); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("create_and_sell not found")
+		}
+
+		return nil, NewError(err)
 	}
+
+	return &models.CreateAndSell{
+		ID:          item.ID,
+		Title:       item.Title,
+		Description: item.Description,
+		ImageID:     item.ImageID,
+		OrderBy:     item.OrderBy,
+		Enabled:     item.Enabled,
+		CreatedByID: item.CreatedBy,
+		UpdatedByID: item.UpdatedBy,
+	}, nil
 }
 
 func (r *CreateAndSellRepository) GetPublicCreateAndSell(ctx context.Context) ([]*models.PublicCreateAndSellItem, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
+
 	var (
 		multierr multierror.Error
 		items    []*models.PublicCreateAndSellItem
@@ -230,12 +239,14 @@ SELECT c.id,
 		) FROM files f WHERE f.id = c.image_id) as image
 FROM create_and_sell c
 WHERE 
-	c.enabled = true AND c.deleted_at isNULL  GROUP BY c.id ORDER BY c.order_by ASC;`)
+	c.enabled = true AND c.deleted isNULL  GROUP BY c.id ORDER BY c.order_by ASC;`)
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		var item CreateAndSell
+
 		var image AggregatedImageJSON
 
 		err = rows.Scan(&item.ID, &item.Title, &item.Description, &item.Link, &image)
@@ -256,6 +267,7 @@ WHERE
 			},
 		})
 	}
+
 	defer rows.Close()
 
 	return items, multierr.ErrorOrNil()

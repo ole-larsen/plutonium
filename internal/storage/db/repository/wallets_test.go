@@ -78,7 +78,6 @@ func TestWalletsRepository_InnerDB(t *testing.T) {
 }
 
 func TestCreateWallet(t *testing.T) {
-
 	// Setup mock DB
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
@@ -104,6 +103,7 @@ func TestCreateWallet(t *testing.T) {
 
 	// Test case: repo is nil
 	ctx := context.Background()
+
 	var nilRepo *repository.WalletsRepository
 	err = nilRepo.Create(ctx, map[string]interface{}{
 		"title":         "Test Wallet",
@@ -205,6 +205,7 @@ func TestUpdateWallet(t *testing.T) {
 
 	// Test case: repo is nil
 	ctx := context.Background()
+
 	var nilRepo *repository.WalletsRepository
 	res, err := nilRepo.Update(ctx, map[string]interface{}{
 		"id":            int64(1),
@@ -243,6 +244,7 @@ func TestGetWallets(t *testing.T) {
 
 	// Test case: repo is nil
 	ctx := context.Background()
+
 	var nilRepo *repository.WalletsRepository
 	res, err := nilRepo.GetWallets(ctx)
 	assert.Error(t, err, "GetWallets() on nil repository should return error")
@@ -314,6 +316,7 @@ func TestGetWalletByID(t *testing.T) {
 
 	// Test case: repo is nil
 	ctx := context.Background()
+
 	var nilRepo *repository.WalletsRepository
 	res, err := nilRepo.GetWalletByID(ctx, 1)
 	assert.Error(t, err, "GetWalletByID() on nil repository should return error")
@@ -427,12 +430,12 @@ func TestGetPublicWalletConnect(t *testing.T) {
 
 	// Test case: repo is nil
 	ctx := context.Background()
+
 	var nilRepo *repository.WalletsRepository
 	res, err := nilRepo.GetPublicWalletConnect(ctx)
 	assert.Error(t, err, "GetPublicWalletConnect() on nil repository should return error")
 	assert.Nil(t, res)
 	assert.Equal(t, repository.ErrDBNotInitialized, err, "GetPublicWalletConnect() should return ErrDBNotInitialized")
-
 }
 
 func TestGetPublicWalletConnect_QueryError(t *testing.T) {

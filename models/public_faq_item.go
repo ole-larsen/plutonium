@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -17,23 +18,78 @@ import (
 // swagger:model PublicFaqItem
 type PublicFaqItem struct {
 
-	// answer
-	Answer string `json:"answer,omitempty"`
+	// attributes
+	Attributes *PublicFaqItemAttributes `json:"attributes,omitempty"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
-
-	// question
-	Question string `json:"question,omitempty"`
 }
 
 // Validate validates this public faq item
 func (m *PublicFaqItem) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateAttributes(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this public faq item based on context it is used
+func (m *PublicFaqItem) validateAttributes(formats strfmt.Registry) error {
+	if swag.IsZero(m.Attributes) { // not required
+		return nil
+	}
+
+	if m.Attributes != nil {
+		if err := m.Attributes.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("attributes")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("attributes")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ContextValidate validate this public faq item based on the context it is used
 func (m *PublicFaqItem) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateAttributes(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *PublicFaqItem) contextValidateAttributes(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Attributes != nil {
+
+		if swag.IsZero(m.Attributes) { // not required
+			return nil
+		}
+
+		if err := m.Attributes.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("attributes")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("attributes")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 

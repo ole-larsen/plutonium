@@ -20,9 +20,9 @@ import (
 
 // MockWalletsRepositoryInterface is a mock of WalletsRepositoryInterface interface.
 type MockWalletsRepositoryInterface struct {
+	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockWalletsRepositoryInterfaceMockRecorder
-	isgomock struct{}
 }
 
 // MockWalletsRepositoryInterfaceMockRecorder is the mock recorder for MockWalletsRepositoryInterface.

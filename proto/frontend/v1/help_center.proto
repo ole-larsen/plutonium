@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "google/protobuf/empty.proto";
+import "frontend/v1/file.proto";
+
+message PublicHelpCenterItem {
+  int64 id = 1;
+  PublicHelpCenterItemAttributes attributes = 2;
+}
+
+message PublicHelpCenterItemAttributes {
+  string title = 1;
+  string link = 2;
+  string description = 3;
+  PublicFile image = 4;
+}
+
+message HelpCenterRequest {
+  string provider = 1;
+}
+
+message SuccessHelpCenter {
+  repeated PublicHelpCenterItem help_center = 1;
+}
+message HelpCenterResponse {
+  oneof response {
+    SuccessHelpCenter data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

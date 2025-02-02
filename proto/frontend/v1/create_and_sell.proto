@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "frontend/v1/file.proto";
+
+message PublicCreateAndSellItem {
+  int64 id = 1;
+  PublicCreateAndSellItemAttributes attributes = 2;
+}
+
+message PublicCreateAndSellItemAttributes {
+  string title = 1;
+  string link = 2;
+  string description = 3;
+  PublicFile image = 4;
+}
+
+message CreateAndSellItemsRequest {
+  string provider = 1;
+}
+
+message CreateAndSellRequest {
+  string provider = 1;
+}

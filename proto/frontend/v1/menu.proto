@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package frontend.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+
+import "google/protobuf/empty.proto";
+
+message PublicMenu {
+  int64 id = 1;  
+  PublicMenuAttributes attributes = 2;                       
+}
+
+message PublicMenuAttributes {
+    string name = 1;              
+    string link = 2;              
+    int64 order_by = 3;
+    repeated PublicMenu items = 4; 
+       
+}
+
+message MenuRequest {
+  string provider = 1;
+}
+
+message MenuResponse {
+  oneof response {
+    PublicMenu data = 1;
+    google.protobuf.Empty error = 2;
+  }
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "market/v1/file.proto";
+import "market/v1/user.proto";
+import "market/v1/collectible.proto";
+
+message MarketplaceCollection {
+  int64 id = 1;
+  MarketplaceCollectionAttributes attributes = 2; 
+}
+
+message MarketplaceCollectionAttributes {
+  int64 category_id = 1;
+
+  string name = 2;
+  string slug = 3;
+  string url = 4;
+  string symbol = 5;
+  string description = 6;
+  string fee = 7;
+  string address = 8;
+  int64 max_items = 9;
+  bool is_approved = 10;
+  bool is_locked = 11;
+  PublicFile logo = 12;
+  PublicFile banner = 13;
+  PublicFile featured = 14;
+  PublicUser creator = 15;
+  PublicUser owner = 16;
+  string created = 17;
+  repeated MarketplaceCollectible collectibles = 18;
+}

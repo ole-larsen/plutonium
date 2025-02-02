@@ -108,7 +108,7 @@ func TestMockSlidersRepositoryInterface_GetSliderByProvider(t *testing.T) {
 	expectedPublicSlider := &models.PublicSlider{
 		ID: 1,
 		Attributes: &models.PublicSliderAttributes{
-			SlidesItem: []*models.PublicSliderItem{},
+			SliderItems: []*models.PublicSliderItem{},
 		},
 	}
 

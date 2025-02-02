@@ -127,106 +127,49 @@ ServiceAPI The Plutonium Service API provides endpoints to support the operation
 This document outlines the API's structure, response formats, and capabilities for integration.
 */
 type ServiceAPI struct {
-	spec            *loads.Document
-	context         *middleware.Context
-	handlers        map[string]map[string]http.Handler
-	formats         strfmt.Registry
-	customConsumers map[string]runtime.Consumer
-	customProducers map[string]runtime.Producer
-	defaultConsumes string
-	defaultProduces string
-	Middleware      func(middleware.Builder) http.Handler
-	useSwaggerUI    bool
-
-	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
-
-	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
-
-	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
-	// It has a default implementation in the security package, however you can replace it for your particular usage.
-	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
-
-	// JSONConsumer registers a consumer for the following mime types:
-	//   - application/json
-	JSONConsumer runtime.Consumer
-
-	// JSONProducer registers a producer for the following mime types:
-	//   - application/json
-	JSONProducer runtime.Producer
-
-	// BearerAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key Authorization provided in the header
-	BearerAuth func(string) (*models.Principal, error)
-
-	// XTokenAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key x-token provided in the header
-	XTokenAuth func(string) (*models.Principal, error)
-
-	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
-	APIAuthorizer runtime.Authorizer
-
-	// AuthGetFrontendAuthCallbackHandler sets the operation handler for the get frontend auth callback operation
-	AuthGetFrontendAuthCallbackHandler auth.GetFrontendAuthCallbackHandler
-	// AuthGetFrontendAuthWalletConnectHandler sets the operation handler for the get frontend auth wallet connect operation
-	AuthGetFrontendAuthWalletConnectHandler auth.GetFrontendAuthWalletConnectHandler
-	// FrontendGetFrontendBlogHandler sets the operation handler for the get frontend blog operation
-	FrontendGetFrontendBlogHandler frontend.GetFrontendBlogHandler
-	// FrontendGetFrontendBlogSlugHandler sets the operation handler for the get frontend blog slug operation
-	FrontendGetFrontendBlogSlugHandler frontend.GetFrontendBlogSlugHandler
-	// FrontendGetFrontendCategoriesHandler sets the operation handler for the get frontend categories operation
-	FrontendGetFrontendCategoriesHandler frontend.GetFrontendCategoriesHandler
-	// FrontendGetFrontendContactHandler sets the operation handler for the get frontend contact operation
-	FrontendGetFrontendContactHandler frontend.GetFrontendContactHandler
-	// FrontendGetFrontendContractsHandler sets the operation handler for the get frontend contracts operation
-	FrontendGetFrontendContractsHandler frontend.GetFrontendContractsHandler
-	// FrontendGetFrontendCreateAndSellHandler sets the operation handler for the get frontend create and sell operation
-	FrontendGetFrontendCreateAndSellHandler frontend.GetFrontendCreateAndSellHandler
-	// FrontendGetFrontendFaqHandler sets the operation handler for the get frontend faq operation
-	FrontendGetFrontendFaqHandler frontend.GetFrontendFaqHandler
-	// FrontendGetFrontendFilesFileHandler sets the operation handler for the get frontend files file operation
-	FrontendGetFrontendFilesFileHandler frontend.GetFrontendFilesFileHandler
-	// FrontendGetFrontendHelpCenterHandler sets the operation handler for the get frontend help center operation
-	FrontendGetFrontendHelpCenterHandler frontend.GetFrontendHelpCenterHandler
-	// FrontendGetFrontendMenuHandler sets the operation handler for the get frontend menu operation
-	FrontendGetFrontendMenuHandler frontend.GetFrontendMenuHandler
-	// FrontendGetFrontendPageSlugHandler sets the operation handler for the get frontend page slug operation
-	FrontendGetFrontendPageSlugHandler frontend.GetFrontendPageSlugHandler
-	// FrontendGetFrontendSliderHandler sets the operation handler for the get frontend slider operation
-	FrontendGetFrontendSliderHandler frontend.GetFrontendSliderHandler
-	// FrontendGetFrontendUsersHandler sets the operation handler for the get frontend users operation
-	FrontendGetFrontendUsersHandler frontend.GetFrontendUsersHandler
-	// FrontendGetFrontendWalletConnectHandler sets the operation handler for the get frontend wallet connect operation
-	FrontendGetFrontendWalletConnectHandler frontend.GetFrontendWalletConnectHandler
-	// MonitoringGetMetricsHandler sets the operation handler for the get metrics operation
-	MonitoringGetMetricsHandler monitoring.GetMetricsHandler
-	// PublicGetPingHandler sets the operation handler for the get ping operation
-	PublicGetPingHandler public.GetPingHandler
-	// AuthPostFrontendAuthWalletConnectHandler sets the operation handler for the post frontend auth wallet connect operation
+	FrontendGetFrontendPageSlugHandler       frontend.GetFrontendPageSlugHandler
+	FrontendGetFrontendSliderHandler         frontend.GetFrontendSliderHandler
+	FrontendGetFrontendBlogHandler           frontend.GetFrontendBlogHandler
+	FrontendGetFrontendBlogSlugHandler       frontend.GetFrontendBlogSlugHandler
+	FrontendPostFrontendContactFormHandler   frontend.PostFrontendContactFormHandler
 	AuthPostFrontendAuthWalletConnectHandler auth.PostFrontendAuthWalletConnectHandler
-	// FrontendPostFrontendContactFormHandler sets the operation handler for the post frontend contact form operation
-	FrontendPostFrontendContactFormHandler frontend.PostFrontendContactFormHandler
-
-	// ServeError is called when an error is received, there is a default handler
-	// but you can set your own with this
-	ServeError func(http.ResponseWriter, *http.Request, error)
-
-	// PreServerShutdown is called before the HTTP(S) server is shutdown
-	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
-	PreServerShutdown func()
-
-	// ServerShutdown is called when the HTTP(S) server is shut down and done
-	// handling all active connections and does not accept connections any more
-	ServerShutdown func()
-
-	// Custom command line argument groups with their descriptions
-	CommandLineOptionsGroups []swag.CommandLineOptionsGroup
-
-	// User defined logger function.
-	Logger func(string, ...interface{})
+	PublicGetPingHandler                     public.GetPingHandler
+	MonitoringGetMetricsHandler              monitoring.GetMetricsHandler
+	FrontendGetFrontendWalletConnectHandler  frontend.GetFrontendWalletConnectHandler
+	FrontendGetFrontendUsersHandler          frontend.GetFrontendUsersHandler
+	FrontendGetFrontendMenuHandler           frontend.GetFrontendMenuHandler
+	FrontendGetFrontendHelpCenterHandler     frontend.GetFrontendHelpCenterHandler
+	FrontendGetFrontendFilesFileHandler      frontend.GetFrontendFilesFileHandler
+	JSONConsumer                             runtime.Consumer
+	JSONProducer                             runtime.Producer
+	FrontendGetFrontendCategoriesHandler     frontend.GetFrontendCategoriesHandler
+	FrontendGetFrontendFaqHandler            frontend.GetFrontendFaqHandler
+	APIAuthorizer                            runtime.Authorizer
+	AuthGetFrontendAuthCallbackHandler       auth.GetFrontendAuthCallbackHandler
+	AuthGetFrontendAuthWalletConnectHandler  auth.GetFrontendAuthWalletConnectHandler
+	FrontendGetFrontendCreateAndSellHandler  frontend.GetFrontendCreateAndSellHandler
+	formats                                  strfmt.Registry
+	FrontendGetFrontendContractsHandler      frontend.GetFrontendContractsHandler
+	FrontendGetFrontendContactHandler        frontend.GetFrontendContactHandler
+	ServerShutdown                           func()
+	context                                  *middleware.Context
+	BearerAuth                               func(string) (*models.Principal, error)
+	BearerAuthenticator                      func(string, security.ScopedTokenAuthentication) runtime.Authenticator
+	APIKeyAuthenticator                      func(string, string, security.TokenAuthentication) runtime.Authenticator
+	BasicAuthenticator                       func(security.UserPassAuthentication) runtime.Authenticator
+	Middleware                               func(middleware.Builder) http.Handler
+	Logger                                   func(string, ...interface{})
+	XTokenAuth                               func(string) (*models.Principal, error)
+	spec                                     *loads.Document
+	handlers                                 map[string]map[string]http.Handler
+	PreServerShutdown                        func()
+	customProducers                          map[string]runtime.Producer
+	customConsumers                          map[string]runtime.Consumer
+	ServeError                               func(http.ResponseWriter, *http.Request, error)
+	defaultProduces                          string
+	defaultConsumes                          string
+	CommandLineOptionsGroups                 []swag.CommandLineOptionsGroup
+	useSwaggerUI                             bool
 }
 
 // UseRedoc for documentation at /docs

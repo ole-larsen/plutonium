@@ -44,6 +44,7 @@ func TestAggregatedMenuAttributesJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := attr.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -104,6 +105,7 @@ func TestAggregatedSliderItemJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := sliderItems.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -160,6 +162,7 @@ func TestAggregatedCategoryCollectionsCollectiblesJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := collectibles.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -212,6 +215,7 @@ func TestAggregatedCategoryCollectionsJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := collections.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -253,6 +257,7 @@ func TestAggregatedImageJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := image.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -299,6 +304,7 @@ func TestAggregatedWallet_Value(t *testing.T) {
 	// Test Value method
 	val, err := wallet.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -344,6 +350,7 @@ func TestAggregatedSocial_Value(t *testing.T) {
 	// Test Value method
 	val, err := social.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -388,6 +395,7 @@ func TestAggregatedAuthorJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := author.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -429,6 +437,7 @@ func TestAggregatedAuthorAttributes_Value(t *testing.T) {
 	// Test Value method
 	val, err := authorAttributes.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -471,6 +480,7 @@ func TestAggregatedPageAttributes_Value(t *testing.T) {
 	// Test Value method
 	val, err := pageAttributes.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -513,6 +523,7 @@ func TestAggregatedContactAttributes_Value(t *testing.T) {
 	// Test Value method
 	val, err := contactAttributes.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 
@@ -556,6 +567,7 @@ func TestAggregatedTagJSON_Value(t *testing.T) {
 	// Test Value method
 	val, err := tags.Value()
 	assert.NoError(t, err)
+
 	valBytes, ok := val.([]byte)
 	assert.True(t, ok)
 

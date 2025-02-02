@@ -11,6 +11,7 @@ import (
 	"github.com/ole-larsen/plutonium/internal/hash"
 	"github.com/ole-larsen/plutonium/internal/plutonium"
 	"github.com/ole-larsen/plutonium/internal/plutonium/jwt"
+	"github.com/ole-larsen/plutonium/internal/storage/db/repository"
 	"github.com/ole-larsen/plutonium/models"
 	"github.com/ole-larsen/plutonium/restapi/operations/auth"
 	"github.com/sethvargo/go-password/password"
@@ -32,8 +33,6 @@ type AuthAPI interface {
 	GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, principal *models.Principal) middleware.Responder
 	PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams) middleware.Responder
 	GetOauth2Callback(params auth.GetFrontendAuthCallbackParams) middleware.Responder
-	Register(ctx context.Context, address string) error
-	HandleNonce(ctx context.Context, address string) (*models.Nonce, error)
 	GetAccessToken(email string) (string, error)
 }
 
@@ -61,8 +60,6 @@ func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, _
 
 	address := strings.ToLower(*params.Address)
 
-	operation := *params.Operation
-
 	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, address)
 
 	if err != nil && err.Error() != userNotFoundMsg {
@@ -72,24 +69,22 @@ func (a *API) GetWalletConnect(params auth.GetFrontendAuthWalletConnectParams, _
 		})
 	}
 
-	if operation == "nonce" {
-		// to get payload from current user:
-		// 1. check user exist in database
-		// 2. if request causes error, return auth error
-		// 3. if user exist, return existing payload
-		// 4. If user is not exists, register new one
-		if user == nil {
-			if err = a.Register(ctx, address); err != nil {
-				return auth.NewGetFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
-					Code:    http.StatusInternalServerError,
-					Message: err.Error(),
-				})
-			}
+	// to get payload from current user:
+	// 1. check user exist in database
+	// 2. if request causes error, return auth error
+	// 3. if user exist, return existing payload
+	// 4. If user is not exists, register new one
+	if user == nil {
+		if err = Register(ctx, address, a.service.GetSettings().Secret, a.service.GetStorage().GetUsersRepository()); err != nil {
+			return auth.NewGetFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
 		}
 	}
 
 	// fetch new payload
-	payload, err := a.HandleNonce(ctx, address)
+	payload, err := HandleNonce(ctx, address, a.service.GetStorage().GetUsersRepository())
 
 	if err != nil {
 		return auth.NewGetFrontendAuthWalletConnectInternalServerError().WithPayload(&models.ErrorResponse{
@@ -201,13 +196,13 @@ func (a *API) PostWalletConnect(params auth.PostFrontendAuthWalletConnectParams)
 	})
 }
 
-func (a *API) Register(ctx context.Context, address string) error {
+func Register(ctx context.Context, address, secret string, users *repository.UsersRepository) error {
 	pwd, err := password.Generate(pwdLength, numDigits, numSymbols, false, false)
 	if err != nil {
 		return err
 	}
 
-	hashPwd, err := hashPassword(pwd, a.service.GetSettings().Secret)
+	hashPwd, err := hash.PasswordWithSecret(pwd, secret)
 	if err != nil {
 		return err
 	}
@@ -225,11 +220,11 @@ func (a *API) Register(ctx context.Context, address string) error {
 	length := 16
 	userMap["rsa_secret"] = hash.RandStringBytes(length)
 
-	return a.service.GetStorage().GetUsersRepository().Create(ctx, userMap)
+	return users.Create(ctx, userMap)
 }
 
-func (a *API) HandleNonce(ctx context.Context, address string) (*models.Nonce, error) {
-	user, err := a.service.GetStorage().GetUsersRepository().GetUserByAddress(ctx, address)
+func HandleNonce(ctx context.Context, address string, repo *repository.UsersRepository) (*models.Nonce, error) {
+	user, err := repo.GetUserByAddress(ctx, address)
 
 	if err != nil && err.Error() != userNotFoundMsg {
 		return nil, err
@@ -250,7 +245,10 @@ func (a *API) HandleNonce(ctx context.Context, address string) (*models.Nonce, e
 }
 
 func (a *API) GetAccessToken(email string) (string, error) {
-	credentials, err := a.service.GetHTTPDialer().GetCredentials(email)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	credentials, err := a.service.GetHTTPDialer().GetCredentials(ctx, email)
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
 		return "", err
@@ -266,7 +264,7 @@ func (a *API) GetAccessToken(email string) (string, error) {
 	authURL := a.service.GetOauth2().Client.AuthorizeURL(&config)
 	fmt.Println("Auth URL: ", authURL)
 
-	tkn, err := a.service.GetHTTPDialer().Authorize(authURL)
+	tkn, err := a.service.GetHTTPDialer().Authorize(ctx, authURL)
 	if err != nil {
 		a.service.GetLogger().Errorln(err)
 		return "", err

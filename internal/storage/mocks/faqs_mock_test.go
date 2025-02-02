@@ -22,7 +22,7 @@ func TestMockFaqsRepositoryInterface(t *testing.T) {
 	faq := &models.Faq{ID: faqID, Question: "What is Plutonium?", Answer: "It's a digital marketplace."}
 	faqs := []*models.Faq{faq}
 	faqMap := map[string]interface{}{"id": faqID, "question": "Updated Question", "answer": "Updated Answer"}
-	publicFaqItem := &models.PublicFaqItem{ID: faqID, Question: "What is Plutonium?"}
+	publicFaqItem := &models.PublicFaqItem{ID: faqID, Attributes: &models.PublicFaqItemAttributes{Question: "What is Plutonium?"}}
 	publicFaqs := []*models.PublicFaqItem{publicFaqItem}
 
 	// Test Create

@@ -17,6 +17,34 @@ services:
     networks:
       - dapp-web
     restart: always
+  uploader:
+    image: olelarsen/uploader
+    container_name: uploader
+    environment:
+      PORT: ${UPLOADER_PORT}
+      NODE_ENV: production
+      APP_NAME: uploader
+      SESSION_SECRET: ${SECRET}
+      XTOKEN: ${XTOKEN}
+      USE_HASH: ${USE_HASH}
+      USE_DB: ${USE_DB}
+      DB_SQL_HOST: ${DB_SQL_HOST}
+      DB_SQL_PORT: ${DB_SQL_PORT}
+      DB_SQL_USERNAME: ${DB_SQL_USERNAME}
+      DB_SQL_PASSWORD: ${DB_SQL_PASSWORD}
+      DB_SQL_DATABASE: ${DB_SQL_DATABASE}
+    networks:
+      - dapp-web
+    restart: always
+    volumes:
+      - uploads:/usr/local/bin/uploads
+volumes:
+  uploads:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./uploads
+      o: bind
 networks:
   dapp-web:
     name: dapp-web

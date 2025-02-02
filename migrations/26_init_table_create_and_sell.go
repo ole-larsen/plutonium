@@ -9,6 +9,7 @@ import (
 func init() {
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		fmt.Println("creating table create_and_sell")
+
 		_, err := db.Exec(`
 CREATE TABLE IF NOT EXISTS create_and_sell (
 	id                     SERIAL PRIMARY KEY,
@@ -30,10 +31,13 @@ ALTER TABLE create_and_sell ADD CONSTRAINT create_and_sell_created_by_id_foreign
 	FOREIGN KEY (created_by_id) REFERENCES users(id);
 ALTER TABLE create_and_sell ADD CONSTRAINT create_and_sell_updated_by_id_foreign
 	FOREIGN KEY (updated_by_id) REFERENCES users(id);`)
+
 		return err
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping create_and_sell")
+
 		_, err := db.Exec(`DROP TABLE IF EXISTS create_and_sell`)
+
 		return err
 	})
 }

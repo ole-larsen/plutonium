@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package profile.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/profile/v1;profilev1";
+
+service ProfileService {
+    
+}

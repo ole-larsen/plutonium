@@ -18,39 +18,16 @@ import (
 //
 // swagger:model Faq
 type Faq struct {
-
-	// answer
-	Answer string `json:"answer,omitempty"`
-
-	// created
-	// Format: date
-	Created strfmt.Date `json:"created,omitempty"`
-
-	// created by id
-	CreatedByID int64 `json:"created_by_id,omitempty"`
-
-	// deleted
-	// Format: date
-	Deleted strfmt.Date `json:"deleted,omitempty"`
-
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// order by
-	OrderBy int64 `json:"order_by,omitempty"`
-
-	// question
-	Question string `json:"question,omitempty"`
-
-	// updated
-	// Format: date
-	Updated strfmt.Date `json:"updated,omitempty"`
-
-	// updated by id
-	UpdatedByID int64 `json:"updated_by_id,omitempty"`
+	Created     strfmt.Date `json:"created,omitempty"`
+	Deleted     strfmt.Date `json:"deleted,omitempty"`
+	Updated     strfmt.Date `json:"updated,omitempty"`
+	Answer      string      `json:"answer,omitempty"`
+	Question    string      `json:"question,omitempty"`
+	CreatedByID int64       `json:"created_by_id,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	OrderBy     int64       `json:"order_by,omitempty"`
+	UpdatedByID int64       `json:"updated_by_id,omitempty"`
+	Enabled     bool        `json:"enabled,omitempty"`
 }
 
 // Validate validates this faq

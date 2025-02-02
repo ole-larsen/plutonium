@@ -182,7 +182,7 @@ func (r *FaqsRepository) GetPublicFaqs(ctx context.Context) ([]*models.PublicFaq
 	)
 
 	rows, err := r.DB.QueryxContext(ctx,
-		`SELECT question, answer from faqs WHERE enabled = true AND deleted isNULL GROUP BY id ORDER BY order_by ASC;`)
+		`SELECT id, question, answer from faqs WHERE enabled = true AND deleted isNULL GROUP BY id ORDER BY order_by ASC;`)
 	if err != nil {
 		return nil, err
 	}
@@ -190,14 +190,16 @@ func (r *FaqsRepository) GetPublicFaqs(ctx context.Context) ([]*models.PublicFaq
 	for rows.Next() {
 		var faq Faq
 
-		err = rows.Scan(&faq.Question, &faq.Answer)
-		if err != nil {
+		if err := rows.Scan(&faq.ID, &faq.Question, &faq.Answer); err != nil {
 			return nil, err
 		}
 
 		faqs = append(faqs, &models.PublicFaqItem{
-			Question: faq.Question,
-			Answer:   faq.Answer,
+			ID: faq.ID,
+			Attributes: &models.PublicFaqItemAttributes{
+				Question: faq.Question,
+				Answer:   faq.Answer,
+			},
 		})
 	}
 

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package market.v1;
+
+option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+
+import "market/v1/contract.proto";
+import "market/v1/nonce.proto";
+import "market/v1/verify.proto";
+import "market/v1/category.proto";
+
+service MarketService {
+    rpc Contracts(ContractsRequest) returns (ContractsResponse);
+    rpc Nonce(NonceRequest) returns (NonceResponse);
+    rpc Verify(VerifyRequest) returns (VerifyResponse);
+    rpc Categories(CategoriesRequest) returns (CategoriesResponse);
+}

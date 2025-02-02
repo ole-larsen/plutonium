@@ -185,18 +185,15 @@ func (r *HelpCenterRepository) GetPublicHelpCenter(ctx context.Context) ([]*mode
 		return nil, ErrDBNotInitialized
 	}
 
-	var (
-		multierr    multierror.Error
-		helpCenters []*models.PublicHelpCenterItem
-	)
+	var items []*models.PublicHelpCenterItem
 
 	rows, err := r.DB.QueryxContext(ctx,
 		`SELECT 
-    h.id, 
-    h.title, 
-    h.slug as link, 
-    h.description, 
-    (SELECT JSON_BUILD_OBJECT(
+	h.id, 
+	h.title, 
+	h.slug as link, 
+	h.description, 
+	(SELECT JSON_BUILD_OBJECT(
 		'id', f.id,
 		'attributes', (SELECT JSON_BUILD_OBJECT(
 						'name',            f.name,
@@ -208,37 +205,39 @@ func (r *HelpCenterRepository) GetPublicHelpCenter(ctx context.Context) ([]*mode
 						'height',          f.height,
 						'size',            f.size,
 						'url',             f.url
-					  ) FROM files f WHERE f.id = h.image_id)
+						) FROM files f WHERE f.id = h.image_id)
 	) FROM files f WHERE f.id = h.image_id) as image
-    FROM help_center h WHERE 
-	h.enabled = true AND h.deleted isNULL  GROUP BY h.id ORDER BY order_by ASC;`)
+FROM help_center h WHERE 
+h.enabled = true AND h.deleted isNULL  GROUP BY h.id ORDER BY order_by ASC;`)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var helpCenter HelpCenter
+		var (
+			item  HelpCenter
+			image AggregatedImageJSON
+		)
 
-		var image AggregatedImageJSON
-
-		err = rows.Scan(&helpCenter.ID, &helpCenter.Title, &helpCenter.Link, &helpCenter.Description, &image)
-		if err != nil {
+		if err := rows.Scan(&item.ID, &item.Title, &item.Link, &item.Description, &image); err != nil {
 			return nil, err
 		}
 
-		helpCenters = append(helpCenters, &models.PublicHelpCenterItem{
-			ID:          helpCenter.ID,
-			Title:       helpCenter.Title,
-			Link:        helpCenter.Link,
-			Description: helpCenter.Description,
-			Image: &models.PublicFile{
-				Attributes: image.Attributes,
-				ID:         image.ID,
+		items = append(items, &models.PublicHelpCenterItem{
+			ID: item.ID,
+			Attributes: &models.PublicHelpCenterItemAttributes{
+				Title:       item.Title,
+				Link:        item.Link,
+				Description: item.Description,
+				Image: &models.PublicFile{
+					Attributes: image.Attributes,
+					ID:         image.ID,
+				},
 			},
 		})
 	}
 
 	defer rows.Close()
 
-	return helpCenters, multierr.ErrorOrNil()
+	return items, nil
 }

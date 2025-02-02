@@ -22,7 +22,7 @@ func TestMockHelpCenterRepositoryInterface(t *testing.T) {
 	helpCenter := &models.HelpCenter{ID: helpCenterID, Title: "Test Help Center"}
 	helpCenters := []*models.HelpCenter{helpCenter}
 	helpCenterMap := map[string]interface{}{"id": helpCenterID, "title": "Updated Help Center"}
-	publicHelpCenterItem := &models.PublicHelpCenterItem{ID: helpCenterID, Title: "Public Help Center"}
+	publicHelpCenterItem := &models.PublicHelpCenterItem{ID: helpCenterID, Attributes: &models.PublicHelpCenterItemAttributes{Title: "Public Help Center"}}
 	publicHelpCenters := []*models.PublicHelpCenterItem{publicHelpCenterItem}
 
 	// Test Create

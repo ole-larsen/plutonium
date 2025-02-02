@@ -389,9 +389,9 @@ SELECT
 	assert.NotNil(t, slider)
 	assert.Equal(t, int64(1), slider.ID)
 	assert.NotNil(t, slider.Attributes)
-	assert.Len(t, slider.Attributes.SlidesItem, 1)
+	assert.Len(t, slider.Attributes.SliderItems, 1)
 
-	slide := slider.Attributes.SlidesItem[0]
+	slide := slider.Attributes.SliderItems[0]
 	assert.Equal(t, "Slide 1 Heading", slide.Heading)
 	assert.Equal(t, "Slide 1 Description", slide.Description)
 	assert.Equal(t, "https://example.com/link1", slide.BtnLink1)

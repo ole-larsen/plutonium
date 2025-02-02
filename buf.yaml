@@ -1,0 +1,15 @@
+# For details on buf.yaml configuration, visit https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+modules:
+ - path: proto
+deps:
+  - buf.build/bufbuild/protovalidate
+  - buf.build/bufbuild/protovalidate-testing
+  - buf.build/envoyproxy/protoc-gen-validate
+lint:
+  ignore:
+    - proto/google/type/datetime.proto
+  rpc_allow_google_protobuf_empty_responses: true
+breaking:
+  use:
+    - FILE

@@ -1713,7 +1713,7 @@ func init() {
         "external_url": {
           "type": "string"
         },
-        "image": {
+        "image_url": {
           "type": "string"
         },
         "name": {
@@ -1848,7 +1848,7 @@ func init() {
         "external_url": {
           "type": "string"
         },
-        "image": {
+        "image_url": {
           "type": "string"
         },
         "name": {
@@ -2057,6 +2057,19 @@ func init() {
     "PublicBlogItem": {
       "type": "object",
       "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicBlogItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicBlogItemAttributes": {
+      "type": "object",
+      "properties": {
         "author": {
           "$ref": "#/definitions/PublicAuthor"
         },
@@ -2078,10 +2091,6 @@ func init() {
         },
         "description3": {
           "type": "string"
-        },
-        "id": {
-          "type": "integer",
-          "format": "bigInt"
         },
         "image": {
           "$ref": "#/definitions/PublicFile"
@@ -2303,12 +2312,21 @@ func init() {
     "PublicFaqItem": {
       "type": "object",
       "properties": {
-        "answer": {
-          "type": "string"
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicFaqItemAttributes"
         },
         "id": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicFaqItemAttributes": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
         },
         "question": {
           "type": "string"
@@ -2361,15 +2379,27 @@ func init() {
         }
       }
     },
+    "PublicHelpCenter": {
+      "type": "object"
+    },
     "PublicHelpCenterItem": {
       "type": "object",
       "properties": {
-        "description": {
-          "type": "string"
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicHelpCenterItemAttributes"
         },
         "id": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicHelpCenterItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
         },
         "image": {
           "$ref": "#/definitions/PublicFile"
@@ -2498,7 +2528,7 @@ func init() {
         "attributes": {
           "type": "object",
           "properties": {
-            "slidesItem": {
+            "sliderItems": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/PublicSliderItem"
@@ -2587,41 +2617,46 @@ func init() {
     "PublicUser": {
       "type": "object",
       "properties": {
-        "address": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "funds": {
-          "type": "string"
-        },
-        "gravatar": {
-          "type": "string"
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "created": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "funds": {
+              "type": "string"
+            },
+            "gravatar": {
+              "type": "string"
+            },
+            "nonce": {
+              "type": "string"
+            },
+            "token": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "uuid": {
+              "type": "string"
+            },
+            "wallpaper": {
+              "$ref": "#/definitions/PublicFile"
+            },
+            "wallpaperId": {
+              "type": "integer",
+              "format": "bigInt"
+            }
+          }
         },
         "id": {
-          "type": "integer",
-          "format": "bigInt"
-        },
-        "nonce": {
-          "type": "string"
-        },
-        "token": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "uuid": {
-          "type": "string"
-        },
-        "wallpaper": {
-          "type": "string"
-        },
-        "wallpaperId": {
           "type": "integer",
           "format": "bigInt"
         }
@@ -4644,7 +4679,7 @@ func init() {
         "external_url": {
           "type": "string"
         },
-        "image": {
+        "image_url": {
           "type": "string"
         },
         "name": {
@@ -4779,7 +4814,7 @@ func init() {
         "external_url": {
           "type": "string"
         },
-        "image": {
+        "image_url": {
           "type": "string"
         },
         "name": {
@@ -4988,6 +5023,19 @@ func init() {
     "PublicBlogItem": {
       "type": "object",
       "properties": {
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicBlogItemAttributes"
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicBlogItemAttributes": {
+      "type": "object",
+      "properties": {
         "author": {
           "$ref": "#/definitions/PublicAuthor"
         },
@@ -5009,10 +5057,6 @@ func init() {
         },
         "description3": {
           "type": "string"
-        },
-        "id": {
-          "type": "integer",
-          "format": "bigInt"
         },
         "image": {
           "$ref": "#/definitions/PublicFile"
@@ -5254,12 +5298,21 @@ func init() {
     "PublicFaqItem": {
       "type": "object",
       "properties": {
-        "answer": {
-          "type": "string"
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicFaqItemAttributes"
         },
         "id": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicFaqItemAttributes": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
         },
         "question": {
           "type": "string"
@@ -5350,15 +5403,27 @@ func init() {
         }
       }
     },
+    "PublicHelpCenter": {
+      "type": "object"
+    },
     "PublicHelpCenterItem": {
       "type": "object",
       "properties": {
-        "description": {
-          "type": "string"
+        "attributes": {
+          "type": "object",
+          "$ref": "#/definitions/PublicHelpCenterItemAttributes"
         },
         "id": {
           "type": "integer",
           "format": "bigInt"
+        }
+      }
+    },
+    "PublicHelpCenterItemAttributes": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
         },
         "image": {
           "$ref": "#/definitions/PublicFile"
@@ -5487,7 +5552,7 @@ func init() {
         "attributes": {
           "type": "object",
           "properties": {
-            "slidesItem": {
+            "sliderItems": {
               "type": "array",
               "items": {
                 "$ref": "#/definitions/PublicSliderItem"
@@ -5504,7 +5569,7 @@ func init() {
     "PublicSliderAttributes": {
       "type": "object",
       "properties": {
-        "slidesItem": {
+        "sliderItems": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/PublicSliderItem"
@@ -5587,6 +5652,54 @@ func init() {
     "PublicUser": {
       "type": "object",
       "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "created": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "funds": {
+              "type": "string"
+            },
+            "gravatar": {
+              "type": "string"
+            },
+            "nonce": {
+              "type": "string"
+            },
+            "token": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "uuid": {
+              "type": "string"
+            },
+            "wallpaper": {
+              "$ref": "#/definitions/PublicFile"
+            },
+            "wallpaperId": {
+              "type": "integer",
+              "format": "bigInt"
+            }
+          }
+        },
+        "id": {
+          "type": "integer",
+          "format": "bigInt"
+        }
+      }
+    },
+    "PublicUserAttributes": {
+      "type": "object",
+      "properties": {
         "address": {
           "type": "string"
         },
@@ -5602,10 +5715,6 @@ func init() {
         "gravatar": {
           "type": "string"
         },
-        "id": {
-          "type": "integer",
-          "format": "bigInt"
-        },
         "nonce": {
           "type": "string"
         },
@@ -5619,7 +5728,7 @@ func init() {
           "type": "string"
         },
         "wallpaper": {
-          "type": "string"
+          "$ref": "#/definitions/PublicFile"
         },
         "wallpaperId": {
           "type": "integer",
