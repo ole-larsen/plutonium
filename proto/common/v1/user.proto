@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package frontend.v1;
+package common.v1;
 
-option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
+option go_package = "github.com/ole-larsen/plutonium/gen/common/v1;commonv1";
 
-import "frontend/v1/file.proto";
+import "common/v1/file.proto";
 
 message PublicUserAttributes {
   string username = 2;     

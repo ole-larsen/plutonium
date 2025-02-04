@@ -24,9 +24,9 @@ const (
 
 type PublicFaqItem struct {
 	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Id            int64                    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Attributes    *PublicFaqItemAttributes `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 

@@ -4,6 +4,30 @@ package profile.v1;
 
 option go_package = "github.com/ole-larsen/plutonium/gen/profile/v1;profilev1";
 
+import "google/protobuf/empty.proto";
+import "common/v1/user.proto";
+
+
+message UserForm {
+  string csrf = 1;
+  int64 id = 2; 
+  string username = 3;     
+  string address = 4;      
+  string email = 5;        
+  string gravatar = 6;    
+}
+
+message PatchUserRequest {
+    UserForm body = 1;
+  }
+
+message PatchUserResponse {
+    oneof response {
+        common.v1.PublicUser user = 1;
+        google.protobuf.Empty error = 2;
+    }
+}
+
 service ProfileService {
-    
+    rpc PatchUser(PatchUserRequest) returns (PatchUserResponse);  
 }

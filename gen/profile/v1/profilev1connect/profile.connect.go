@@ -6,8 +6,11 @@ package profilev1connect
 
 import (
 	connect "connectrpc.com/connect"
-	_ "github.com/ole-larsen/plutonium/gen/profile/v1"
+	context "context"
+	errors "errors"
+	v1 "github.com/ole-larsen/plutonium/gen/profile/v1"
 	http "net/http"
+	strings "strings"
 )
 
 // This is a compile-time assertion to ensure that this generated file and the connect package are
@@ -22,8 +25,22 @@ const (
 	ProfileServiceName = "profile.v1.ProfileService"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// ProfileServicePatchUserProcedure is the fully-qualified name of the ProfileService's PatchUser
+	// RPC.
+	ProfileServicePatchUserProcedure = "/profile.v1.ProfileService/PatchUser"
+)
+
 // ProfileServiceClient is a client for the profile.v1.ProfileService service.
 type ProfileServiceClient interface {
+	PatchUser(context.Context, *connect.Request[v1.PatchUserRequest]) (*connect.Response[v1.PatchUserResponse], error)
 }
 
 // NewProfileServiceClient constructs a client for the profile.v1.ProfileService service. By
@@ -34,15 +51,31 @@ type ProfileServiceClient interface {
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
 func NewProfileServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ProfileServiceClient {
-	return &profileServiceClient{}
+	baseURL = strings.TrimRight(baseURL, "/")
+	profileServiceMethods := v1.File_profile_v1_profile_proto.Services().ByName("ProfileService").Methods()
+	return &profileServiceClient{
+		patchUser: connect.NewClient[v1.PatchUserRequest, v1.PatchUserResponse](
+			httpClient,
+			baseURL+ProfileServicePatchUserProcedure,
+			connect.WithSchema(profileServiceMethods.ByName("PatchUser")),
+			connect.WithClientOptions(opts...),
+		),
+	}
 }
 
 // profileServiceClient implements ProfileServiceClient.
 type profileServiceClient struct {
+	patchUser *connect.Client[v1.PatchUserRequest, v1.PatchUserResponse]
+}
+
+// PatchUser calls profile.v1.ProfileService.PatchUser.
+func (c *profileServiceClient) PatchUser(ctx context.Context, req *connect.Request[v1.PatchUserRequest]) (*connect.Response[v1.PatchUserResponse], error) {
+	return c.patchUser.CallUnary(ctx, req)
 }
 
 // ProfileServiceHandler is an implementation of the profile.v1.ProfileService service.
 type ProfileServiceHandler interface {
+	PatchUser(context.Context, *connect.Request[v1.PatchUserRequest]) (*connect.Response[v1.PatchUserResponse], error)
 }
 
 // NewProfileServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -51,8 +84,17 @@ type ProfileServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewProfileServiceHandler(svc ProfileServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	profileServiceMethods := v1.File_profile_v1_profile_proto.Services().ByName("ProfileService").Methods()
+	profileServicePatchUserHandler := connect.NewUnaryHandler(
+		ProfileServicePatchUserProcedure,
+		svc.PatchUser,
+		connect.WithSchema(profileServiceMethods.ByName("PatchUser")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/profile.v1.ProfileService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case ProfileServicePatchUserProcedure:
+			profileServicePatchUserHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -61,3 +103,7 @@ func NewProfileServiceHandler(svc ProfileServiceHandler, opts ...connect.Handler
 
 // UnimplementedProfileServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedProfileServiceHandler struct{}
+
+func (UnimplementedProfileServiceHandler) PatchUser(context.Context, *connect.Request[v1.PatchUserRequest]) (*connect.Response[v1.PatchUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("profile.v1.ProfileService.PatchUser is not implemented"))
+}

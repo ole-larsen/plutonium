@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package market.v1;
+package common.v1;
 
-option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
+option go_package = "github.com/ole-larsen/plutonium/gen/common/v1;commonv1";
 
 message PublicFile {
   int64 id = 1;

@@ -6,7 +6,7 @@ option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
 
 import "google/protobuf/empty.proto";
 import "market/v1/collection.proto";
-import "market/v1/file.proto";
+import "common/v1/file.proto";
 
 message PublicCategory {
   int64 id = 1;
@@ -18,7 +18,7 @@ message PublicCategoryAttributes {
   string slug = 2;
   string description = 3;
   string content = 4;
-  PublicFile image = 5;
+  common.v1.PublicFile image = 5;
   repeated MarketplaceCollection collections = 6;
 }
 

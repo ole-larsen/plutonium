@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.4
 // 	protoc        (unknown)
-// source: market/v1/file.proto
+// source: common/v1/file.proto
 
-package marketv1
+package commonv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -23,15 +23,15 @@ const (
 
 type PublicFile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Attributes    *PublicFileAttributes  `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PublicFile) Reset() {
 	*x = PublicFile{}
-	mi := &file_market_v1_file_proto_msgTypes[0]
+	mi := &file_common_v1_file_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *PublicFile) String() string {
 func (*PublicFile) ProtoMessage() {}
 
 func (x *PublicFile) ProtoReflect() protoreflect.Message {
-	mi := &file_market_v1_file_proto_msgTypes[0]
+	mi := &file_common_v1_file_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *PublicFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicFile.ProtoReflect.Descriptor instead.
 func (*PublicFile) Descriptor() ([]byte, []int) {
-	return file_market_v1_file_proto_rawDescGZIP(), []int{0}
+	return file_common_v1_file_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PublicFile) GetId() int64 {
@@ -75,24 +75,24 @@ func (x *PublicFile) GetAttributes() *PublicFileAttributes {
 
 type PublicFileAttributes struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ext           string                 `protobuf:"bytes,6,opt,name=ext,proto3" json:"ext,omitempty"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Provider      string                 `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
 	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
 	Alt           string                 `protobuf:"bytes,4,opt,name=alt,proto3" json:"alt,omitempty"`
 	Caption       string                 `protobuf:"bytes,5,opt,name=caption,proto3" json:"caption,omitempty"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Ext           string                 `protobuf:"bytes,6,opt,name=ext,proto3" json:"ext,omitempty"`
 	Hash          string                 `protobuf:"bytes,7,opt,name=hash,proto3" json:"hash,omitempty"`
 	Mime          string                 `protobuf:"bytes,8,opt,name=mime,proto3" json:"mime,omitempty"`
+	Size          float64                `protobuf:"fixed64,9,opt,name=size,proto3" json:"size,omitempty"`
+	Width         int64                  `protobuf:"varint,10,opt,name=width,proto3" json:"width,omitempty"`
+	Height        int64                  `protobuf:"varint,11,opt,name=height,proto3" json:"height,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Size          float64 `protobuf:"fixed64,9,opt,name=size,proto3" json:"size,omitempty"`
-	Width         int64   `protobuf:"varint,10,opt,name=width,proto3" json:"width,omitempty"`
-	Height        int64   `protobuf:"varint,11,opt,name=height,proto3" json:"height,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PublicFileAttributes) Reset() {
 	*x = PublicFileAttributes{}
-	mi := &file_market_v1_file_proto_msgTypes[1]
+	mi := &file_common_v1_file_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -104,7 +104,7 @@ func (x *PublicFileAttributes) String() string {
 func (*PublicFileAttributes) ProtoMessage() {}
 
 func (x *PublicFileAttributes) ProtoReflect() protoreflect.Message {
-	mi := &file_market_v1_file_proto_msgTypes[1]
+	mi := &file_common_v1_file_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -117,7 +117,7 @@ func (x *PublicFileAttributes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicFileAttributes.ProtoReflect.Descriptor instead.
 func (*PublicFileAttributes) Descriptor() ([]byte, []int) {
-	return file_market_v1_file_proto_rawDescGZIP(), []int{1}
+	return file_common_v1_file_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PublicFileAttributes) GetName() string {
@@ -197,15 +197,15 @@ func (x *PublicFileAttributes) GetHeight() int64 {
 	return 0
 }
 
-var File_market_v1_file_proto protoreflect.FileDescriptor
+var File_common_v1_file_proto protoreflect.FileDescriptor
 
-var file_market_v1_file_proto_rawDesc = string([]byte{
-	0x0a, 0x14, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x66, 0x69, 0x6c, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76,
+var file_common_v1_file_proto_rawDesc = string([]byte{
+	0x0a, 0x14, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x66, 0x69, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76,
 	0x31, 0x22, 0x5d, 0x0a, 0x0a, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x12,
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x02, 0x69, 0x64, 0x12,
 	0x3f, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e,
 	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62,
 	0x75, 0x74, 0x65, 0x73, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73,
 	0x22, 0x80, 0x02, 0x0a, 0x14, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x41,
@@ -224,38 +224,38 @@ var file_market_v1_file_proto_rawDesc = string([]byte{
 	0x04, 0x73, 0x69, 0x7a, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x18, 0x0a,
 	0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x68,
 	0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x68, 0x65, 0x69,
-	0x67, 0x68, 0x74, 0x42, 0x97, 0x01, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x67, 0x68, 0x74, 0x42, 0x97, 0x01, 0x0a, 0x0d, 0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x46, 0x69, 0x6c, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f,
 	0x50, 0x01, 0x5a, 0x36, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6f,
 	0x6c, 0x65, 0x2d, 0x6c, 0x61, 0x72, 0x73, 0x65, 0x6e, 0x2f, 0x70, 0x6c, 0x75, 0x74, 0x6f, 0x6e,
-	0x69, 0x75, 0x6d, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76,
-	0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x4d, 0x58, 0x58,
-	0xaa, 0x02, 0x09, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x09, 0x4d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x15, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x0a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x69, 0x75, 0x6d, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76,
+	0x31, 0x3b, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x43, 0x58, 0x58,
+	0xaa, 0x02, 0x09, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x09, 0x43,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x15, 0x43, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0a, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_market_v1_file_proto_rawDescOnce sync.Once
-	file_market_v1_file_proto_rawDescData []byte
+	file_common_v1_file_proto_rawDescOnce sync.Once
+	file_common_v1_file_proto_rawDescData []byte
 )
 
-func file_market_v1_file_proto_rawDescGZIP() []byte {
-	file_market_v1_file_proto_rawDescOnce.Do(func() {
-		file_market_v1_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_market_v1_file_proto_rawDesc), len(file_market_v1_file_proto_rawDesc)))
+func file_common_v1_file_proto_rawDescGZIP() []byte {
+	file_common_v1_file_proto_rawDescOnce.Do(func() {
+		file_common_v1_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_v1_file_proto_rawDesc), len(file_common_v1_file_proto_rawDesc)))
 	})
-	return file_market_v1_file_proto_rawDescData
+	return file_common_v1_file_proto_rawDescData
 }
 
-var file_market_v1_file_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_market_v1_file_proto_goTypes = []any{
-	(*PublicFile)(nil),           // 0: market.v1.PublicFile
-	(*PublicFileAttributes)(nil), // 1: market.v1.PublicFileAttributes
+var file_common_v1_file_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_common_v1_file_proto_goTypes = []any{
+	(*PublicFile)(nil),           // 0: common.v1.PublicFile
+	(*PublicFileAttributes)(nil), // 1: common.v1.PublicFileAttributes
 }
-var file_market_v1_file_proto_depIdxs = []int32{
-	1, // 0: market.v1.PublicFile.attributes:type_name -> market.v1.PublicFileAttributes
+var file_common_v1_file_proto_depIdxs = []int32{
+	1, // 0: common.v1.PublicFile.attributes:type_name -> common.v1.PublicFileAttributes
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -263,26 +263,26 @@ var file_market_v1_file_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_market_v1_file_proto_init() }
-func file_market_v1_file_proto_init() {
-	if File_market_v1_file_proto != nil {
+func init() { file_common_v1_file_proto_init() }
+func file_common_v1_file_proto_init() {
+	if File_common_v1_file_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_market_v1_file_proto_rawDesc), len(file_market_v1_file_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_v1_file_proto_rawDesc), len(file_common_v1_file_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_market_v1_file_proto_goTypes,
-		DependencyIndexes: file_market_v1_file_proto_depIdxs,
-		MessageInfos:      file_market_v1_file_proto_msgTypes,
+		GoTypes:           file_common_v1_file_proto_goTypes,
+		DependencyIndexes: file_common_v1_file_proto_depIdxs,
+		MessageInfos:      file_common_v1_file_proto_msgTypes,
 	}.Build()
-	File_market_v1_file_proto = out.File
-	file_market_v1_file_proto_goTypes = nil
-	file_market_v1_file_proto_depIdxs = nil
+	File_common_v1_file_proto = out.File
+	file_common_v1_file_proto_goTypes = nil
+	file_common_v1_file_proto_depIdxs = nil
 }

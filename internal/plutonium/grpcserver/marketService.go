@@ -9,6 +9,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/google/uuid"
+	commonv1 "github.com/ole-larsen/plutonium/gen/common/v1"
 	marketv1 "github.com/ole-larsen/plutonium/gen/market/v1"
 	"github.com/ole-larsen/plutonium/gen/market/v1/marketv1connect"
 	"github.com/ole-larsen/plutonium/internal/blockchain"
@@ -284,14 +285,14 @@ func (s *MarketServiceServer) Verify(
 	response := &marketv1.VerifyResponse{
 		Response: &marketv1.VerifyResponse_Data{
 			Data: &marketv1.VerifiedAccess{
-				User: &marketv1.PublicUser{
+				User: &commonv1.PublicUser{
 					Id: user.ID,
-					Attributes: &marketv1.PublicUserAttributes{
+					Attributes: &commonv1.PublicUserAttributes{
 						Address:   address,
 						Uuid:      userUUID,
 						Email:     user.Email,
 						Gravatar:  user.Gravatar,
-						Wallpaper: NestMarketPublicFile(wallpaper),
+						Wallpaper: NestPublicFile(wallpaper),
 						Username:  user.Username,
 					},
 				},

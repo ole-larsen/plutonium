@@ -7,6 +7,7 @@
 package marketv1
 
 import (
+	v1 "github.com/ole-larsen/plutonium/gen/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -23,9 +24,9 @@ const (
 
 type MarketplaceCollection struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
+	Id            int64                            `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Attributes    *MarketplaceCollectionAttributes `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -74,27 +75,27 @@ func (x *MarketplaceCollection) GetAttributes() *MarketplaceCollectionAttributes
 }
 
 type MarketplaceCollectionAttributes struct {
-	Logo          *PublicFile            `protobuf:"bytes,12,opt,name=logo,proto3" json:"logo,omitempty"`
-	Owner         *PublicUser            `protobuf:"bytes,16,opt,name=owner,proto3" json:"owner,omitempty"`
-	Creator       *PublicUser            `protobuf:"bytes,15,opt,name=creator,proto3" json:"creator,omitempty"`
-	Featured      *PublicFile            `protobuf:"bytes,14,opt,name=featured,proto3" json:"featured,omitempty"`
-	Banner        *PublicFile            `protobuf:"bytes,13,opt,name=banner,proto3" json:"banner,omitempty"`
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,5,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Fee           string                 `protobuf:"bytes,7,opt,name=fee,proto3" json:"fee,omitempty"`
-	Address       string                 `protobuf:"bytes,8,opt,name=address,proto3" json:"address,omitempty"`
-	Created       string                 `protobuf:"bytes,17,opt,name=created,proto3" json:"created,omitempty"`
-	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
-	Url           string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
-	Slug          string                 `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	Collectibles  []*MarketplaceCollectible `protobuf:"bytes,18,rep,name=collectibles,proto3" json:"collectibles,omitempty"`
+	state         protoimpl.MessageState    `protogen:"open.v1"`
 	CategoryId    int64                     `protobuf:"varint,1,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
+	Name          string                    `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Slug          string                    `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`
+	Url           string                    `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
+	Symbol        string                    `protobuf:"bytes,5,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Description   string                    `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	Fee           string                    `protobuf:"bytes,7,opt,name=fee,proto3" json:"fee,omitempty"`
+	Address       string                    `protobuf:"bytes,8,opt,name=address,proto3" json:"address,omitempty"`
 	MaxItems      int64                     `protobuf:"varint,9,opt,name=max_items,json=maxItems,proto3" json:"max_items,omitempty"`
+	IsApproved    bool                      `protobuf:"varint,10,opt,name=is_approved,json=isApproved,proto3" json:"is_approved,omitempty"`
+	IsLocked      bool                      `protobuf:"varint,11,opt,name=is_locked,json=isLocked,proto3" json:"is_locked,omitempty"`
+	Logo          *v1.PublicFile            `protobuf:"bytes,12,opt,name=logo,proto3" json:"logo,omitempty"`
+	Banner        *v1.PublicFile            `protobuf:"bytes,13,opt,name=banner,proto3" json:"banner,omitempty"`
+	Featured      *v1.PublicFile            `protobuf:"bytes,14,opt,name=featured,proto3" json:"featured,omitempty"`
+	Creator       *v1.PublicUser            `protobuf:"bytes,15,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner         *v1.PublicUser            `protobuf:"bytes,16,opt,name=owner,proto3" json:"owner,omitempty"`
+	Created       string                    `protobuf:"bytes,17,opt,name=created,proto3" json:"created,omitempty"`
+	Collectibles  []*MarketplaceCollectible `protobuf:"bytes,18,rep,name=collectibles,proto3" json:"collectibles,omitempty"`
+	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
-	IsLocked      bool `protobuf:"varint,11,opt,name=is_locked,json=isLocked,proto3" json:"is_locked,omitempty"`
-	IsApproved    bool `protobuf:"varint,10,opt,name=is_approved,json=isApproved,proto3" json:"is_approved,omitempty"`
 }
 
 func (x *MarketplaceCollectionAttributes) Reset() {
@@ -204,35 +205,35 @@ func (x *MarketplaceCollectionAttributes) GetIsLocked() bool {
 	return false
 }
 
-func (x *MarketplaceCollectionAttributes) GetLogo() *PublicFile {
+func (x *MarketplaceCollectionAttributes) GetLogo() *v1.PublicFile {
 	if x != nil {
 		return x.Logo
 	}
 	return nil
 }
 
-func (x *MarketplaceCollectionAttributes) GetBanner() *PublicFile {
+func (x *MarketplaceCollectionAttributes) GetBanner() *v1.PublicFile {
 	if x != nil {
 		return x.Banner
 	}
 	return nil
 }
 
-func (x *MarketplaceCollectionAttributes) GetFeatured() *PublicFile {
+func (x *MarketplaceCollectionAttributes) GetFeatured() *v1.PublicFile {
 	if x != nil {
 		return x.Featured
 	}
 	return nil
 }
 
-func (x *MarketplaceCollectionAttributes) GetCreator() *PublicUser {
+func (x *MarketplaceCollectionAttributes) GetCreator() *v1.PublicUser {
 	if x != nil {
 		return x.Creator
 	}
 	return nil
 }
 
-func (x *MarketplaceCollectionAttributes) GetOwner() *PublicUser {
+func (x *MarketplaceCollectionAttributes) GetOwner() *v1.PublicUser {
 	if x != nil {
 		return x.Owner
 	}
@@ -258,9 +259,9 @@ var File_market_v1_collection_proto protoreflect.FileDescriptor
 var file_market_v1_collection_proto_rawDesc = string([]byte{
 	0x0a, 0x1a, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6f, 0x6c, 0x6c,
 	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x6d, 0x61,
-	0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x1a, 0x14, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f,
-	0x76, 0x31, 0x2f, 0x66, 0x69, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x70, 0x72,
+	0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x1a, 0x14, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f,
+	0x76, 0x31, 0x2f, 0x66, 0x69, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63,
 	0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74, 0x69, 0x62, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x22, 0x73, 0x0a, 0x15, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x43,
@@ -291,19 +292,19 @@ var file_market_v1_collection_proto_rawDesc = string([]byte{
 	0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x69, 0x73, 0x5f, 0x6c,
 	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4c,
 	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x29, 0x0a, 0x04, 0x6c, 0x6f, 0x67, 0x6f, 0x18, 0x0c, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e,
 	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x04, 0x6c, 0x6f, 0x67, 0x6f,
 	0x12, 0x2d, 0x0a, 0x06, 0x62, 0x61, 0x6e, 0x6e, 0x65, 0x72, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62,
+	0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62,
 	0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x06, 0x62, 0x61, 0x6e, 0x6e, 0x65, 0x72, 0x12,
 	0x31, 0x0a, 0x08, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x64, 0x18, 0x0e, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75,
+	0x0b, 0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75,
 	0x62, 0x6c, 0x69, 0x63, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x08, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72,
 	0x65, 0x64, 0x12, 0x2f, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x0f, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x01, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e,
 	0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x55, 0x73, 0x65, 0x72, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61,
 	0x74, 0x6f, 0x72, 0x12, 0x2b, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x10, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50,
+	0x28, 0x0b, 0x32, 0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x50,
 	0x75, 0x62, 0x6c, 0x69, 0x63, 0x55, 0x73, 0x65, 0x72, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72,
 	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x11, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x12, 0x45, 0x0a, 0x0c, 0x63, 0x6f,
@@ -340,17 +341,17 @@ var file_market_v1_collection_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_market_v1_collection_proto_goTypes = []any{
 	(*MarketplaceCollection)(nil),           // 0: market.v1.MarketplaceCollection
 	(*MarketplaceCollectionAttributes)(nil), // 1: market.v1.MarketplaceCollectionAttributes
-	(*PublicFile)(nil),                      // 2: market.v1.PublicFile
-	(*PublicUser)(nil),                      // 3: market.v1.PublicUser
+	(*v1.PublicFile)(nil),                   // 2: common.v1.PublicFile
+	(*v1.PublicUser)(nil),                   // 3: common.v1.PublicUser
 	(*MarketplaceCollectible)(nil),          // 4: market.v1.MarketplaceCollectible
 }
 var file_market_v1_collection_proto_depIdxs = []int32{
 	1, // 0: market.v1.MarketplaceCollection.attributes:type_name -> market.v1.MarketplaceCollectionAttributes
-	2, // 1: market.v1.MarketplaceCollectionAttributes.logo:type_name -> market.v1.PublicFile
-	2, // 2: market.v1.MarketplaceCollectionAttributes.banner:type_name -> market.v1.PublicFile
-	2, // 3: market.v1.MarketplaceCollectionAttributes.featured:type_name -> market.v1.PublicFile
-	3, // 4: market.v1.MarketplaceCollectionAttributes.creator:type_name -> market.v1.PublicUser
-	3, // 5: market.v1.MarketplaceCollectionAttributes.owner:type_name -> market.v1.PublicUser
+	2, // 1: market.v1.MarketplaceCollectionAttributes.logo:type_name -> common.v1.PublicFile
+	2, // 2: market.v1.MarketplaceCollectionAttributes.banner:type_name -> common.v1.PublicFile
+	2, // 3: market.v1.MarketplaceCollectionAttributes.featured:type_name -> common.v1.PublicFile
+	3, // 4: market.v1.MarketplaceCollectionAttributes.creator:type_name -> common.v1.PublicUser
+	3, // 5: market.v1.MarketplaceCollectionAttributes.owner:type_name -> common.v1.PublicUser
 	4, // 6: market.v1.MarketplaceCollectionAttributes.collectibles:type_name -> market.v1.MarketplaceCollectible
 	7, // [7:7] is the sub-list for method output_type
 	7, // [7:7] is the sub-list for method input_type
@@ -364,8 +365,6 @@ func file_market_v1_collection_proto_init() {
 	if File_market_v1_collection_proto != nil {
 		return
 	}
-	file_market_v1_file_proto_init()
-	file_market_v1_user_proto_init()
 	file_market_v1_collectible_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

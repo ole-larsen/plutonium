@@ -7,6 +7,7 @@
 package marketv1
 
 import (
+	v1 "github.com/ole-larsen/plutonium/gen/common/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -23,9 +24,9 @@ const (
 
 type MarketplaceCollectible struct {
 	state         protoimpl.MessageState            `protogen:"open.v1"`
+	Id            int64                             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Attributes    *MarketplaceCollectibleAttributes `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -75,14 +76,14 @@ func (x *MarketplaceCollectible) GetAttributes() *MarketplaceCollectibleAttribut
 
 type MarketplaceCollectibleAttributes struct {
 	state         protoimpl.MessageState          `protogen:"open.v1"`
-	Creator       *PublicUser                     `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner         *PublicUser                     `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	CollectionId  int64                           `protobuf:"varint,1,opt,name=collection_id,json=collectionId,proto3" json:"collection_id,omitempty"`
+	TokenIds      []int64                         `protobuf:"varint,2,rep,packed,name=token_ids,json=tokenIds,proto3" json:"token_ids,omitempty"`
+	Uri           string                          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Creator       *v1.PublicUser                  `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner         *v1.PublicUser                  `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 	Details       *MarketplaceCollectibleDetails  `protobuf:"bytes,6,opt,name=details,proto3" json:"details,omitempty"`
 	Metadata      *MarketplaceCollectibleMetadata `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	Uri           string                          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
-	TokenIds      []int64                         `protobuf:"varint,2,rep,packed,name=token_ids,json=tokenIds,proto3" json:"token_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	CollectionId  int64 `protobuf:"varint,1,opt,name=collection_id,json=collectionId,proto3" json:"collection_id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -137,14 +138,14 @@ func (x *MarketplaceCollectibleAttributes) GetUri() string {
 	return ""
 }
 
-func (x *MarketplaceCollectibleAttributes) GetCreator() *PublicUser {
+func (x *MarketplaceCollectibleAttributes) GetCreator() *v1.PublicUser {
 	if x != nil {
 		return x.Creator
 	}
 	return nil
 }
 
-func (x *MarketplaceCollectibleAttributes) GetOwner() *PublicUser {
+func (x *MarketplaceCollectibleAttributes) GetOwner() *v1.PublicUser {
 	if x != nil {
 		return x.Owner
 	}
@@ -167,28 +168,28 @@ func (x *MarketplaceCollectibleAttributes) GetMetadata() *MarketplaceCollectible
 
 type MarketplaceCollectibleDetails struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	StartPrice      string                 `protobuf:"bytes,15,opt,name=start_price,json=startPrice,proto3" json:"start_price,omitempty"`
-	Total           string                 `protobuf:"bytes,19,opt,name=total,proto3" json:"total,omitempty"`
-	PriceWei        string                 `protobuf:"bytes,11,opt,name=price_wei,json=priceWei,proto3" json:"price_wei,omitempty"`
+	Address         string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Auction         bool                   `protobuf:"varint,2,opt,name=auction,proto3" json:"auction,omitempty"`
+	Cancelled       bool                   `protobuf:"varint,3,opt,name=cancelled,proto3" json:"cancelled,omitempty"`
 	Collection      string                 `protobuf:"bytes,4,opt,name=collection,proto3" json:"collection,omitempty"`
-	ReservePriceWei string                 `protobuf:"bytes,14,opt,name=reserve_price_wei,json=reservePriceWei,proto3" json:"reserve_price_wei,omitempty"`
+	EndTime         int64                  `protobuf:"varint,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 	Fee             string                 `protobuf:"bytes,6,opt,name=fee,proto3" json:"fee,omitempty"`
 	FeeWei          string                 `protobuf:"bytes,7,opt,name=fee_wei,json=feeWei,proto3" json:"fee_wei,omitempty"`
-	TotalWei        string                 `protobuf:"bytes,20,opt,name=total_wei,json=totalWei,proto3" json:"total_wei,omitempty"`
-	ReservePrice    string                 `protobuf:"bytes,13,opt,name=reserve_price,json=reservePrice,proto3" json:"reserve_price,omitempty"`
+	Fulfilled       bool                   `protobuf:"varint,8,opt,name=fulfilled,proto3" json:"fulfilled,omitempty"`
+	IsStarted       bool                   `protobuf:"varint,9,opt,name=is_started,json=isStarted,proto3" json:"is_started,omitempty"`
 	Price           string                 `protobuf:"bytes,10,opt,name=price,proto3" json:"price,omitempty"`
-	Address         string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Tags            string                 `protobuf:"bytes,18,opt,name=tags,proto3" json:"tags,omitempty"`
+	PriceWei        string                 `protobuf:"bytes,11,opt,name=price_wei,json=priceWei,proto3" json:"price_wei,omitempty"`
+	Quantity        int64                  `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	ReservePrice    string                 `protobuf:"bytes,13,opt,name=reserve_price,json=reservePrice,proto3" json:"reserve_price,omitempty"`
+	ReservePriceWei string                 `protobuf:"bytes,14,opt,name=reserve_price_wei,json=reservePriceWei,proto3" json:"reserve_price_wei,omitempty"`
+	StartPrice      string                 `protobuf:"bytes,15,opt,name=start_price,json=startPrice,proto3" json:"start_price,omitempty"`
 	StartPriceWei   string                 `protobuf:"bytes,16,opt,name=start_price_wei,json=startPriceWei,proto3" json:"start_price_wei,omitempty"`
+	StartTime       int64                  `protobuf:"varint,17,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	Tags            string                 `protobuf:"bytes,18,opt,name=tags,proto3" json:"tags,omitempty"`
+	Total           string                 `protobuf:"bytes,19,opt,name=total,proto3" json:"total,omitempty"`
+	TotalWei        string                 `protobuf:"bytes,20,opt,name=total_wei,json=totalWei,proto3" json:"total_wei,omitempty"`
 	unknownFields   protoimpl.UnknownFields
-	StartTime       int64 `protobuf:"varint,17,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	EndTime         int64 `protobuf:"varint,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
-	Quantity        int64 `protobuf:"varint,12,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	sizeCache       protoimpl.SizeCache
-	IsStarted       bool `protobuf:"varint,9,opt,name=is_started,json=isStarted,proto3" json:"is_started,omitempty"`
-	Auction         bool `protobuf:"varint,2,opt,name=auction,proto3" json:"auction,omitempty"`
-	Cancelled       bool `protobuf:"varint,3,opt,name=cancelled,proto3" json:"cancelled,omitempty"`
-	Fulfilled       bool `protobuf:"varint,8,opt,name=fulfilled,proto3" json:"fulfilled,omitempty"`
 }
 
 func (x *MarketplaceCollectibleDetails) Reset() {
@@ -518,7 +519,7 @@ var File_market_v1_collectible_proto protoreflect.FileDescriptor
 var file_market_v1_collectible_proto_rawDesc = string([]byte{
 	0x0a, 0x1b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6f, 0x6c, 0x6c,
 	0x65, 0x63, 0x74, 0x69, 0x62, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x1a, 0x14, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x1a, 0x14, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
 	0x2f, 0x76, 0x31, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x75,
 	0x0a, 0x16, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x43, 0x6f, 0x6c,
 	0x6c, 0x65, 0x63, 0x74, 0x69, 0x62, 0x6c, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
@@ -536,10 +537,10 @@ var file_market_v1_collectible_proto_rawDesc = string([]byte{
 	0x28, 0x03, 0x52, 0x08, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x49, 0x64, 0x73, 0x12, 0x10, 0x0a, 0x03,
 	0x75, 0x72, 0x69, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x69, 0x12, 0x2f,
 	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x15, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c,
+	0x15, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c,
 	0x69, 0x63, 0x55, 0x73, 0x65, 0x72, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
 	0x2b, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c, 0x69,
+	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x75, 0x62, 0x6c, 0x69,
 	0x63, 0x55, 0x73, 0x65, 0x72, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x42, 0x0a, 0x07,
 	0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e,
 	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
@@ -645,12 +646,12 @@ var file_market_v1_collectible_proto_goTypes = []any{
 	(*MarketplaceCollectibleDetails)(nil),    // 2: market.v1.MarketplaceCollectibleDetails
 	(*MarketplaceCollectibleMetadata)(nil),   // 3: market.v1.MarketplaceCollectibleMetadata
 	(*MetadataAttributes)(nil),               // 4: market.v1.MetadataAttributes
-	(*PublicUser)(nil),                       // 5: market.v1.PublicUser
+	(*v1.PublicUser)(nil),                    // 5: common.v1.PublicUser
 }
 var file_market_v1_collectible_proto_depIdxs = []int32{
 	1, // 0: market.v1.MarketplaceCollectible.attributes:type_name -> market.v1.MarketplaceCollectibleAttributes
-	5, // 1: market.v1.MarketplaceCollectibleAttributes.creator:type_name -> market.v1.PublicUser
-	5, // 2: market.v1.MarketplaceCollectibleAttributes.owner:type_name -> market.v1.PublicUser
+	5, // 1: market.v1.MarketplaceCollectibleAttributes.creator:type_name -> common.v1.PublicUser
+	5, // 2: market.v1.MarketplaceCollectibleAttributes.owner:type_name -> common.v1.PublicUser
 	2, // 3: market.v1.MarketplaceCollectibleAttributes.details:type_name -> market.v1.MarketplaceCollectibleDetails
 	3, // 4: market.v1.MarketplaceCollectibleAttributes.metadata:type_name -> market.v1.MarketplaceCollectibleMetadata
 	4, // 5: market.v1.MarketplaceCollectibleMetadata.attributes:type_name -> market.v1.MetadataAttributes
@@ -666,7 +667,6 @@ func file_market_v1_collectible_proto_init() {
 	if File_market_v1_collectible_proto != nil {
 		return
 	}
-	file_market_v1_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

@@ -5,7 +5,7 @@ package frontend.v1;
 option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
 
 import "google/protobuf/empty.proto";
-import "frontend/v1/file.proto";
+import "common/v1/file.proto";
 
 message PublicSlider {
   int64 id = 1;
@@ -20,12 +20,12 @@ message PublicSliderItem {
   int64 id = 1;
   string description = 2;
   string heading = 3;
-  PublicFile bg = 4;
+  common.v1.PublicFile bg = 4;
   string btn_link1 = 5;
   string btn_link2 = 6;
   string btn_text1 = 7;
   string btn_text2 = 8;
-  PublicFile image = 10;
+  common.v1.PublicFile image = 10;
 }
 
 message SliderRequest {

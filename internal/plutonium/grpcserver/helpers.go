@@ -1,6 +1,7 @@
 package grpcserver
 
 import (
+	commonv1 "github.com/ole-larsen/plutonium/gen/common/v1"
 	frontendv1 "github.com/ole-larsen/plutonium/gen/frontend/v1"
 	marketv1 "github.com/ole-larsen/plutonium/gen/market/v1"
 	"github.com/ole-larsen/plutonium/models"
@@ -24,14 +25,14 @@ func NestPublicMenu(items []*models.PublicMenu) []*frontendv1.PublicMenu {
 	return nestedItems
 }
 
-func NestFrontendPublicFile(file *models.PublicFile) *frontendv1.PublicFile {
+func NestPublicFile(file *models.PublicFile) *commonv1.PublicFile {
 	if file == nil {
 		return nil
 	}
 
-	return &frontendv1.PublicFile{
+	return &commonv1.PublicFile{
 		Id: file.ID,
-		Attributes: &frontendv1.PublicFileAttributes{
+		Attributes: &commonv1.PublicFileAttributes{
 			Name:     file.Attributes.Name,
 			Provider: file.Attributes.Provider,
 			Url:      file.Attributes.URL,
@@ -47,33 +48,10 @@ func NestFrontendPublicFile(file *models.PublicFile) *frontendv1.PublicFile {
 	}
 }
 
-func NestMarketPublicFile(file *models.PublicFile) *marketv1.PublicFile {
-	if file == nil {
-		return nil
-	}
-
-	return &marketv1.PublicFile{
-		Id: file.ID,
-		Attributes: &marketv1.PublicFileAttributes{
-			Name:     file.Attributes.Name,
-			Provider: file.Attributes.Provider,
-			Url:      file.Attributes.URL,
-			Alt:      file.Attributes.Alt,
-			Caption:  file.Attributes.Caption,
-			Ext:      file.Attributes.Ext,
-			Hash:     file.Attributes.Hash,
-			Mime:     file.Attributes.Mime,
-			Size:     file.Attributes.Size,
-			Width:    file.Attributes.Width,
-			Height:   file.Attributes.Height,
-		},
-	}
-}
-
-func NestFrontendPublicUser(user *models.PublicUser) *frontendv1.PublicUser {
-	nestedUser := &frontendv1.PublicUser{
+func NestPublicUser(user *models.PublicUser) *commonv1.PublicUser {
+	nestedUser := &commonv1.PublicUser{
 		Id: user.ID,
-		Attributes: &frontendv1.PublicUserAttributes{
+		Attributes: &commonv1.PublicUserAttributes{
 			Username: user.Attributes.Username,
 			Address:  user.Attributes.Address,
 			Email:    user.Attributes.Email,
@@ -86,29 +64,7 @@ func NestFrontendPublicUser(user *models.PublicUser) *frontendv1.PublicUser {
 		},
 	}
 	if user.Attributes.Wallpaper != nil {
-		nestedUser.Attributes.Wallpaper = NestFrontendPublicFile(user.Attributes.Wallpaper)
-	}
-
-	return nestedUser
-}
-
-func NestMarketPublicUser(user *models.PublicUser) *marketv1.PublicUser {
-	nestedUser := &marketv1.PublicUser{
-		Id: user.ID,
-		Attributes: &marketv1.PublicUserAttributes{
-			Username: user.Attributes.Username,
-			Address:  user.Attributes.Address,
-			Email:    user.Attributes.Email,
-			Uuid:     user.Attributes.UUID,
-			Gravatar: user.Attributes.Gravatar,
-			Nonce:    user.Attributes.Nonce,
-			Token:    user.Attributes.Token,
-			Funds:    user.Attributes.Funds,
-			Created:  user.Attributes.Created,
-		},
-	}
-	if user.Attributes.Wallpaper != nil {
-		nestedUser.Attributes.Wallpaper = NestMarketPublicFile(user.Attributes.Wallpaper)
+		nestedUser.Attributes.Wallpaper = NestPublicFile(user.Attributes.Wallpaper)
 	}
 
 	return nestedUser
@@ -128,11 +84,11 @@ func NestPublicSlides(items []*models.PublicSliderItem) []*frontendv1.PublicSlid
 			BtnText2:    items[i].BtnText2,
 		}
 		if items[i].Image != nil {
-			nestedItems[i].Image = NestFrontendPublicFile(items[i].Image)
+			nestedItems[i].Image = NestPublicFile(items[i].Image)
 		}
 
 		if items[i].Bg != nil {
-			nestedItems[i].Bg = NestFrontendPublicFile(items[i].Bg)
+			nestedItems[i].Bg = NestPublicFile(items[i].Bg)
 		}
 	}
 
@@ -151,8 +107,8 @@ func NestPublicCategories(items []*models.PublicCategory) []*marketv1.PublicCate
 				Content:     items[i].Attributes.Content,
 			},
 		}
-		if items[i].Attributes.Image != nil {
-			nestedItems[i].Attributes.Image = NestMarketPublicFile(items[i].Attributes.Image)
+		if items[i].Attributes.Image.Attributes != nil {
+			nestedItems[i].Attributes.Image = NestPublicFile(items[i].Attributes.Image)
 		}
 
 		if items[i].Attributes.Collections != nil {
@@ -172,11 +128,11 @@ func NestPublicCreateAndSellItems(items []*models.PublicCreateAndSellItem) []*fr
 				Title:       items[i].Attributes.Title,
 				Link:        items[i].Attributes.Link,
 				Description: items[i].Attributes.Description,
-				Image:       NestFrontendPublicFile(items[i].Attributes.Image),
+				Image:       NestPublicFile(items[i].Attributes.Image),
 			},
 		}
 		if items[i].Attributes.Image != nil {
-			nestedItems[i].Attributes.Image = NestFrontendPublicFile(items[i].Attributes.Image)
+			nestedItems[i].Attributes.Image = NestPublicFile(items[i].Attributes.Image)
 		}
 	}
 
@@ -192,11 +148,11 @@ func NestPublicHelpCenterItems(items []*models.PublicHelpCenterItem) []*frontend
 				Title:       items[i].Attributes.Title,
 				Link:        items[i].Attributes.Link,
 				Description: items[i].Attributes.Description,
-				Image:       NestFrontendPublicFile(items[i].Attributes.Image),
+				Image:       NestPublicFile(items[i].Attributes.Image),
 			},
 		}
 		if items[i].Attributes.Image != nil {
-			nestedItems[i].Attributes.Image = NestFrontendPublicFile(items[i].Attributes.Image)
+			nestedItems[i].Attributes.Image = NestPublicFile(items[i].Attributes.Image)
 		}
 	}
 
@@ -234,7 +190,7 @@ func NestPublicContact(item *models.PublicContact) *frontendv1.PublicContact {
 		},
 	}
 	if item.Attributes.Image != nil {
-		nestedItem.Attributes.Image = NestFrontendPublicFile(item.Attributes.Image)
+		nestedItem.Attributes.Image = NestPublicFile(item.Attributes.Image)
 	}
 
 	return nestedItem
@@ -256,7 +212,7 @@ func NestPublicPage(item *models.PublicPage) *frontendv1.PublicPage {
 		},
 	}
 	if item.Attributes.Image != nil {
-		nestedItem.Attributes.Image = NestFrontendPublicFile(item.Attributes.Image)
+		nestedItem.Attributes.Image = NestPublicFile(item.Attributes.Image)
 	}
 
 	return nestedItem
@@ -271,11 +227,11 @@ func NestPublicWalletConnectItems(items []*models.PublicWalletConnectItem) []*fr
 				Title:       items[i].Attributes.Title,
 				Link:        items[i].Attributes.Link,
 				Description: items[i].Attributes.Description,
-				Image:       NestFrontendPublicFile(items[i].Attributes.Image),
+				Image:       NestPublicFile(items[i].Attributes.Image),
 			},
 		}
 		if items[i].Attributes.Image != nil {
-			nestedItems[i].Attributes.Image = NestFrontendPublicFile(items[i].Attributes.Image)
+			nestedItems[i].Attributes.Image = NestPublicFile(items[i].Attributes.Image)
 		}
 	}
 
@@ -337,11 +293,11 @@ func NestMarketCollectibles(items []*models.MarketplaceCollectible) []*marketv1.
 			},
 		}
 		if items[i].Attributes.Creator != nil {
-			nestedItems[i].Attributes.Creator = NestMarketPublicUser(items[i].Attributes.Creator)
+			nestedItems[i].Attributes.Creator = NestPublicUser(items[i].Attributes.Creator)
 		}
 
 		if items[i].Attributes.Owner != nil {
-			nestedItems[i].Attributes.Owner = NestMarketPublicUser(items[i].Attributes.Owner)
+			nestedItems[i].Attributes.Owner = NestPublicUser(items[i].Attributes.Owner)
 		}
 	}
 
@@ -369,23 +325,23 @@ func NestMarketCollections(items []*models.MarketplaceCollection) []*marketv1.Ma
 			},
 		}
 		if items[i].Attributes.Logo != nil {
-			nestedItems[i].Attributes.Logo = NestMarketPublicFile(items[i].Attributes.Logo)
+			nestedItems[i].Attributes.Logo = NestPublicFile(items[i].Attributes.Logo)
 		}
 
 		if items[i].Attributes.Banner != nil {
-			nestedItems[i].Attributes.Banner = NestMarketPublicFile(items[i].Attributes.Banner)
+			nestedItems[i].Attributes.Banner = NestPublicFile(items[i].Attributes.Banner)
 		}
 
 		if items[i].Attributes.Featured != nil {
-			nestedItems[i].Attributes.Featured = NestMarketPublicFile(items[i].Attributes.Featured)
+			nestedItems[i].Attributes.Featured = NestPublicFile(items[i].Attributes.Featured)
 		}
 
 		if items[i].Attributes.Creator != nil {
-			nestedItems[i].Attributes.Creator = NestMarketPublicUser(items[i].Attributes.Creator)
+			nestedItems[i].Attributes.Creator = NestPublicUser(items[i].Attributes.Creator)
 		}
 
 		if items[i].Attributes.Owner != nil {
-			nestedItems[i].Attributes.Creator = NestMarketPublicUser(items[i].Attributes.Owner)
+			nestedItems[i].Attributes.Creator = NestPublicUser(items[i].Attributes.Owner)
 		}
 
 		if items[i].Attributes.Collectibles != nil {

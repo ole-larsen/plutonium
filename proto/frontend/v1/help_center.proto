@@ -5,7 +5,7 @@ package frontend.v1;
 option go_package = "github.com/ole-larsen/plutonium/gen/frontend/v1;frontendv1";
 
 import "google/protobuf/empty.proto";
-import "frontend/v1/file.proto";
+import "common/v1/file.proto";
 
 message PublicHelpCenterItem {
   int64 id = 1;
@@ -16,7 +16,7 @@ message PublicHelpCenterItemAttributes {
   string title = 1;
   string link = 2;
   string description = 3;
-  PublicFile image = 4;
+  common.v1.PublicFile image = 4;
 }
 
 message HelpCenterRequest {

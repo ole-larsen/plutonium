@@ -15,6 +15,7 @@ import (
 
 	"github.com/ole-larsen/plutonium/gen/frontend/v1/frontendv1connect"
 	"github.com/ole-larsen/plutonium/gen/market/v1/marketv1connect"
+	"github.com/ole-larsen/plutonium/gen/profile/v1/profilev1connect"
 	"github.com/ole-larsen/plutonium/internal/blockchain"
 	"github.com/ole-larsen/plutonium/internal/log"
 	"github.com/ole-larsen/plutonium/internal/plutonium/httpclient"
@@ -207,6 +208,19 @@ func (s *GRPCServer) Listen(_ *settings.Settings) (*http.Server, error) {
 	}
 
 	path, handler = marketv1connect.NewMarketServiceHandler(&marketServiceServer)
+
+	mux.Handle(path, handler)
+
+	profileServiceServer := ProfileServiceServer{
+		logger:     s.logger,
+		storage:    s.storage,
+		web3Dialer: s.web3Dialer,
+		httpDialer: s.httpDialer,
+		oauth2:     s.oauth2,
+		settings:   s.settings,
+	}
+
+	path, handler = profilev1connect.NewProfileServiceHandler(&profileServiceServer)
 
 	mux.Handle(path, handler)
 

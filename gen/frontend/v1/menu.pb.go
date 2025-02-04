@@ -24,9 +24,9 @@ const (
 
 type PublicMenu struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Attributes    *PublicMenuAttributes  `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	Id            int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 
@@ -78,9 +78,9 @@ type PublicMenuAttributes struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Link          string                 `protobuf:"bytes,2,opt,name=link,proto3" json:"link,omitempty"`
+	OrderBy       int64                  `protobuf:"varint,3,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	Items         []*PublicMenu          `protobuf:"bytes,4,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
-	OrderBy       int64 `protobuf:"varint,3,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	sizeCache     protoimpl.SizeCache
 }
 

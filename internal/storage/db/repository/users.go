@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-openapi/strfmt"
 	_ "github.com/go-sql-driver/mysql" // add driver
@@ -30,6 +31,7 @@ type UsersRepositoryInterface interface {
 	UpdateGravatar(ctx context.Context, userMap map[string]interface{}) error
 	UpdateWallpaper(ctx context.Context, userMap map[string]interface{}) error
 	UpdateSecret(ctx context.Context, userMap map[string]interface{}) error
+	Update(ctx context.Context, userMap map[string]interface{}) (*User, error)
 }
 
 type User struct {
@@ -108,15 +110,15 @@ func (r *UsersRepository) GetUserByID(ctx context.Context, id int64) (*User, err
 
 	sqlStatement := fmt.Sprintf(`
 SELECT 
-	id,
-	email,
-	password,
-	password_reset_token,
-	password_reset_expires,
-	enabled,
-	secret,
-	rsa_secret,
-	gravatar,
+	u.id,
+	u.email,
+	u.password,
+	u.password_reset_token,
+	u.password_reset_expires,
+	u.enabled,
+	u.secret,
+	u.rsa_secret,
+	u.gravatar,
 	(SELECT JSON_BUILD_OBJECT(
 		'id', f.id,
 		'attributes', (SELECT JSON_BUILD_OBJECT(
@@ -131,12 +133,12 @@ SELECT
 			'url',             f.url
 		) FROM files f WHERE f.id = u.wallpaper_id)
 		) FROM files f WHERE f.id = u.wallpaper_id) as wallpaper,
-	created,
-	updated,
-	deleted
-FROM %s 
-LEFT JOIN files f ON wallpaper_id = f.id
-WHERE id=$1;`, r.TBL)
+	u.created,
+	u.updated,
+	u.deleted
+FROM %s u
+LEFT JOIN files f ON u.wallpaper_id = f.id
+WHERE u.id=$1;`, r.TBL)
 
 	row := r.DB.QueryRowxContext(ctx, sqlStatement, id)
 
@@ -352,4 +354,43 @@ func (r *UsersRepository) UpdateSecret(ctx context.Context, userMap map[string]i
 	_, err := r.DB.NamedExecContext(ctx, `UPDATE users SET secret=:secret WHERE id =:id`, userMap)
 
 	return err
+}
+
+func (r *UsersRepository) Update(ctx context.Context, userMap map[string]interface{}) (*User, error) {
+	if r == nil {
+		return nil, ErrDBNotInitialized
+	}
+
+	id, ok := userMap["id"]
+	if !ok {
+		return nil, fmt.Errorf("missing 'id' in userMap")
+	}
+
+	delete(userMap, "id") // ID should not be updated
+
+	// Build the SET clause dynamically
+	var setClauses []string
+	var args []interface{}
+	argIndex := 1
+	for key, value := range userMap {
+		setClauses = append(setClauses, fmt.Sprintf("%s=$%d", key, argIndex))
+		args = append(args, value)
+		argIndex++
+	}
+
+	args = append(args, id) // Append the user ID for WHERE clause
+
+	query := fmt.Sprintf("UPDATE users SET %s WHERE id=$%d RETURNING *", strings.Join(setClauses, ", "), argIndex)
+	fmt.Println(query, args)
+	// Execute the query and scan the result into updatedUser
+	var updatedUser User
+	row := r.DB.QueryRowxContext(ctx, query, args...)
+	if err := row.StructScan(&updatedUser); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, err
+	}
+
+	return &updatedUser, nil
 }

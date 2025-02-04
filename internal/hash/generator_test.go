@@ -45,3 +45,29 @@ func TestRandStringBytes_ZeroLength(t *testing.T) {
 	randomString := hash.RandStringBytes(0)
 	assert.Equal(t, "", randomString, "String with zero length should be empty")
 }
+
+func SelectionSort(arr []int) {
+	n := len(arr)
+
+	for i := 0; i < n; i++ {
+		min := i
+		for j := i + 1; j < n; j++ {
+			if arr[j] < arr[min] {
+				min = j
+			}
+		}
+		arr[i], arr[min] = arr[min], arr[i]
+	}
+}
+
+func BubbleSort(arr []int) {
+	n := len(arr)
+
+	for j := 1; j < n; j++ {
+		for i := 0; i < n-j; i++ {
+            if arr[i] > arr[i+1] {
+                arr[i], arr[i+1] = arr[i+1], arr[i]
+            }
+        }
+	}
+}

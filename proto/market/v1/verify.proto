@@ -7,7 +7,7 @@ option go_package = "github.com/ole-larsen/plutonium/gen/market/v1;marketv1";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-import "market/v1/user.proto";
+import "common/v1/user.proto";
 
 message Oauth2Token {
   string access_token = 1;
@@ -20,7 +20,7 @@ message Oauth2Token {
 }
 
 message VerifiedAccess {
-  PublicUser user = 1;
+  common.v1.PublicUser user = 1;
   Oauth2Token token = 2;
 }
 message VerifyResponse {

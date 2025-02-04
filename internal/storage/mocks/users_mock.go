@@ -21,9 +21,9 @@ import (
 
 // MockUsersRepositoryInterface is a mock of UsersRepositoryInterface interface.
 type MockUsersRepositoryInterface struct {
-	isgomock struct{}
 	ctrl     *gomock.Controller
 	recorder *MockUsersRepositoryInterfaceMockRecorder
+	isgomock struct{}
 }
 
 // MockUsersRepositoryInterfaceMockRecorder is the mock recorder for MockUsersRepositoryInterface.
@@ -143,6 +143,21 @@ func (m *MockUsersRepositoryInterface) Ping() error {
 func (mr *MockUsersRepositoryInterfaceMockRecorder) Ping() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).Ping))
+}
+
+// Update mocks base method.
+func (m *MockUsersRepositoryInterface) Update(ctx context.Context, userMap map[string]any) (*repository.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, userMap)
+	ret0, _ := ret[0].(*repository.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockUsersRepositoryInterfaceMockRecorder) Update(ctx, userMap any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUsersRepositoryInterface)(nil).Update), ctx, userMap)
 }
 
 // UpdateGravatar mocks base method.
