@@ -146,10 +146,10 @@ func (mr *MockUsersRepositoryInterfaceMockRecorder) Ping() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockUsersRepositoryInterface) Update(ctx context.Context, userMap map[string]any) (*repository.User, error) {
+func (m *MockUsersRepositoryInterface) Update(ctx context.Context, userMap map[string]any) (*models.PublicUser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, userMap)
-	ret0, _ := ret[0].(*repository.User)
+	ret0, _ := ret[0].(*models.PublicUser)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

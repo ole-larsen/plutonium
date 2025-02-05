@@ -31,7 +31,7 @@ type UsersRepositoryInterface interface {
 	UpdateGravatar(ctx context.Context, userMap map[string]interface{}) error
 	UpdateWallpaper(ctx context.Context, userMap map[string]interface{}) error
 	UpdateSecret(ctx context.Context, userMap map[string]interface{}) error
-	Update(ctx context.Context, userMap map[string]interface{}) (*User, error)
+	Update(ctx context.Context, userMap map[string]interface{}) (*models.PublicUser, error)
 }
 
 type User struct {
@@ -219,7 +219,7 @@ SELECT
     u.id, 
     u.uuid, 
     u.username, 
-    u.email
+    u.email,
 	u.gravatar,
 	(SELECT JSON_BUILD_OBJECT(
 		'id', f.id,
@@ -356,7 +356,7 @@ func (r *UsersRepository) UpdateSecret(ctx context.Context, userMap map[string]i
 	return err
 }
 
-func (r *UsersRepository) Update(ctx context.Context, userMap map[string]interface{}) (*User, error) {
+func (r *UsersRepository) Update(ctx context.Context, userMap map[string]interface{}) (*models.PublicUser, error) {
 	if r == nil {
 		return nil, ErrDBNotInitialized
 	}
@@ -368,7 +368,6 @@ func (r *UsersRepository) Update(ctx context.Context, userMap map[string]interfa
 
 	delete(userMap, "id") // ID should not be updated
 
-	// Build the SET clause dynamically
 	var setClauses []string
 	var args []interface{}
 	argIndex := 1
@@ -377,20 +376,21 @@ func (r *UsersRepository) Update(ctx context.Context, userMap map[string]interfa
 		args = append(args, value)
 		argIndex++
 	}
-
 	args = append(args, id) // Append the user ID for WHERE clause
 
-	query := fmt.Sprintf("UPDATE users SET %s WHERE id=$%d RETURNING *", strings.Join(setClauses, ", "), argIndex)
-	fmt.Println(query, args)
-	// Execute the query and scan the result into updatedUser
-	var updatedUser User
-	row := r.DB.QueryRowxContext(ctx, query, args...)
-	if err := row.StructScan(&updatedUser); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("user not found")
-		}
+	// First, update the user
+	updateQuery := fmt.Sprintf("UPDATE users SET %s WHERE id=$%d", strings.Join(setClauses, ", "), argIndex)
+	_, err := r.DB.ExecContext(ctx, updateQuery, args...)
+	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
-	return &updatedUser, nil
+	userID, ok := id.(int64)
+	if !ok {
+		return nil, NewError(fmt.Errorf("could not get user id"))
+	}
+
+	// Second, fetch publicUser
+	return r.GetPublicUserByID(ctx, userID)
 }

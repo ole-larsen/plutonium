@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
-	commonv1 "github.com/ole-larsen/plutonium/gen/common/v1"
 	profilev1 "github.com/ole-larsen/plutonium/gen/profile/v1"
 	"github.com/ole-larsen/plutonium/gen/profile/v1/profilev1connect"
 	"github.com/ole-larsen/plutonium/internal/blockchain"
@@ -13,7 +12,6 @@ import (
 	"github.com/ole-larsen/plutonium/internal/plutonium/oauth2client"
 	"github.com/ole-larsen/plutonium/internal/plutonium/settings"
 	"github.com/ole-larsen/plutonium/internal/storage"
-	"github.com/ole-larsen/plutonium/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -107,21 +105,7 @@ func (s *ProfileServiceServer) PatchUser(
 		s.logger.Errorln(NewError(err))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	publicUser := &commonv1.PublicUser{
-		Id: user.ID,
-		Attributes: &commonv1.PublicUserAttributes{
-			Username: user.Username,
-			Email:    user.Email,
-			Gravatar: user.Gravatar,
-		},
-	}
-	if user.Wallpaper != nil {
-		wallpaper := &models.PublicFile{
-			Attributes: user.Wallpaper.Attributes,
-			ID:         user.Wallpaper.ID,
-		}
-		publicUser.Attributes.Wallpaper = NestPublicFile(wallpaper)
-	}
+	publicUser := NestPublicUser(user)
 	response := &profilev1.PatchUserResponse{
 		Response: &profilev1.PatchUserResponse_User{
 			User: publicUser,
